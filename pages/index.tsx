@@ -3,6 +3,7 @@ import { Page, Text, Display, Grid } from "@geist-ui/react";
 import { ATSBetTable } from "./ATSBetTable";
 import { TotalBetTable } from "./TotalBetTable";
 import { RefreshCounter } from "./RefreshCounter";
+import { TotalGraph } from "./TotalGraph";
 
 export default function Home() {
   return (
@@ -25,6 +26,9 @@ export default function Home() {
           <Grid justify="center">
             <TotalBetTable />
           </Grid>
+        </Grid.Container>
+        <Grid.Container>
+          <TotalGraph />
         </Grid.Container>
       </Page>
     </div>
