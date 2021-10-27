@@ -2,9 +2,9 @@ import { useTheme, useMediaQuery, Grid } from "@geist-ui/react";
 import { ResponsiveLine, Serie, PointTooltipProps } from "@nivo/line";
 import { LegendAnchor } from "@nivo/legends";
 
-type ResponsiveLineProps = {
-  data: Serie[];
-};
+// type ResponsiveLineProps = {
+//   data: Serie[];
+// };
 
 const data: Serie[] = [
   {
@@ -48,6 +48,7 @@ export function TotalGraph(): JSX.Element {
   return (
     <Grid height="400px" width="900px">
       <p>hey</p>
+      <img />
       <ResponsiveLine
         data={data}
         theme={{
