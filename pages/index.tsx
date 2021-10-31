@@ -1,7 +1,7 @@
 import Head from "next/head";
-import { Page, Text, Display, Grid, Divider } from "@geist-ui/react";
-import { ATSBetTable } from "./ATSBetTable";
-import { TotalBetTable } from "./TotalBetTable";
+import { Page, Text, Display, Grid } from "@geist-ui/react";
+// import { ATSBetTable } from "./ATSBetTable";
+// import { TotalBetTable } from "./TotalBetTable";
 import { RefreshCounter } from "./RefreshCounter";
 import { GameCard } from "./TotalGraph";
 
@@ -24,17 +24,8 @@ export default function Home() {
           <Grid>
             <RefreshCounter />
           </Grid>
-          {/* <Grid justify="center">
-            <ATSBetTable />
-          </Grid> */}
         </Grid.Container>
-        {/* <Divider /> */}
-        {/* <Grid.Container justify="center" gap={3}>
-        <Grid justify="center">
-            <TotalBetTable />
-          </Grid>
-        </Grid.Container> */}
-        {/* <Divider /> */}
+
         <Grid.Container gap={2} justify="center">
           <Grid width="600px">
             <GameCard isLoading />

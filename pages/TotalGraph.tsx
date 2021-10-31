@@ -105,7 +105,7 @@ const data: Serie[] = [
 ];
 
 type GameCardProps = {
-  isLoading: boolean;
+  isLoading?: boolean;
 };
 
 export function GameCard({ isLoading }: GameCardProps): JSX.Element {
