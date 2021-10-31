@@ -16,7 +16,9 @@
     "@nivo/line": "^0.74.0",
     "next": "11.1.2",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-query": "^3.30.0",
+    "react-use-websocket": "^2.9.1"
   },
   "devDependencies": {
     "@types/react": "17.0.31",

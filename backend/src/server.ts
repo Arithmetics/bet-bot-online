@@ -24,8 +24,12 @@ wss.on("connection", (ws: ExtWebSocket) => {
   //connection is up, let's add a simple simple event
   ws.on("message", (message: string) => {
     //log the received message and send it back to the client
-    console.log("received: %s", message);
-    ws.send(`Hello, you sent -> ${message}`);
+    console.log("received::: %s", message);
+    // ws.send(`Hello, you sent -> ${message}`);
+
+    wss.clients.forEach((client) => {
+      client.send(`someonesent: ${message}`);
+    });
   });
 
   //send immediatly a feedback to the incoming connection (initial data for us)
@@ -47,6 +51,6 @@ setInterval(() => {
 //start our server
 server.listen(process.env.PORT || 8999, () => {
   console.log(
-    `Server started on port ${(server.address() as { port: number }).port} :)`
+    `Server started on port ${(server.address() as { port: number }).port} :))`
   );
 });

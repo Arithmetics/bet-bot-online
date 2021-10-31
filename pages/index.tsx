@@ -2,6 +2,7 @@ import Head from "next/head";
 import { Page, Text, Display, Grid } from "@geist-ui/react";
 // import { ATSBetTable } from "./ATSBetTable";
 // import { TotalBetTable } from "./TotalBetTable";
+import { WSTest } from "./WSTest";
 import { RefreshCounter } from "./RefreshCounter";
 import { GameCard } from "./TotalGraph";
 
@@ -25,7 +26,7 @@ export default function Home() {
             <RefreshCounter />
           </Grid>
         </Grid.Container>
-
+        <WSTest />
         <Grid.Container gap={2} justify="center">
           <Grid width="600px">
             <GameCard isLoading />
