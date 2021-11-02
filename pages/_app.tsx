@@ -7,12 +7,12 @@ const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <QueryClientProvider client={queryClient}>
       <GeistProvider themeType="dark">
-        <CssBaseline />
-        <Component {...pageProps} />
+          <QueryClientProvider client={queryClient}>
+          <CssBaseline />
+          <Component {...pageProps} />
+        </QueryClientProvider>
       </GeistProvider>
-    </QueryClientProvider>
   );
 }
 

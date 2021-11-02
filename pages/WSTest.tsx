@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import {useToasts} from '@geist-ui/react';
 
 type XMessage = {
   data: string;
 };
 
 export const WSTest = () => {
-  //Public API that will echo messages sent to it back to the client
+  const [_, setToast] = useToasts();
+
   const [messageHistory, setMessageHistory] = useState<XMessage[]>([]);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
@@ -14,13 +16,21 @@ export const WSTest = () => {
   );
 
   useEffect(() => {
-    console.log(lastMessage);
     if (lastMessage !== null) {
       if (typeof lastMessage === "string") {
         setMessageHistory((prev) => prev.concat(lastMessage));
       }
     }
   }, [lastMessage, setMessageHistory]);
+
+  useEffect(() => {
+    if (readyState === ReadyState.CLOSED) {
+      setToast({
+        text: 'Lost connection with server. Refresh and try again.',
+        type: 'error',
+      })
+    }
+  }, [readyState])
 
   const handleClickSendMessage = () => sendMessage(`${Date.now()}`);
 
@@ -32,14 +42,11 @@ export const WSTest = () => {
     [ReadyState.UNINSTANTIATED]: "Uninstantiated",
   }[readyState];
 
+  console.log(readyState, connectionStatus)
+
   return (
     <div>
-      <button
-        onClick={handleClickSendMessage}
-        disabled={readyState !== ReadyState.OPEN}
-      >
-        Click Me to send Hello
-      </button>
+
       <span>The WebSocket is currently {connectionStatus}</span>
       {lastMessage ? <span>Last message: {lastMessage.data}</span> : null}
       <ul>
