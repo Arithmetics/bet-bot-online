@@ -5,12 +5,22 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import { RefreshCounter } from "./RefreshCounter";
 import { GameCard } from "./TotalGraph";
 
+type ConnectionMessage = {
+  messageTimestamp: number;
+  games: string[];
+  msUntilNextUpdate: number;
+};
+
 const websocketUrl = "ws://localhost:8999";
 
-export default function Home() {
-  const [_, setToast] = useToasts();
+export default function Home(): JSX.Element {
+  const [, setToast] = useToasts();
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(websocketUrl);
+  // sendMessage
+  const { lastMessage, readyState } = useWebSocket(websocketUrl);
+
+  const [currentMessage, setCurrentMessage] =
+    useState<ConnectionMessage | null>(null);
 
   useEffect(() => {
     if (readyState === ReadyState.CLOSED) {
@@ -25,7 +35,15 @@ export default function Home() {
         type: "success",
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [readyState]);
+
+  useEffect(() => {
+    if (lastMessage && lastMessage.data) {
+      console.log(lastMessage.data);
+      setCurrentMessage(lastMessage.data);
+    }
+  }, [lastMessage]);
 
   const isConnecting = readyState === ReadyState.CONNECTING;
 
@@ -45,12 +63,17 @@ export default function Home() {
         </Display>
 
         {isConnecting ? (
-          <Loading type="error" marginTop={10}></Loading>
+          <Loading marginTop={10} type="error">
+            Loading
+          </Loading>
         ) : (
           <>
             <Grid.Container justify="center" gap={3}>
               <Grid>
-                <RefreshCounter />
+                <RefreshCounter
+                  msUntilNextUpdate={currentMessage?.msUntilNextUpdate}
+                  messageTimestamp={currentMessage?.messageTimestamp}
+                />
               </Grid>
             </Grid.Container>
             <Grid.Container gap={2} justify="center">
