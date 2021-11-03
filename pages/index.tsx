@@ -16,7 +16,6 @@ const websocketUrl = "ws://localhost:8999";
 export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
 
-  // sendMessage
   const { lastMessage, readyState } = useWebSocket(websocketUrl);
 
   const [currentMessage, setCurrentMessage] =
@@ -40,10 +39,10 @@ export default function Home(): JSX.Element {
 
   useEffect(() => {
     if (lastMessage && lastMessage.data) {
-      console.log(lastMessage.data);
-      setCurrentMessage(lastMessage.data);
+      console.log("setting new message");
+      setCurrentMessage(JSON.parse(lastMessage.data));
     }
-  }, [lastMessage]);
+  }, [lastMessage, setCurrentMessage]);
 
   const isConnecting = readyState === ReadyState.CONNECTING;
 
@@ -70,10 +69,13 @@ export default function Home(): JSX.Element {
           <>
             <Grid.Container justify="center" gap={3}>
               <Grid>
-                <RefreshCounter
-                  msUntilNextUpdate={currentMessage?.msUntilNextUpdate}
-                  messageTimestamp={currentMessage?.messageTimestamp}
-                />
+                {currentMessage?.msUntilNextUpdate &&
+                currentMessage.messageTimestamp ? (
+                  <RefreshCounter
+                    msUntilNextUpdate={currentMessage?.msUntilNextUpdate}
+                    messageTimestamp={currentMessage?.messageTimestamp}
+                  />
+                ) : undefined}
               </Grid>
             </Grid.Container>
             <Grid.Container gap={2} justify="center">

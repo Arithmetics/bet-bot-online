@@ -151,6 +151,8 @@ export function GameCard({ isLoading }: GameCardProps): JSX.Element {
             justify="space-between"
           >
             <Badge type="error">Grade: OVER +4.3</Badge> <Spacer h={0.5} />
+            <Badge type="warning">Stale: Not updated in last update</Badge>{" "}
+            <Spacer h={0.5} />
             <Text h3 margin={0}>
               4:34 - 3rd
             </Text>

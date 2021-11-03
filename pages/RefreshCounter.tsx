@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Text, Input, Button, Grid, Modal } from "@geist-ui/react";
 import RefreshCcw from "@geist-ui/react-icons/refreshCcw";
 
+import TimeAgo from "react-timeago";
+
 type RefreshCounterProps = {
-  messageTimestamp?: number;
-  msUntilNextUpdate?: number;
+  messageTimestamp: number;
+  msUntilNextUpdate: number;
 };
 
 export function RefreshCounter({
@@ -20,21 +22,21 @@ export function RefreshCounter({
   };
 
   const nextUpdateTime = new Date(
-    Date.now() + (msUntilNextUpdate || 0)
+    messageTimestamp + msUntilNextUpdate
   ).toLocaleTimeString();
 
   return (
     <Grid justify="center">
       <Text h2>Next update: {nextUpdateTime}</Text>
-      <Text h4>
-        Data is 4 minutes and 42 seconds stale &nbsp;{" "}
-        <Button
-          iconRight={<RefreshCcw />}
-          auto
-          scale={2 / 3}
-          onClick={handler}
-        />
-      </Text>
+
+      <TimeAgo
+        date={new Date(messageTimestamp)}
+        formatter={(val, unit) => {
+          const time = `${val} ${unit}${val === 1 ? "" : "s"}`;
+          return <Text h4>Data is {time} stale</Text>;
+        }}
+      />
+      <Button iconRight={<RefreshCcw />} auto scale={2 / 3} onClick={handler} />
 
       <Modal visible={state} onClose={closeHandler}>
         <Modal.Content>

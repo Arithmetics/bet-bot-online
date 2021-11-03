@@ -2,7 +2,9 @@ import express from "express";
 import http from "http";
 import WebSocket from "ws";
 
-const MASTER_INTERVAL = 10000;
+let lastMessage = Date.now();
+
+const MASTER_INTERVAL = 30000;
 
 type ConnectionMessage = {
   messageTimestamp: number;
@@ -10,34 +12,29 @@ type ConnectionMessage = {
   msUntilNextUpdate: number;
 };
 
+interface ExtWebSocket extends WebSocket {
+  isAlive: boolean;
+}
+
 function constructMessage(): ConnectionMessage {
   return {
-    messageTimestamp: Date.now(),
+    messageTimestamp: lastMessage,
     games: [],
     msUntilNextUpdate: MASTER_INTERVAL,
   };
 }
 
 const app = express();
-
-//initialize a simple http server
 const server = http.createServer(app);
-
-//initialize the WebSocket server instance
 const wss = new WebSocket.Server({ server });
 
-interface ExtWebSocket extends WebSocket {
-  isAlive: boolean;
-}
-
-function sendMessageToClients(): void {
+function sendMessageToAllClients(): void {
+  lastMessage = Date.now();
+  console.log("sending messages now");
   wss.clients.forEach((client) => {
     client.send(JSON.stringify(constructMessage()));
   });
 }
-
-// const masterTime =
-setInterval(sendMessageToClients, MASTER_INTERVAL);
 
 wss.on("connection", (ws: ExtWebSocket) => {
   ws.isAlive = true;
@@ -60,6 +57,9 @@ wss.on("connection", (ws: ExtWebSocket) => {
   //send immediatly a feedback to the incoming connection (initial data for us)
   ws.send(JSON.stringify(constructMessage()));
 });
+
+// send data out on interval
+setInterval(sendMessageToAllClients, MASTER_INTERVAL);
 
 // check on all connections every 10 secs and close broken connections
 setInterval(() => {
