@@ -64,7 +64,7 @@ export default function Home(): JSX.Element {
         </Display>
 
         {isConnecting ? (
-          <Loading marginTop={10} type="error">
+          <Loading style={{ marginTop: "10rem" }} type="error">
             Loading
           </Loading>
         ) : (

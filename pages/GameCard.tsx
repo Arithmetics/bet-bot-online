@@ -21,7 +21,6 @@ type GameCardProps = {
 
 function getLogoUrl(teamName: string): string {
   const noSpaces = teamName.replace(/\s/g, "");
-  console.log(noSpaces);
   return `/nba_team_logos/${noSpaces}.png`;
 }
 
@@ -43,7 +42,10 @@ export function GameCard({
       <Card.Content>
         <Grid.Container gap={1} justify="space-between">
           <Grid xs={12} direction="column">
-            <Grid.Container alignItems="flex-start" marginBottom={1}>
+            <Grid.Container
+              alignItems="flex-start"
+              style={{ marginBottom: "1rem" }}
+            >
               <Grid xs={24}>
                 <Grid.Container alignItems="center">
                   <Grid>
@@ -51,7 +53,7 @@ export function GameCard({
                       height="50px"
                       src={getLogoUrl(game.awayTeam)}
                       alt={game.awayTeam}
-                      marginRight={1}
+                      style={{ marginRight: "1rem" }}
                     />
                   </Grid>
                   <Grid>
@@ -62,7 +64,7 @@ export function GameCard({
                       height="50px"
                       src={getLogoUrl(game.homeTeam)}
                       alt={game.homeTeam}
-                      marginLeft={1}
+                      style={{ marginLeft: "1rem" }}
                     />
                   </Grid>
                 </Grid.Container>
