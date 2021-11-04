@@ -89,6 +89,14 @@ function todaysRawGamesOnly(scrapedGames: RawScrapedGame[]): RawScrapedGame[] {
   return scrapedGames.filter((g) => g.date.includes(` ${todaysDate} `));
 }
 
+export function filterActiveGames(games: LiveGame[]): LiveGame[] {
+  return games.filter((g) => g.quarter !== undefined && g.minute !== undefined);
+}
+
+export function filterNotStartedGames(games: LiveGame[]): LiveGame[] {
+  return games.filter((lrg) => !lrg.quarter && !lrg.minute);
+}
+
 function convertRawToFullGame(scrapedGames: RawScrapedGame[]): LiveGame[] {
   return scrapedGames.map((g) => {
     const gameTimes = g.gameState.split("Q");

@@ -39,7 +39,7 @@ export default function Home(): JSX.Element {
 
   useEffect(() => {
     if (lastMessage && lastMessage.data) {
-      console.log("setting new message");
+      console.log("setting new message", JSON.parse(lastMessage.data));
       setCurrentMessage(JSON.parse(lastMessage.data));
     }
   }, [lastMessage, setCurrentMessage]);

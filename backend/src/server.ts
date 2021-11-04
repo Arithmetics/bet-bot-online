@@ -1,14 +1,16 @@
 import express from "express";
 import http from "http";
 import WebSocket from "ws";
+import { Game } from "@prisma/client";
+import { updateData, getAllTodaysGames } from "./database";
 
 let lastMessage = Date.now();
 
-const MASTER_INTERVAL = 30000;
+const MASTER_INTERVAL = 30 * 1000;
 
 type ConnectionMessage = {
   messageTimestamp: number;
-  games: string[];
+  games: Game[];
   msUntilNextUpdate: number;
 };
 
@@ -16,10 +18,10 @@ interface ExtWebSocket extends WebSocket {
   isAlive: boolean;
 }
 
-function constructMessage(): ConnectionMessage {
+function constructMessage(games: Game[]): ConnectionMessage {
   return {
     messageTimestamp: lastMessage,
-    games: [],
+    games,
     msUntilNextUpdate: MASTER_INTERVAL,
   };
 }
@@ -28,11 +30,16 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-function sendMessageToAllClients(): void {
+async function sendMessageToAllClients(): Promise<void> {
+  console.log("updating data");
+  await updateData();
+
+  const games = await getAllTodaysGames();
   lastMessage = Date.now();
-  console.log("sending messages now");
+
+  console.log("sending messages now", games.length);
   wss.clients.forEach((client) => {
-    client.send(JSON.stringify(constructMessage()));
+    client.send(JSON.stringify(constructMessage(games)));
   });
 }
 
@@ -53,9 +60,8 @@ wss.on("connection", (ws: ExtWebSocket) => {
   //   client.send(`someonesent: ${message}`);
   // });
   // });
-
   //send immediatly a feedback to the incoming connection (initial data for us)
-  ws.send(JSON.stringify(constructMessage()));
+  ws.send(JSON.stringify(constructMessage([])));
 });
 
 // send data out on interval
