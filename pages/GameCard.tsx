@@ -24,6 +24,37 @@ function getLogoUrl(teamName: string): string {
   return `/nba_team_logos/${noSpaces}.png`;
 }
 
+function createTotalGraphData(game: GameWithLines): Serie[] {
+  const realScore = {
+    id: "Real Score",
+    data:
+      game?.liveGameLines.map((line) => ({
+        x: line.minute,
+        y: line.awayScore + line.homeScore,
+      })) || [],
+  };
+
+  const vegasLine = {
+    id: "Vegas Line",
+    data:
+      game?.liveGameLines.map((line) => ({
+        x: line.minute,
+        y: line.totalLine,
+      })) || [],
+  };
+
+  const botProj = {
+    id: "Bot Projected",
+    data:
+      game?.liveGameLines.map((line) => ({
+        x: line.minute,
+        y: line.totalLine + Math.random() * 20,
+      })) || [],
+  };
+
+  return [realScore, vegasLine, botProj];
+}
+
 export function GameCard({
   isLoading,
   game,
@@ -33,9 +64,10 @@ export function GameCard({
     return null;
   }
 
-  const started = game.liveGameLines.length;
+  const started = game.liveGameLines.length > 0;
+  console.log(started);
   const stale = disconnected;
-  const gameData: Serie[] = [];
+  const gameData: Serie[] = createTotalGraphData(game);
 
   return (
     <Card width="500px">
