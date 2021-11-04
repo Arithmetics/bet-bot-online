@@ -1,100 +1,105 @@
 import { useTheme, useMediaQuery, Grid } from "@geist-ui/react";
 import { ResponsiveLine, Serie, PointTooltipProps } from "@nivo/line";
 import { LegendAnchor } from "@nivo/legends";
+import Activity from "@geist-ui/react-icons/activity";
 
-const data: Serie[] = [
-  {
-    id: "Real Score",
-    data: [
-      {
-        x: 0,
-        y: 10,
-      },
-      {
-        x: 10,
-        y: 20,
-      },
-      {
-        x: 20,
-        y: 80,
-      },
-      {
-        x: 35,
-        y: 150,
-      },
-      {
-        x: 48,
-        y: 220,
-      },
-    ],
-  },
-  {
-    id: "Vegas Line",
-    data: [
-      {
-        x: 12,
-        y: 201,
-      },
-      {
-        x: 15,
-        y: 199,
-      },
-      {
-        x: 24,
-        y: 211,
-      },
-      {
-        x: 29,
-        y: 214,
-      },
-      {
-        x: 39,
-        y: 210,
-      },
-    ],
-  },
-  {
-    id: "Bot Projected",
-    data: [
-      {
-        x: 12,
-        y: 205,
-      },
-      {
-        x: 15,
-        y: 244,
-      },
-      {
-        x: 24,
-        y: 244,
-      },
-      {
-        x: 29,
-        y: 221,
-      },
-      {
-        x: 39,
-        y: 210,
-      },
-    ],
-  },
-  {
-    id: "Final Score",
-    data: [
-      {
-        x: 0,
-        y: 220,
-      },
-      {
-        x: 48,
-        y: 220,
-      },
-    ],
-  },
-];
+// const data: Serie[] = [
+//   {
+//     id: "Real Score",
+//     data: [
+//       {
+//         x: 0,
+//         y: 10,
+//       },
+//       {
+//         x: 10,
+//         y: 20,
+//       },
+//       {
+//         x: 20,
+//         y: 80,
+//       },
+//       {
+//         x: 35,
+//         y: 150,
+//       },
+//       {
+//         x: 48,
+//         y: 220,
+//       },
+//     ],
+//   },
+//   {
+//     id: "Vegas Line",
+//     data: [
+//       {
+//         x: 12,
+//         y: 201,
+//       },
+//       {
+//         x: 15,
+//         y: 199,
+//       },
+//       {
+//         x: 24,
+//         y: 211,
+//       },
+//       {
+//         x: 29,
+//         y: 214,
+//       },
+//       {
+//         x: 39,
+//         y: 210,
+//       },
+//     ],
+//   },
+//   {
+//     id: "Bot Projected",
+//     data: [
+//       {
+//         x: 12,
+//         y: 205,
+//       },
+//       {
+//         x: 15,
+//         y: 244,
+//       },
+//       {
+//         x: 24,
+//         y: 244,
+//       },
+//       {
+//         x: 29,
+//         y: 221,
+//       },
+//       {
+//         x: 39,
+//         y: 210,
+//       },
+//     ],
+//   },
+//   {
+//     id: "Final Score",
+//     data: [
+//       {
+//         x: 0,
+//         y: 220,
+//       },
+//       {
+//         x: 48,
+//         y: 220,
+//       },
+//     ],
+//   },
+// ];
+
+type TotalGraphProps = {
+  data: Serie[];
+};
 
 // export function TotalGraph({ data }: ResponsiveLineProps): JSX.Element {
-export function TotalGraph(): JSX.Element {
+export function TotalGraph({ data }: TotalGraphProps): JSX.Element {
   const { palette } = useTheme();
   const isUpMD = useMediaQuery("md", { match: "up" });
 
@@ -119,6 +124,10 @@ export function TotalGraph(): JSX.Element {
     }
     return acc;
   }, 0);
+
+  if (data.length === 0) {
+    return <Activity />;
+  }
 
   return (
     <ResponsiveLine

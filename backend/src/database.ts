@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import {
   filterActiveGames,
   filterNotStartedGames,
@@ -6,6 +6,17 @@ import {
 } from "./scrape";
 
 const prisma = new PrismaClient();
+
+async function getAGame(id: number) {
+  return await prisma.game.findFirst({
+    where: {
+      id,
+    },
+    include: {
+      liveGameLines: true,
+    },
+  });
+}
 
 export async function getAllTodaysGames() {
   return await prisma.game.findMany({
@@ -17,6 +28,8 @@ export async function getAllTodaysGames() {
     },
   });
 }
+
+export type GameWithLines = Prisma.PromiseReturnType<typeof getAGame>;
 
 export async function updateData() {
   const allListedGames = await scrapeListedGames();

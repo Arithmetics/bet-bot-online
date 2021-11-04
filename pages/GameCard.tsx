@@ -8,21 +8,34 @@ import {
   Image,
   Loading,
 } from "@geist-ui/react";
-import { Game } from "../backend/node_modules/.prisma/client";
+import { GameWithLines } from "../backend/src/database";
+import { Serie } from "@nivo/line";
 
 import { TotalGraph } from "./TotalGraph";
 
 type GameCardProps = {
-  game: Game;
+  game: GameWithLines;
   isLoading?: boolean;
 };
 
 function getLogoUrl(teamName: string): string {
-  const noSpaces = teamName.replace(/\s/g, "-");
+  const noSpaces = teamName.replace(/\s/g, "");
+  console.log(noSpaces);
   return `/nba_team_logos/${noSpaces}.png`;
 }
 
-export function GameCard({ isLoading, game }: GameCardProps): JSX.Element {
+export function GameCard({
+  isLoading,
+  game,
+}: GameCardProps): JSX.Element | undefined {
+  if (!game) {
+    return undefined;
+  }
+
+  const started = game.liveGameLines.length;
+
+  const gameData: Serie[] = [];
+
   return (
     <Card width="500px">
       <Card.Content>
@@ -55,7 +68,7 @@ export function GameCard({ isLoading, game }: GameCardProps): JSX.Element {
             </Grid.Container>
             <Spacer h={0.5} />
             <Text h3 margin={0}>
-              Score: 45 - 42
+              {started ? "Score: 45 - 42" : "Not Started"}
             </Text>
           </Grid>
           <Grid
@@ -83,7 +96,7 @@ export function GameCard({ isLoading, game }: GameCardProps): JSX.Element {
               </Grid>
             </Grid.Container>
           ) : (
-            <TotalGraph />
+            <TotalGraph data={gameData} />
           )}
         </div>
       </Card.Content>

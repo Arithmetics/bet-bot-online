@@ -37,10 +37,16 @@ async function sendMessageToAllClients(): Promise<void> {
   const games = await getAllTodaysGames();
   lastMessage = Date.now();
 
-  console.log("sending messages now", games.length);
+  console.log("cycle run, sending messages to all clients now", games.length);
   wss.clients.forEach((client) => {
     client.send(JSON.stringify(constructMessage(games)));
   });
+}
+
+async function sendConnectionMessage(ws: ExtWebSocket): Promise<void> {
+  console.log("new wb connecting, sending current data");
+  const games = await getAllTodaysGames();
+  ws.send(JSON.stringify(constructMessage(games)));
 }
 
 wss.on("connection", (ws: ExtWebSocket) => {
@@ -50,18 +56,7 @@ wss.on("connection", (ws: ExtWebSocket) => {
     ws.isAlive = true;
   });
 
-  //connection is up, let's add a simple simple event
-  // ws.on("message", (message: string) => {
-  //log the received message and send it back to the client
-  // console.log("received::: %s", message);
-  // ws.send(`Hello, you sent -> ${message}`);
-
-  // wss.clients.forEach((client) => {
-  //   client.send(`someonesent: ${message}`);
-  // });
-  // });
-  //send immediatly a feedback to the incoming connection (initial data for us)
-  ws.send(JSON.stringify(constructMessage([])));
+  sendConnectionMessage(ws);
 });
 
 // send data out on interval
