@@ -15,7 +15,7 @@ export function RefreshCounter({
 }: RefreshCounterProps): JSX.Element {
   const [state, setState] = useState(false);
 
-  const handler = () => setState(true);
+  // const handler = () => setState(true);
 
   const closeHandler = () => {
     setState(false);
@@ -33,10 +33,14 @@ export function RefreshCounter({
         date={new Date(messageTimestamp)}
         formatter={(val, unit) => {
           const time = `${val} ${unit}${val === 1 ? "" : "s"}`;
-          return <Text h4>Data is {time} stale</Text>;
+          return (
+            <Text h4 type="error" style={{ textAlign: "center" }}>
+              Data is {time} stale
+            </Text>
+          );
         }}
       />
-      <Button iconRight={<RefreshCcw />} auto scale={2 / 3} onClick={handler} />
+      {/* <Button iconRight={<RefreshCcw />} auto scale={2 / 3} onClick={handler} /> */}
 
       <Modal visible={state} onClose={closeHandler}>
         <Modal.Content>

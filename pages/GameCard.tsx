@@ -14,8 +14,9 @@ import { Serie } from "@nivo/line";
 import { TotalGraph } from "./TotalGraph";
 
 type GameCardProps = {
-  game: GameWithLines;
+  game?: GameWithLines;
   isLoading?: boolean;
+  disconnected: boolean;
 };
 
 function getLogoUrl(teamName: string): string {
@@ -27,13 +28,14 @@ function getLogoUrl(teamName: string): string {
 export function GameCard({
   isLoading,
   game,
-}: GameCardProps): JSX.Element | undefined {
+  disconnected,
+}: GameCardProps): JSX.Element | null {
   if (!game) {
-    return undefined;
+    return null;
   }
 
   const started = game.liveGameLines.length;
-
+  const stale = disconnected;
   const gameData: Serie[] = [];
 
   return (
@@ -67,7 +69,7 @@ export function GameCard({
               </Grid>
             </Grid.Container>
             <Spacer h={0.5} />
-            <Text h3 margin={0}>
+            <Text h4 margin={0}>
               {started ? "Score: 45 - 42" : "Not Started"}
             </Text>
           </Grid>
@@ -77,18 +79,42 @@ export function GameCard({
             alignItems="flex-end"
             justify="space-between"
           >
-            <Badge type="error">Grade: OVER +4.3</Badge> <Spacer h={0.5} />
-            <Badge type="warning">Stale: Not updated in last update</Badge>{" "}
+            <Badge> Grade: ---</Badge>
             <Spacer h={0.5} />
-            <Text h3 margin={0}>
-              4:34 - 3rd
-            </Text>
+            {/* <Badge type="error">Grade: OVER +4.3</Badge> */}
+            {/* <Spacer h={0.5} /> */}
+            {stale ? (
+              <>
+                <Badge type="warning">Stale: Not updated</Badge>
+                <Spacer h={0.5} />
+              </>
+            ) : undefined}
+
+            {started ? (
+              <Text h3 margin={0}>
+                12:00 - 1st
+              </Text>
+            ) : undefined}
+            {!started ? (
+              <Text h4 margin={0}>
+                Total Line: {game.closingTotalLine}
+              </Text>
+            ) : undefined}
           </Grid>
         </Grid.Container>
       </Card.Content>
       <Divider />
       <Card.Content>
-        <div style={{ height: "300px", width: "100%", marginTop: "-1.5rem" }}>
+        <div
+          style={{
+            height: "300px",
+            width: "100%",
+            marginTop: "-1.5rem",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           {isLoading ? (
             <Grid.Container height="100%" alignItems="center">
               <Grid xs={24}>

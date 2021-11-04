@@ -126,7 +126,7 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element {
   }, 0);
 
   if (data.length === 0) {
-    return <Activity />;
+    return <Activity color="red" />;
   }
 
   return (
