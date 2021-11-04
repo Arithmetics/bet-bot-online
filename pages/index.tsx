@@ -2,12 +2,14 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import { Page, Text, Display, Grid, useToasts, Loading } from "@geist-ui/react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import { Game } from "../backend/node_modules/.prisma/client";
+
+import { Games } from "./Games";
 import { RefreshCounter } from "./RefreshCounter";
-import { GameCard } from "./TotalGraph";
 
 type ConnectionMessage = {
   messageTimestamp: number;
-  games: string[];
+  games: Game[];
   msUntilNextUpdate: number;
 };
 
@@ -78,26 +80,7 @@ export default function Home(): JSX.Element {
                 ) : undefined}
               </Grid>
             </Grid.Container>
-            <Grid.Container gap={2} justify="center">
-              <Grid width="600px">
-                <GameCard isLoading />
-              </Grid>
-              <Grid width="600px">
-                <GameCard />
-              </Grid>
-              <Grid>
-                <GameCard />
-              </Grid>
-              <Grid>
-                <GameCard />
-              </Grid>
-              <Grid>
-                <GameCard />
-              </Grid>
-              <Grid>
-                <GameCard />
-              </Grid>
-            </Grid.Container>
+            <Games games={currentMessage?.games} />
           </>
         )}
       </Page>

@@ -6,7 +6,7 @@ import { updateData, getAllTodaysGames } from "./database";
 
 let lastMessage = Date.now();
 
-const MASTER_INTERVAL = 30 * 1000;
+const MASTER_INTERVAL = 120 * 1000;
 
 type ConnectionMessage = {
   messageTimestamp: number;
