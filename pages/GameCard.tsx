@@ -64,7 +64,19 @@ export function GameCard({
   }
 
   const started = game.liveGameLines.length > 0;
-  console.log(started);
+
+  const mostRecentLine = game.liveGameLines.reduce((acc, cur) => {
+    if ((cur.totalMinutes || 0) > (acc.totalMinutes || 0)) {
+      acc = cur;
+    }
+    return acc;
+  }, game.liveGameLines[0]);
+
+  const mostRecentLineGrade =
+    (mostRecentLine?.grade || 0) < 0
+      ? `UNDER ${Math.abs(mostRecentLine?.grade || 0)}`
+      : `OVER ${Math.abs(mostRecentLine?.grade || 0)}`;
+
   const stale = disconnected;
   const gameData: Serie[] = createTotalGraphData(game);
 
@@ -110,10 +122,8 @@ export function GameCard({
             alignItems="flex-end"
             justify="space-between"
           >
-            <Badge> Grade: ---</Badge>
+            <Badge> Grade: {started ? mostRecentLineGrade : "---"}</Badge>
             <Spacer h={0.5} />
-            {/* <Badge type="error">Grade: OVER +4.3</Badge> */}
-            {/* <Spacer h={0.5} /> */}
             {stale ? (
               <>
                 <Badge type="warning">Stale: Not updated</Badge>

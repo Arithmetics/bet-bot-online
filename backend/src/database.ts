@@ -17,6 +17,19 @@ export type GamePlus = Game & {
   liveGameLines: LiveGameLinePlus[];
 };
 
+function botPredictedTotal(
+  currentTotalScore: number,
+  currentTotalLine: number,
+  closingTotalLine: number,
+  minutesLeft: number
+): number {
+  const expectedRate = closingTotalLine / 48; // pts / minute
+  // adding average 30 in to account for extra time
+  return parseFloat(
+    (currentTotalScore + (minutesLeft + 0.5) * expectedRate).toFixed(2)
+  );
+}
+
 function getTotalMinutes(quarter: number, minute: number): number {
   const minutesPlayedInQuarter = 12 - minute;
   const oldQuarterMinues = (quarter - 1) * 12;
@@ -26,10 +39,18 @@ function getTotalMinutes(quarter: number, minute: number): number {
 
 function addBettingData(game: GamePlus): GamePlus {
   game.liveGameLines = game.liveGameLines.map((line) => {
+    const totalMinutes = getTotalMinutes(line.quarter, line.minute);
+    const botProjectedTotal = botPredictedTotal(
+      line.awayScore + line.homeScore,
+      line.totalLine,
+      game.closingTotalLine,
+      48 - totalMinutes
+    );
     return {
       ...line,
-      totalMinutes: getTotalMinutes(line.quarter, line.minute),
-      botProjectedTotal: 160,
+      totalMinutes,
+      botProjectedTotal,
+      grade: parseFloat((botProjectedTotal - line.totalLine).toFixed(2)),
     };
   });
 
