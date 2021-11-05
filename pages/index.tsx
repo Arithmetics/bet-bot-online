@@ -2,14 +2,14 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import { Page, Text, Display, Grid, useToasts, Loading } from "@geist-ui/react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { GameWithLines } from "../backend/src/database";
+import { GamePlus } from "../backend/src/database";
 
 import { Games } from "./Games";
 import { RefreshCounter } from "./RefreshCounter";
 
 type ConnectionMessage = {
   messageTimestamp: number;
-  games: GameWithLines[];
+  games: GamePlus[];
   msUntilNextUpdate: number;
 };
 

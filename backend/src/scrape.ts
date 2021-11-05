@@ -84,7 +84,10 @@ function parseGames(html: string): RawScrapedGame[] {
 }
 
 function todaysRawGamesOnly(scrapedGames: RawScrapedGame[]): RawScrapedGame[] {
-  const todaysDate = new Date().getDate();
+  const pstDate = new Date();
+  pstDate.setHours(pstDate.getHours() - 8);
+
+  const todaysDate = pstDate.getDate();
 
   return scrapedGames.filter((g) => g.date.includes(` ${todaysDate} `));
 }

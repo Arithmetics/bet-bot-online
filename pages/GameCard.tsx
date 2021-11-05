@@ -6,15 +6,15 @@ import {
   Spacer,
   Grid,
   Image,
-  Loading,
 } from "@geist-ui/react";
-import { GameWithLines } from "../backend/src/database";
+import Activity from "@geist-ui/react-icons/activity";
+import { GamePlus } from "../backend/src/database";
 import { Serie } from "@nivo/line";
 
 import { TotalGraph } from "./TotalGraph";
 
 type GameCardProps = {
-  game?: GameWithLines;
+  game?: GamePlus;
   isLoading?: boolean;
   disconnected: boolean;
 };
@@ -24,12 +24,12 @@ function getLogoUrl(teamName: string): string {
   return `/nba_team_logos/${noSpaces}.png`;
 }
 
-function createTotalGraphData(game: GameWithLines): Serie[] {
+function createTotalGraphData(game: GamePlus): Serie[] {
   const realScore = {
     id: "Real Score",
     data:
       game?.liveGameLines.map((line) => ({
-        x: line.minute,
+        x: line.totalMinutes,
         y: line.awayScore + line.homeScore,
       })) || [],
   };
@@ -38,7 +38,7 @@ function createTotalGraphData(game: GameWithLines): Serie[] {
     id: "Vegas Line",
     data:
       game?.liveGameLines.map((line) => ({
-        x: line.minute,
+        x: line.totalMinutes,
         y: line.totalLine,
       })) || [],
   };
@@ -47,8 +47,8 @@ function createTotalGraphData(game: GameWithLines): Serie[] {
     id: "Bot Projected",
     data:
       game?.liveGameLines.map((line) => ({
-        x: line.minute,
-        y: line.totalLine + Math.random() * 20,
+        x: line.totalMinutes,
+        y: line.botProjectedTotal,
       })) || [],
   };
 
@@ -56,7 +56,6 @@ function createTotalGraphData(game: GameWithLines): Serie[] {
 }
 
 export function GameCard({
-  isLoading,
   game,
   disconnected,
 }: GameCardProps): JSX.Element | null {
@@ -79,13 +78,12 @@ export function GameCard({
               style={{ marginBottom: "1rem" }}
             >
               <Grid xs={24}>
-                <Grid.Container alignItems="center">
+                <Grid.Container alignItems="center" gap={1}>
                   <Grid>
                     <Image
                       height="50px"
                       src={getLogoUrl(game.awayTeam)}
                       alt={game.awayTeam}
-                      style={{ marginRight: "1rem" }}
                     />
                   </Grid>
                   <Grid>
@@ -96,7 +94,6 @@ export function GameCard({
                       height="50px"
                       src={getLogoUrl(game.homeTeam)}
                       alt={game.homeTeam}
-                      style={{ marginLeft: "1rem" }}
                     />
                   </Grid>
                 </Grid.Container>
@@ -149,15 +146,7 @@ export function GameCard({
             alignItems: "center",
           }}
         >
-          {isLoading ? (
-            <Grid.Container height="100%" alignItems="center">
-              <Grid xs={24}>
-                <Loading type="error">Loading</Loading>
-              </Grid>
-            </Grid.Container>
-          ) : (
-            <TotalGraph data={gameData} />
-          )}
+          {started ? <TotalGraph data={gameData} /> : <Activity color="red" />}
         </div>
       </Card.Content>
     </Card>

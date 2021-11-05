@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Game, LiveGameLine } from "@prisma/client";
 import {
   filterActiveGames,
   filterNotStartedGames,
@@ -7,40 +7,63 @@ import {
 
 const prisma = new PrismaClient();
 
-async function getAGame(id: number) {
-  return await prisma.game.findFirst({
-    where: {
-      id,
-    },
-    include: {
-      liveGameLines: true,
-    },
+export type LiveGameLinePlus = LiveGameLine & {
+  totalMinutes?: number;
+  botProjectedTotal?: number;
+  grade?: number;
+};
+
+export type GamePlus = Game & {
+  liveGameLines: LiveGameLinePlus[];
+};
+
+function getTotalMinutes(quarter: number, minute: number): number {
+  const minutesPlayedInQuarter = 12 - minute;
+  const oldQuarterMinues = (quarter - 1) * 12;
+
+  return minutesPlayedInQuarter + oldQuarterMinues;
+}
+
+function addBettingData(game: GamePlus): GamePlus {
+  game.liveGameLines = game.liveGameLines.map((line) => {
+    return {
+      ...line,
+      totalMinutes: getTotalMinutes(line.quarter, line.minute),
+      botProjectedTotal: 160,
+    };
   });
+
+  return game;
 }
 
 export async function getAllTodaysGames() {
-  return await prisma.game.findMany({
+  const pstDate = new Date();
+  pstDate.setHours(pstDate.getHours() - 8);
+  const games = await prisma.game.findMany({
     where: {
-      date: new Date(),
+      date: pstDate,
     },
     include: {
       liveGameLines: true,
     },
   });
+  console.log("xxx", games.length);
+  return games.map(addBettingData);
 }
-
-export type GameWithLines = Prisma.PromiseReturnType<typeof getAGame>;
 
 export async function updateData() {
   const allListedGames = await scrapeListedGames();
   const scheduledGames = filterNotStartedGames(allListedGames);
 
   for await (const scheduledGame of scheduledGames) {
+    const pstDate = new Date();
+    pstDate.setHours(pstDate.getHours() - 8);
+
     const matching = await prisma.game.findFirst({
       where: {
         homeTeam: scheduledGame.homeTeam,
         awayTeam: scheduledGame.awayTeam,
-        date: new Date(),
+        date: pstDate,
       },
     });
     if (scheduledGame.awayLine && scheduledGame.overLine) {
@@ -49,7 +72,7 @@ export async function updateData() {
           data: {
             awayTeam: scheduledGame.awayTeam,
             homeTeam: scheduledGame.homeTeam,
-            date: new Date(),
+            date: pstDate,
             closingAwayLine: scheduledGame.awayLine,
             closingTotalLine: scheduledGame.overLine,
           },

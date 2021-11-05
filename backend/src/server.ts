@@ -1,8 +1,7 @@
 import express from "express";
 import http from "http";
 import WebSocket from "ws";
-import { Game } from "@prisma/client";
-import { updateData, getAllTodaysGames } from "./database";
+import { updateData, getAllTodaysGames, GamePlus } from "./database";
 
 let lastMessage = Date.now();
 
@@ -10,7 +9,7 @@ const MASTER_INTERVAL = 120 * 1000;
 
 type ConnectionMessage = {
   messageTimestamp: number;
-  games: Game[];
+  games: GamePlus[];
   msUntilNextUpdate: number;
 };
 
@@ -18,7 +17,7 @@ interface ExtWebSocket extends WebSocket {
   isAlive: boolean;
 }
 
-function constructMessage(games: Game[]): ConnectionMessage {
+function constructMessage(games: GamePlus[]): ConnectionMessage {
   return {
     messageTimestamp: lastMessage,
     games,
