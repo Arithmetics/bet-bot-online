@@ -54,7 +54,7 @@ export default function Home(): JSX.Element {
         <title>bet bot</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Page dotBackdrop width="1200px" padding={0}>
+      <Page dotBackdrop width="1600px" padding={0}>
         <Display
           title="bet bot"
           caption={<>welcome to the bet bot</>}

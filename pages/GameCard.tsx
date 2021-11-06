@@ -77,6 +77,8 @@ export function GameCard({
       ? `UNDER ${Math.abs(mostRecentLine?.grade || 0)}`
       : `OVER ${Math.abs(mostRecentLine?.grade || 0)}`;
 
+  // const gradeInAlert = Math.abs(mostRecentLine?.grade || 0)
+
   const stale = disconnected;
   const gameData: Serie[] = createTotalGraphData(game);
 
@@ -113,7 +115,9 @@ export function GameCard({
             </Grid.Container>
             <Spacer h={0.5} />
             <Text h4 margin={0}>
-              {started ? "Score: 45 - 42" : "Not Started"}
+              {started
+                ? `Score: ${mostRecentLine.awayScore} - ${mostRecentLine.homeScore}`
+                : "Not Started"}
             </Text>
           </Grid>
           <Grid
@@ -133,7 +137,7 @@ export function GameCard({
 
             {started ? (
               <Text h3 margin={0}>
-                12:00 - 1st
+                {mostRecentLine.minute} mins - {mostRecentLine.quarter}Q
               </Text>
             ) : undefined}
             {!started ? (
@@ -148,7 +152,7 @@ export function GameCard({
       <Card.Content>
         <div
           style={{
-            height: "300px",
+            height: "600px",
             width: "100%",
             marginTop: "-1.5rem",
             display: "flex",

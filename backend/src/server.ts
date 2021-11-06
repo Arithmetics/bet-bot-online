@@ -31,7 +31,11 @@ const wss = new WebSocket.Server({ server });
 
 async function sendMessageToAllClients(): Promise<void> {
   console.log("updating data");
-  await updateData();
+  try {
+    await updateData();
+  } catch (e) {
+    console.log("BIG BAD ERROR");
+  }
 
   const games = await getAllTodaysGames();
   lastMessage = Date.now();
