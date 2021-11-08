@@ -4,6 +4,7 @@ import {
   filterNotStartedGames,
   scrapeListedGames,
 } from "./scrape";
+import { createPacificPrismaDate } from "./utils";
 
 const prisma = new PrismaClient();
 
@@ -58,11 +59,9 @@ function addBettingData(game: GamePlus): GamePlus {
 }
 
 export async function getAllTodaysGames() {
-  const pstDate = new Date();
-  pstDate.setHours(pstDate.getHours() - 8);
   const games = await prisma.game.findMany({
     where: {
-      date: pstDate,
+      date: createPacificPrismaDate(),
     },
     include: {
       liveGameLines: true,
@@ -77,14 +76,11 @@ export async function updateData() {
   const scheduledGames = filterNotStartedGames(allListedGames);
 
   for await (const scheduledGame of scheduledGames) {
-    const pstDate = new Date();
-    pstDate.setHours(pstDate.getHours() - 8);
-
     const matching = await prisma.game.findFirst({
       where: {
         homeTeam: scheduledGame.homeTeam,
         awayTeam: scheduledGame.awayTeam,
-        date: pstDate,
+        date: createPacificPrismaDate(),
       },
     });
     if (scheduledGame.awayLine && scheduledGame.overLine) {
@@ -93,7 +89,7 @@ export async function updateData() {
           data: {
             awayTeam: scheduledGame.awayTeam,
             homeTeam: scheduledGame.homeTeam,
-            date: pstDate,
+            date: createPacificPrismaDate(),
             closingAwayLine: scheduledGame.awayLine,
             closingTotalLine: scheduledGame.overLine,
           },
@@ -112,12 +108,13 @@ export async function updateData() {
 
   const activeGames = filterActiveGames(allListedGames);
 
+  console.log("found active games:", activeGames.length);
   for await (const activeGame of activeGames) {
     const matching = await prisma.game.findFirst({
       where: {
         homeTeam: activeGame.homeTeam,
         awayTeam: activeGame.awayTeam,
-        date: new Date(),
+        date: createPacificPrismaDate(),
       },
     });
 

@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import cheerio from "cheerio";
+import { createPacificPrismaDate } from "./utils";
 
 export type RawScrapedGame = {
   date: string;
@@ -84,8 +85,7 @@ function parseGames(html: string): RawScrapedGame[] {
 }
 
 function todaysRawGamesOnly(scrapedGames: RawScrapedGame[]): RawScrapedGame[] {
-  const pstDate = new Date();
-  pstDate.setHours(pstDate.getHours() - 8);
+  const pstDate = createPacificPrismaDate();
 
   const todaysDate = pstDate.getDate();
 
