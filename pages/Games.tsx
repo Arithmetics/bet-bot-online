@@ -24,7 +24,7 @@ export function Games({ games, disconnected }: GamesProps): JSX.Element {
   return (
     <Grid.Container gap={2} justify="center">
       {games?.sort(sortStarted).map((game) => (
-        <Grid key={game?.id} width="600px">
+        <Grid key={game?.id} style={{ width: "500px", maxWidth: "95vw" }}>
           <GameCard game={game} disconnected={disconnected} />
         </Grid>
       ))}

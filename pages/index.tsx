@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import { Page, Text, Display, Grid, useToasts, Loading } from "@geist-ui/react";
+import AlertTriangle from "@geist-ui/react-icons/alertTriangle";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { GamePlus } from "../backend/src/database";
 
@@ -13,9 +14,8 @@ type ConnectionMessage = {
   msUntilNextUpdate: number;
 };
 
-// const websocketUrl = "ws://localhost:8999";
-// const websocketUrl = "ws://brockcastle.pagekite.me/";
-const websocketUrl = "wss://brockcastle.pagekite.me/";
+const websocketUrl = "ws://localhost:8999";
+// const websocketUrl = "wss://brockcastle.pagekite.me/";
 
 export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
@@ -49,6 +49,8 @@ export default function Home(): JSX.Element {
   }, [lastMessage, setCurrentMessage]);
 
   const isConnecting = readyState === ReadyState.CONNECTING;
+  const isDisconnected = readyState === ReadyState.CLOSED;
+  const isConnected = readyState === ReadyState.OPEN;
 
   return (
     <div>
@@ -68,11 +70,31 @@ export default function Home(): JSX.Element {
           <Text h1>🤖 🏀</Text>
         </Display>
 
+        {isDisconnected ? (
+          <Grid.Container
+            direction="column"
+            justify="center"
+            alignItems="center"
+            style={{ marginTop: "10rem" }}
+          >
+            <Grid xs={12}>
+              <Text type="error" h4>
+                Disconnected
+              </Text>
+            </Grid>
+            <Grid xs={12}>
+              <AlertTriangle color="red" size={36} />
+            </Grid>
+          </Grid.Container>
+        ) : undefined}
+
         {isConnecting ? (
           <Loading style={{ marginTop: "10rem" }} type="error">
             Loading
           </Loading>
-        ) : (
+        ) : undefined}
+
+        {isConnected ? (
           <>
             <Grid.Container justify="center" gap={3}>
               <Grid>
@@ -85,12 +107,9 @@ export default function Home(): JSX.Element {
                 ) : undefined}
               </Grid>
             </Grid.Container>
-            <Games
-              games={currentMessage?.games}
-              disconnected={readyState === ReadyState.CLOSED}
-            />
+            <Games games={currentMessage?.games} disconnected={false} />
           </>
-        )}
+        ) : undefined}
       </Page>
     </div>
   );

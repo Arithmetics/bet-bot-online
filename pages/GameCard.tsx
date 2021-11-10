@@ -83,7 +83,7 @@ export function GameCard({
   const gameData: Serie[] = createTotalGraphData(game);
 
   return (
-    <Card width="500px">
+    <Card>
       <Card.Content>
         <Grid.Container gap={1} justify="space-between">
           <Grid xs={12} direction="column">
@@ -160,7 +160,11 @@ export function GameCard({
             alignItems: "center",
           }}
         >
-          {started ? <TotalGraph data={gameData} /> : <Activity color="red" />}
+          {started ? (
+            <TotalGraph data={gameData} />
+          ) : (
+            <Activity color="red" size={36} />
+          )}
         </div>
       </Card.Content>
     </Card>
