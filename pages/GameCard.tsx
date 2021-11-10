@@ -166,3 +166,5 @@ export function GameCard({
     </Card>
   );
 }
+
+export default GameCard;

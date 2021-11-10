@@ -110,3 +110,5 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element {
     />
   );
 }
+
+export default TotalGraph;

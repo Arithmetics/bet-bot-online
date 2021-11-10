@@ -31,3 +31,5 @@ export function Games({ games, disconnected }: GamesProps): JSX.Element {
     </Grid.Container>
   );
 }
+
+export default Games;
