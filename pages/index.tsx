@@ -14,7 +14,8 @@ type ConnectionMessage = {
 };
 
 // const websocketUrl = "ws://localhost:8999";
-const websocketUrl = "ws://brockcastle.pagekite.me/";
+// const websocketUrl = "ws://brockcastle.pagekite.me/";
+const websocketUrl = "wss://brockcastle.pagekite.me/";
 
 export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
