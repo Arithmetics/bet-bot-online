@@ -13,7 +13,8 @@ type ConnectionMessage = {
   msUntilNextUpdate: number;
 };
 
-const websocketUrl = "ws://localhost:8999";
+// const websocketUrl = "ws://localhost:8999";
+const websocketUrl = "ws://brockcastle.pagekite.me/";
 
 export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
@@ -52,9 +53,12 @@ export default function Home(): JSX.Element {
     <div>
       <Head>
         <title>bet bot</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="icon"
+          href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>"
+        />
       </Head>
-      <Page dotBackdrop width="1600px" padding={0}>
+      <Page dotBackdrop style={{ maxWidth: "2200px" }} padding={0}>
         <Display
           title="bet bot"
           caption={<>welcome to the bet bot</>}
