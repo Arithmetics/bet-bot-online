@@ -1,4 +1,5 @@
 import { PrismaClient, Game, LiveGameLine } from "@prisma/client";
+import { getESPNGames, findMatchingScoreboardScore } from "./espn";
 import {
   filterActiveGames,
   filterNotStartedGames,
@@ -16,6 +17,7 @@ export type LiveGameLinePlus = LiveGameLine & {
 
 export type GamePlus = Game & {
   liveGameLines: LiveGameLinePlus[];
+  isStale?: boolean;
 };
 
 function botPredictedTotal(
@@ -55,10 +57,10 @@ function addBettingData(game: GamePlus): GamePlus {
     };
   });
 
-  return game;
+  return { ...game, isStale: false };
 }
 
-export async function getAllTodaysGames() {
+export async function getAllTodaysGames(): Promise<GamePlus[]> {
   const games = await prisma.game.findMany({
     where: {
       date: createPacificPrismaDate(),
@@ -67,13 +69,39 @@ export async function getAllTodaysGames() {
       liveGameLines: true,
     },
   });
-  console.log("xxx", games.length);
   return games.map(addBettingData);
 }
 
 export async function updateData() {
-  const allListedGames = await scrapeListedGames();
-  const scheduledGames = filterNotStartedGames(allListedGames);
+  const [allScoreboardGames, allESPNGames] = await Promise.all([
+    scrapeListedGames(),
+    getESPNGames(),
+  ]);
+
+  // new cycle
+  for await (const espnGame of allESPNGames) {
+    let isStale = false;
+    const matchingScoreboardGame = findMatchingScoreboardScore(
+      espnGame,
+      allScoreboardGames
+    );
+    if (!matchingScoreboardGame) {
+      isStale = true;
+    }
+    if (
+      matchingScoreboardGame.awayLine &&
+      matchingScoreboardGame.overLine &&
+      matchingScoreboardGame.quarter !== undefined &&
+      matchingScoreboardGame.minute !== undefined &&
+      matchingScoreboardGame.awayScore !== undefined &&
+      matchingScoreboardGame.homeScore !== undefined
+    ) {
+      isStale = true;
+    }
+  }
+  //
+
+  const scheduledGames = filterNotStartedGames(allScoreboardGames);
 
   for await (const scheduledGame of scheduledGames) {
     const matching = await prisma.game.findFirst({
@@ -83,6 +111,7 @@ export async function updateData() {
         date: createPacificPrismaDate(),
       },
     });
+
     if (scheduledGame.awayLine && scheduledGame.overLine) {
       if (!matching) {
         await prisma.game.create({
@@ -106,7 +135,7 @@ export async function updateData() {
     }
   }
 
-  const activeGames = filterActiveGames(allListedGames);
+  const activeGames = filterActiveGames(allScoreboardGames);
 
   console.log("found active games:", activeGames.length);
   for await (const activeGame of activeGames) {

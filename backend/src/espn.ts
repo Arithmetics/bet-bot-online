@@ -1,5 +1,5 @@
 import got from "got";
-import { GamePlus } from "./database";
+import { LiveGame } from "./scrape";
 import { createPacificPrismaDate } from "./utils";
 
 const url = "https://sports.oregonlottery.org/sports/basketball/nba";
@@ -91,12 +91,23 @@ export async function getESPNGames(): Promise<ESPNGameReduced[]> {
 }
 
 export function findMatchingESPNScore(
-  ats: GamePlus,
+  ats: LiveGame,
   scores: ESPNGameReduced[]
 ): ESPNGameReduced | undefined {
   return scores.find((s) => {
     return (
       ats.awayTeam.includes(s.awayTeam) && ats.homeTeam.includes(s.homeTeam)
+    );
+  });
+}
+
+export function findMatchingScoreboardScore(
+  espn: ESPNGameReduced,
+  scores: LiveGame[]
+): LiveGame | undefined {
+  return scores.find((s) => {
+    return (
+      s.awayTeam.includes(espn.awayTeam) && s.homeTeam.includes(espn.homeTeam)
     );
   });
 }
