@@ -103,6 +103,10 @@ export async function updateData() {
 
   const scheduledGames = filterNotStartedGames(allScoreboardGames);
 
+  console.log(
+    "Scraping Scoreboard, found scheduled games:",
+    scheduledGames.length
+  );
   for await (const scheduledGame of scheduledGames) {
     const matching = await prisma.game.findFirst({
       where: {
@@ -124,6 +128,10 @@ export async function updateData() {
           },
         });
       } else {
+        console.log("updating a pregame line:");
+        console.log(
+          `${scheduledGame.awayTeam}/${scheduledGame.homeTeam} from ${matching.closingTotalLine} to ${scheduledGame.overLine}`
+        );
         await prisma.game.update({
           where: { id: matching.id },
           data: {
@@ -137,7 +145,7 @@ export async function updateData() {
 
   const activeGames = filterActiveGames(allScoreboardGames);
 
-  console.log("found active games:", activeGames.length);
+  console.log("Scraping Scoreboard, found active games:", activeGames.length);
   for await (const activeGame of activeGames) {
     const matching = await prisma.game.findFirst({
       where: {

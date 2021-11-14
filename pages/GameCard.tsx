@@ -3,6 +3,7 @@ import {
   Card,
   Divider,
   Badge,
+  BadgeProps,
   Spacer,
   Grid,
   Image,
@@ -55,6 +56,19 @@ function createTotalGraphData(game: GamePlus): Serie[] {
   return [realScore, vegasLine, botProj];
 }
 
+function determineBadgeType(
+  started: boolean,
+  highEnough: boolean
+): BadgeProps["type"] {
+  if (!started) {
+    return "secondary";
+  }
+  if (highEnough) {
+    return "error";
+  }
+  return "default";
+}
+
 export function GameCard({
   game,
   disconnected,
@@ -83,7 +97,7 @@ export function GameCard({
   const gameData: Serie[] = createTotalGraphData(game);
 
   return (
-    <Card width="500px">
+    <Card>
       <Card.Content>
         <Grid.Container gap={1} justify="space-between">
           <Grid xs={12} direction="column">
@@ -121,12 +135,19 @@ export function GameCard({
             </Text>
           </Grid>
           <Grid
-            xs={8}
+            xs={10}
             direction="column"
             alignItems="flex-end"
             justify="space-between"
           >
-            <Badge> Grade: {started ? mostRecentLineGrade : "---"}</Badge>
+            <Badge
+              type={determineBadgeType(
+                started,
+                Math.abs(parseFloat(mostRecentLineGrade)) > 6
+              )}
+            >
+               Grade: {started ? mostRecentLineGrade : "---"}
+            </Badge>
             <Spacer h={0.5} />
             {stale ? (
               <>
@@ -160,9 +181,15 @@ export function GameCard({
             alignItems: "center",
           }}
         >
-          {started ? <TotalGraph data={gameData} /> : <Activity color="red" />}
+          {started ? (
+            <TotalGraph data={gameData} />
+          ) : (
+            <Activity color="red" size={36} />
+          )}
         </div>
       </Card.Content>
     </Card>
   );
 }
+
+export default GameCard;

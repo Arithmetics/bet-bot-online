@@ -4,11 +4,10 @@ import { LegendAnchor } from "@nivo/legends";
 import Activity from "@geist-ui/react-icons/activity";
 
 type TotalGraphProps = {
-  data: Serie[];
+  data?: Serie[];
 };
 
-// export function TotalGraph({ data }: ResponsiveLineProps): JSX.Element {
-export function TotalGraph({ data }: TotalGraphProps): JSX.Element {
+export function TotalGraph({ data }: TotalGraphProps): JSX.Element | null {
   const { palette } = useTheme();
   const isUpMD = useMediaQuery("md", { match: "up" });
 
@@ -18,6 +17,10 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element {
   const translateY = isUpMD ? 0 : 120;
 
   const anchor: LegendAnchor = isUpMD ? "bottom-right" : "bottom-left";
+
+  if (!data) {
+    return null;
+  }
 
   const maxY = data.reduce((acc, cur) => {
     const maxData = cur.data.reduce((acc2, cur2) => {
@@ -110,3 +113,5 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element {
     />
   );
 }
+
+export default TotalGraph;

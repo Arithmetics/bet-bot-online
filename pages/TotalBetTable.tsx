@@ -52,3 +52,5 @@ export function TotalBetTable() {
     </>
   );
 }
+
+export default TotalBetTable;

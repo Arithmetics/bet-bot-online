@@ -62,3 +62,5 @@ export function RefreshCounter({
     </Grid>
   );
 }
+
+export default RefreshCounter;
