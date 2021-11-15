@@ -11,6 +11,7 @@
   "dependencies": {
     "@geist-ui/react": "^2.2.0",
     "@geist-ui/react-icons": "^1.0.1",
+    "@nivo/bar": "^0.74.0",
     "@nivo/core": "^0.74.0",
     "@nivo/legends": "^0.74.0",
     "@nivo/line": "^0.74.0",

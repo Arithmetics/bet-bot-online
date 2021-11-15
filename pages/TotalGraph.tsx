@@ -45,7 +45,6 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element | null {
       }
 
       if (minData < acc.minY) {
-        console.log(minData);
         acc.minY = minData;
       }
 
@@ -57,8 +56,6 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element | null {
   if (data.length === 0) {
     return <Activity color="red" />;
   }
-
-  console.log(yAxis);
 
   return (
     <ResponsiveLine

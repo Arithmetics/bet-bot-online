@@ -13,6 +13,7 @@ import { GamePlus } from "../backend/src/database";
 import { Serie } from "@nivo/line";
 
 import { TotalGraph } from "./TotalGraph";
+import { BarGraph } from "./BarGraph";
 
 type GameCardProps = {
   game?: GamePlus;
@@ -127,6 +128,8 @@ export function GameCard({
 
   // const gradeInAlert = Math.abs(mostRecentLine?.grade || 0)
 
+  const gameComplete = game.finalAwayScore && game.finalHomeScore;
+
   const stale = disconnected;
   const gameData: Serie[] = createTotalGraphData(game);
 
@@ -180,7 +183,7 @@ export function GameCard({
                 Math.abs(parseFloat(mostRecentLineGrade)) > 6
               )}
             >
-               Grade: {started ? mostRecentLineGrade : "---"}
+               Grade: {started && !gameComplete ? mostRecentLineGrade : "---"}
             </Badge>
             <Spacer h={0.5} />
             {stale ? (
@@ -190,9 +193,14 @@ export function GameCard({
               </>
             ) : undefined}
 
-            {started ? (
+            {started && !gameComplete ? (
               <Text h3 margin={0}>
                 {mostRecentLine.minute} mins - {mostRecentLine.quarter}Q
+              </Text>
+            ) : undefined}
+            {gameComplete ? (
+              <Text h3 margin={0}>
+                Final
               </Text>
             ) : undefined}
             {!started ? (
@@ -220,6 +228,18 @@ export function GameCard({
           ) : (
             <Activity color="red" size={36} />
           )}
+        </div>
+        <div
+          style={{
+            height: "300px",
+            width: "100%",
+            marginTop: "-1.5rem",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <BarGraph />
         </div>
       </Card.Content>
     </Card>
