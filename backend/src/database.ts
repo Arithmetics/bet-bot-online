@@ -1,10 +1,11 @@
 import { PrismaClient, Game, LiveGameLine } from "@prisma/client";
-import { getESPNGames, findMatchingScoreboardScore } from "./espn";
 import {
-  filterActiveGames,
-  filterNotStartedGames,
-  scrapeListedGames,
-} from "./scrape";
+  getESPNGames,
+  ESPNStatusEnum,
+  findMatchingScoreboardScore,
+  ESPNGameReduced,
+} from "./espn";
+import { scrapeScoreboardGames, LiveGame } from "./scrape";
 import { createPacificPrismaDate } from "./utils";
 
 const prisma = new PrismaClient();
@@ -22,22 +23,20 @@ export type GamePlus = Game & {
 
 function botPredictedTotal(
   currentTotalScore: number,
-  currentTotalLine: number,
   closingTotalLine: number,
   minutesLeft: number
 ): number {
   const expectedRate = closingTotalLine / 48; // pts / minute
-  // adding average 30 in to account for extra time
   return parseFloat(
-    (currentTotalScore + (minutesLeft + 0.5) * expectedRate).toFixed(2)
+    (currentTotalScore + minutesLeft * expectedRate).toFixed(2)
   );
 }
 
 function getTotalMinutes(quarter: number, minute: number): number {
   const minutesPlayedInQuarter = 12 - minute;
-  const oldQuarterMinues = (quarter - 1) * 12;
+  const oldQuarterMinutes = (quarter - 1) * 12;
 
-  return minutesPlayedInQuarter + oldQuarterMinues;
+  return minutesPlayedInQuarter + oldQuarterMinutes;
 }
 
 function addBettingData(game: GamePlus): GamePlus {
@@ -45,7 +44,6 @@ function addBettingData(game: GamePlus): GamePlus {
     const totalMinutes = getTotalMinutes(line.quarter, line.minute);
     const botProjectedTotal = botPredictedTotal(
       line.awayScore + line.homeScore,
-      line.totalLine,
       game.closingTotalLine,
       48 - totalMinutes
     );
@@ -72,109 +70,130 @@ export async function getAllTodaysGames(): Promise<GamePlus[]> {
   return games.map(addBettingData);
 }
 
+async function updateCompletedGame(
+  espnGame: ESPNGameReduced,
+  matchingDBGame: Game | null
+): Promise<void> {
+  if (!matchingDBGame) {
+    console.log(
+      `ERROR: Found completed ESPN game with no matching DB game: ${espnGame.awayTeam} vs ${espnGame.homeTeam}`
+    );
+    return;
+  }
+  await prisma.game.update({
+    where: { id: matchingDBGame.id },
+    data: {
+      finalAwayScore: espnGame.awayScore,
+      finalHomeScore: espnGame.homeScore,
+    },
+  });
+}
+
+async function updatedPendingGame(
+  scoreboardGame: LiveGame,
+  matchingDBGame: Game | null
+): Promise<void> {
+  if (!scoreboardGame.awayLine || !scoreboardGame.overLine) {
+    return;
+  }
+
+  if (!matchingDBGame) {
+    await prisma.game.create({
+      data: {
+        awayTeam: scoreboardGame.awayTeam,
+        homeTeam: scoreboardGame.homeTeam,
+        date: createPacificPrismaDate(),
+        closingAwayLine: scoreboardGame.awayLine,
+        closingTotalLine: scoreboardGame.overLine,
+      },
+    });
+    return;
+  }
+
+  await prisma.game.update({
+    where: { id: matchingDBGame.id },
+    data: {
+      closingAwayLine: scoreboardGame.awayLine,
+      closingTotalLine: scoreboardGame.overLine,
+    },
+  });
+}
+
+async function updateOngoingGame(
+  espnGame: ESPNGameReduced,
+  scoreboardGame: LiveGame,
+  matchingDBGame: Game | null
+): Promise<void> {
+  if (!matchingDBGame) {
+    console.log(
+      `ERROR: Found ongoing ESPN game with no matching DB game: ${espnGame.awayTeam} vs ${espnGame.homeTeam}`
+    );
+    return;
+  }
+
+  const minute = espnGame.secondsRemaining / 60;
+
+  if (
+    scoreboardGame.awayLine &&
+    scoreboardGame.overLine &&
+    scoreboardGame.quarter !== undefined &&
+    scoreboardGame.minute !== undefined &&
+    scoreboardGame.awayScore !== undefined &&
+    scoreboardGame.homeScore !== undefined
+  ) {
+    await prisma.liveGameLine.create({
+      data: {
+        gameId: matchingDBGame.id,
+        awayLine: scoreboardGame.awayLine,
+        totalLine: scoreboardGame.overLine,
+        quarter: espnGame.quarter,
+        minute,
+        awayScore: espnGame.awayScore,
+        homeScore: espnGame.homeScore,
+      },
+    });
+  }
+}
+
 export async function updateData() {
   const [allScoreboardGames, allESPNGames] = await Promise.all([
-    scrapeListedGames(),
+    scrapeScoreboardGames(),
     getESPNGames(),
   ]);
 
   // new cycle
   for await (const espnGame of allESPNGames) {
-    let isStale = false;
     const matchingScoreboardGame = findMatchingScoreboardScore(
       espnGame,
       allScoreboardGames
     );
     if (!matchingScoreboardGame) {
-      isStale = true;
+      console.log(
+        `Couldn't find a matching Scoreboard listing for ESPN Game: ${espnGame.awayTeam}, ${espnGame.homeTeam}`
+      );
+      continue;
     }
-    if (
-      matchingScoreboardGame.awayLine &&
-      matchingScoreboardGame.overLine &&
-      matchingScoreboardGame.quarter !== undefined &&
-      matchingScoreboardGame.minute !== undefined &&
-      matchingScoreboardGame.awayScore !== undefined &&
-      matchingScoreboardGame.homeScore !== undefined
-    ) {
-      isStale = true;
-    }
-  }
-  //
 
-  const scheduledGames = filterNotStartedGames(allScoreboardGames);
-
-  console.log(
-    "Scraping Scoreboard, found scheduled games:",
-    scheduledGames.length
-  );
-  for await (const scheduledGame of scheduledGames) {
-    const matching = await prisma.game.findFirst({
+    const matchingDBGame = await prisma.game.findFirst({
       where: {
-        homeTeam: scheduledGame.homeTeam,
-        awayTeam: scheduledGame.awayTeam,
+        homeTeam: matchingScoreboardGame.homeTeam,
+        awayTeam: matchingScoreboardGame.awayTeam,
         date: createPacificPrismaDate(),
       },
     });
 
-    if (scheduledGame.awayLine && scheduledGame.overLine) {
-      if (!matching) {
-        await prisma.game.create({
-          data: {
-            awayTeam: scheduledGame.awayTeam,
-            homeTeam: scheduledGame.homeTeam,
-            date: createPacificPrismaDate(),
-            closingAwayLine: scheduledGame.awayLine,
-            closingTotalLine: scheduledGame.overLine,
-          },
-        });
-      } else {
-        console.log("updating a pregame line:");
-        console.log(
-          `${scheduledGame.awayTeam}/${scheduledGame.homeTeam} from ${matching.closingTotalLine} to ${scheduledGame.overLine}`
-        );
-        await prisma.game.update({
-          where: { id: matching.id },
-          data: {
-            closingAwayLine: scheduledGame.awayLine,
-            closingTotalLine: scheduledGame.overLine,
-          },
-        });
-      }
-    }
-  }
-
-  const activeGames = filterActiveGames(allScoreboardGames);
-
-  console.log("Scraping Scoreboard, found active games:", activeGames.length);
-  for await (const activeGame of activeGames) {
-    const matching = await prisma.game.findFirst({
-      where: {
-        homeTeam: activeGame.homeTeam,
-        awayTeam: activeGame.awayTeam,
-        date: createPacificPrismaDate(),
-      },
-    });
-
-    if (
-      matching &&
-      activeGame.awayLine &&
-      activeGame.overLine &&
-      activeGame.quarter !== undefined &&
-      activeGame.minute !== undefined &&
-      activeGame.awayScore !== undefined &&
-      activeGame.homeScore !== undefined
+    if (espnGame.status === ESPNStatusEnum.STATUS_SCHEDULED) {
+      // game hasnt started
+      await updatedPendingGame(matchingScoreboardGame, matchingDBGame);
+    } else if (
+      espnGame.status === ESPNStatusEnum.STATUS_IN_PROGRESS ||
+      espnGame.status === ESPNStatusEnum.STATUS_HALFTIME
     ) {
-      await prisma.liveGameLine.create({
-        data: {
-          gameId: matching.id,
-          awayLine: activeGame.awayLine,
-          totalLine: activeGame.overLine,
-          quarter: activeGame.quarter,
-          minute: activeGame.minute,
-          awayScore: activeGame.awayScore,
-          homeScore: activeGame.homeScore,
-        },
-      });
+      await updateOngoingGame(espnGame, matchingScoreboardGame, matchingDBGame);
+      // game in progress
+    } else if (espnGame.status === ESPNStatusEnum.STATUS_FINAL) {
+      // game complete
+      await updateCompletedGame(espnGame, matchingDBGame);
     }
   }
 }

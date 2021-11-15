@@ -18,6 +18,8 @@ model Game {
     date                DateTime @db.Date
     closingAwayLine     Float
     closingTotalLine    Float
+    finalAwayScore      Float?
+    finalHomeScore      Float?
     liveGameLines       LiveGameLine[]
 }
 

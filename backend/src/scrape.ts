@@ -116,7 +116,7 @@ function convertRawToFullGame(scrapedGames: RawScrapedGame[]): LiveGame[] {
   });
 }
 
-export async function scrapeListedGames(): Promise<LiveGame[]> {
+export async function scrapeScoreboardGames(): Promise<LiveGame[]> {
   const browser = await puppeteer.launch({});
   const page = await browser.newPage();
   await page.goto(url);

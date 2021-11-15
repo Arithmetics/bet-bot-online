@@ -2,14 +2,12 @@ import got from "got";
 import { LiveGame } from "./scrape";
 import { createPacificPrismaDate } from "./utils";
 
-const url = "https://sports.oregonlottery.org/sports/basketball/nba";
-
 type ESPNCompetitor = {
   team: { shortDisplayName: string };
   score: number;
 };
 
-enum ESPNStatusEnum {
+export enum ESPNStatusEnum {
   STATUS_SCHEDULED = "STATUS_SCHEDULED",
   STATUS_HALFTIME = "STATUS_HALFTIME",
   STATUS_IN_PROGRESS = "STATUS_IN_PROGRESS",
@@ -43,7 +41,7 @@ export type ESPNGameReduced = {
   awayScore: number;
   homeScore: number;
   quarter: number;
-  minute: number;
+  secondsRemaining: number;
   status: ESPNStatusEnum;
 };
 
@@ -58,7 +56,7 @@ function reduceESPNGames(espnResponse: ESPNResponse): ESPNGameReduced[] {
         homeTeam: competition.competitors[1].team.shortDisplayName,
         homeScore: competition.competitors[1].score,
         quarter: competition.status.period,
-        minute: competition.status.clock,
+        secondsRemaining: competition.status.clock,
         status: competition.status.type.name,
       });
     });
