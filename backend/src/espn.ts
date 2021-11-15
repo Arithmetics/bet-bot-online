@@ -4,7 +4,8 @@ import { createPacificPrismaDate } from "./utils";
 
 type ESPNCompetitor = {
   team: { shortDisplayName: string };
-  score: number;
+  homeAway: string;
+  score: string;
 };
 
 export enum ESPNStatusEnum {
@@ -50,11 +51,22 @@ function reduceESPNGames(espnResponse: ESPNResponse): ESPNGameReduced[] {
 
   espnResponse.events.forEach((event) => {
     event.competitions.forEach((competition) => {
+      const homeTeam = competition.competitors.find(
+        (c) => c.homeAway === "home"
+      );
+      const awayTeam = competition.competitors.find(
+        (c) => c.homeAway === "away"
+      );
+
+      if (!homeTeam || !awayTeam) {
+        return;
+      }
+
       games.push({
-        awayTeam: competition.competitors[0].team.shortDisplayName,
-        awayScore: competition.competitors[0].score,
-        homeTeam: competition.competitors[1].team.shortDisplayName,
-        homeScore: competition.competitors[1].score,
+        awayTeam: awayTeam.team.shortDisplayName,
+        awayScore: parseInt(awayTeam.score, 10),
+        homeTeam: homeTeam.team.shortDisplayName,
+        homeScore: parseInt(homeTeam.score),
         quarter: competition.status.period,
         secondsRemaining: competition.status.clock,
         status: competition.status.type.name,

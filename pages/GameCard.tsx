@@ -25,14 +25,26 @@ function getLogoUrl(teamName: string): string {
   return `/nba_team_logos/${noSpaces}.png`;
 }
 
+function getTotalMinutes(quarter: number, minute: number): number {
+  const minutesPlayedInQuarter = 12 - minute;
+  const oldQuarterMinutes = (quarter - 1) * 12;
+
+  return minutesPlayedInQuarter + oldQuarterMinutes;
+}
+
 function createTotalGraphData(game: GamePlus): Serie[] {
   const realScore = {
-    id: "Real Score",
+    id: "Real Score Pace",
     data:
-      game?.liveGameLines.map((line) => ({
-        x: line.totalMinutes,
-        y: line.awayScore + line.homeScore,
-      })) || [],
+      game?.liveGameLines.map((line) => {
+        const pace =
+          (line.awayScore + line.homeScore) *
+          (48 / getTotalMinutes(line.quarter, line.minute));
+        return {
+          x: line.totalMinutes,
+          y: Math.round(pace),
+        };
+      }) || [],
   };
 
   const vegasLine = {

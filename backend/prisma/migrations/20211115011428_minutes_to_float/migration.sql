@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "LiveGameLine" ALTER COLUMN "minute" SET DATA TYPE DOUBLE PRECISION;

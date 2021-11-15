@@ -30,7 +30,7 @@ model LiveGameLine {
     awayLine    Float
     totalLine   Float
     quarter     Int
-    minute      Int
+    minute      Float
     awayScore   Int
     homeScore   Int
 }

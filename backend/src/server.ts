@@ -5,7 +5,7 @@ import { updateData, getAllTodaysGames, GamePlus } from "./database";
 
 let lastMessage = Date.now();
 
-const MASTER_INTERVAL = 300 * 1000;
+const MASTER_INTERVAL = 4 * 60 * 1000;
 
 type ConnectionMessage = {
   messageTimestamp: number;
@@ -34,7 +34,7 @@ async function sendMessageToAllClients(): Promise<void> {
   try {
     await updateData();
   } catch (e) {
-    console.log("BIG BAD ERROR");
+    console.log("BIG BAD ERROR", e);
   }
 
   const games = await getAllTodaysGames();

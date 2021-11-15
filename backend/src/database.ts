@@ -131,7 +131,7 @@ async function updateOngoingGame(
     return;
   }
 
-  const minute = espnGame.secondsRemaining / 60;
+  const minute = Math.round((espnGame.secondsRemaining * 100) / 60) / 100;
 
   if (
     scoreboardGame.awayLine &&
