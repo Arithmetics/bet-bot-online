@@ -167,32 +167,43 @@ export async function updateData() {
       espnGame,
       allScoreboardGames
     );
-    if (!matchingScoreboardGame) {
-      console.log(
-        `Couldn't find a matching Scoreboard listing for ESPN Game: ${espnGame.awayTeam}, ${espnGame.homeTeam}`
-      );
-      continue;
-    }
 
-    const matchingDBGame = await prisma.game.findFirst({
-      where: {
-        homeTeam: matchingScoreboardGame.homeTeam,
-        awayTeam: matchingScoreboardGame.awayTeam,
-        date: createPacificPrismaDate(),
-      },
-    });
+    let matchingDBGame: Game | null = null;
+
+    if (matchingScoreboardGame) {
+      matchingDBGame = await prisma.game.findFirst({
+        where: {
+          homeTeam: matchingScoreboardGame.homeTeam,
+          awayTeam: matchingScoreboardGame.awayTeam,
+          date: createPacificPrismaDate(),
+        },
+      });
+    }
 
     if (espnGame.status === ESPNStatusEnum.STATUS_SCHEDULED) {
       // game hasnt started
+      if (!matchingScoreboardGame) {
+        console.log(
+          `Couldn't find a matching Scoreboard listing for ESPN Game: ${espnGame.awayTeam}, ${espnGame.homeTeam}`
+        );
+        continue;
+      }
       await updatedPendingGame(matchingScoreboardGame, matchingDBGame);
     } else if (
       espnGame.status === ESPNStatusEnum.STATUS_IN_PROGRESS ||
       espnGame.status === ESPNStatusEnum.STATUS_HALFTIME
     ) {
+      if (!matchingScoreboardGame) {
+        console.log(
+          `Couldn't find a matching Scoreboard listing for ESPN Game: ${espnGame.awayTeam}, ${espnGame.homeTeam}`
+        );
+        continue;
+      }
       await updateOngoingGame(espnGame, matchingScoreboardGame, matchingDBGame);
       // game in progress
     } else if (espnGame.status === ESPNStatusEnum.STATUS_FINAL) {
       // game complete
+      console.log("final game");
       await updateCompletedGame(espnGame, matchingDBGame);
     }
   }

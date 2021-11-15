@@ -33,8 +33,10 @@ function getTotalMinutes(quarter: number, minute: number): number {
 }
 
 function createTotalGraphData(game: GamePlus): Serie[] {
+  const series: Serie[] = [];
+
   const realScore = {
-    id: "Real Score Pace",
+    id: "Current Pace",
     data:
       game?.liveGameLines.map((line) => {
         const pace =
@@ -65,7 +67,27 @@ function createTotalGraphData(game: GamePlus): Serie[] {
       })) || [],
   };
 
-  return [realScore, vegasLine, botProj];
+  series.push(realScore);
+  series.push(vegasLine);
+  series.push(botProj);
+
+  if (game.finalAwayScore && game.finalHomeScore) {
+    series.push({
+      id: "Final Total",
+      data: [
+        {
+          x: 0,
+          y: game.finalAwayScore + game.finalHomeScore,
+        },
+        {
+          x: 48,
+          y: game.finalAwayScore + game.finalHomeScore,
+        },
+      ],
+    });
+  }
+
+  return series;
 }
 
 function determineBadgeType(
