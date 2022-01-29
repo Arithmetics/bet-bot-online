@@ -75,3 +75,5 @@ export function ATSBetTable() {
     </>
   );
 }
+
+export default ATSBetTable;

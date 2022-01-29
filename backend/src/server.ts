@@ -5,7 +5,7 @@ import { updateData, getAllTodaysGames, GamePlus } from "./database";
 
 let lastMessage = Date.now();
 
-const MASTER_INTERVAL = 120 * 1000;
+const MASTER_INTERVAL = 300 * 1000;
 
 type ConnectionMessage = {
   messageTimestamp: number;
@@ -41,6 +41,7 @@ async function sendMessageToAllClients(): Promise<void> {
   lastMessage = Date.now();
 
   console.log("cycle run, sending messages to all clients now", games.length);
+  console.log("----------------");
   wss.clients.forEach((client) => {
     client.send(JSON.stringify(constructMessage(games)));
   });
