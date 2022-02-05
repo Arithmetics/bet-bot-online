@@ -1,10 +1,11 @@
 import { PrismaClient, Game, LiveGameLine } from "@prisma/client";
-import {
-  filterActiveGames,
-  filterNotStartedGames,
-  scrapeListedGames,
-} from "./scrape";
 import { createPacificPrismaDate } from "./utils";
+import {
+  getDraftKingsListings,
+  filterNotStartedGames,
+  filterActiveGames,
+} from "./draftKings";
+import { PeriodLookup } from "./DraftKingsTypes";
 
 const prisma = new PrismaClient();
 
@@ -18,35 +19,47 @@ export type GamePlus = Game & {
   liveGameLines: LiveGameLinePlus[];
 };
 
-function botPredictedTotal(
-  currentTotalScore: number,
-  currentTotalLine: number,
-  closingTotalLine: number,
-  minutesLeft: number
+function getTotalSeconds(
+  quarter: number,
+  minute: number,
+  second: number
 ): number {
-  const expectedRate = closingTotalLine / 48; // pts / minute
-  // adding average 30 in to account for extra time
-  return parseFloat(
-    (currentTotalScore + (minutesLeft + 0.5) * expectedRate).toFixed(2)
-  );
+  const secondsPlayedInQuarter = (12 - minute) * 60 + second;
+  const oldQuarterSeconds = (quarter - 1) * 12 * 60;
+
+  return secondsPlayedInQuarter + oldQuarterSeconds;
 }
 
-function getTotalMinutes(quarter: number, minute: number): number {
-  const minutesPlayedInQuarter = 12 - minute;
-  const oldQuarterMinues = (quarter - 1) * 12;
+function botPredictedTotal(
+  currentTotalScore: number,
+  closingTotalLine: number,
+  secondsLeft: number
+): number {
+  const expectedRatePerSecond = closingTotalLine / (48 * 60); // pts / minute
 
-  return minutesPlayedInQuarter + oldQuarterMinues;
+  return parseFloat(
+    (currentTotalScore + secondsLeft * expectedRatePerSecond).toFixed(2)
+  );
 }
 
 function addBettingData(game: GamePlus): GamePlus {
   game.liveGameLines = game.liveGameLines.map((line) => {
-    const totalMinutes = getTotalMinutes(line.quarter, line.minute);
+    const totalSeconds = getTotalSeconds(
+      line.quarter,
+      line.minute,
+      line.second
+    );
+
+    const secondsLeftInRegulation = 48 * 60 - totalSeconds;
+
+    const totalMinutes = Math.round(totalSeconds / 60);
+
     const botProjectedTotal = botPredictedTotal(
       line.awayScore + line.homeScore,
-      line.totalLine,
       game.closingTotalLine,
-      48 - totalMinutes
+      secondsLeftInRegulation
     );
+
     return {
       ...line,
       totalMinutes,
@@ -71,11 +84,12 @@ export async function getAllTodaysGames() {
 }
 
 export async function updateData() {
-  const allListedGames = await scrapeListedGames();
+  const allListedGames = await getDraftKingsListings();
+
   const scheduledGames = filterNotStartedGames(allListedGames);
 
   console.log(
-    "Scraping Scoreboard, found scheduled games:",
+    "Querying Draft Kings, found scheduled games:",
     scheduledGames.length
   );
   for await (const scheduledGame of scheduledGames) {
@@ -86,27 +100,27 @@ export async function updateData() {
         date: createPacificPrismaDate(),
       },
     });
-    if (scheduledGame.awayLine && scheduledGame.overLine) {
+    if (scheduledGame.totalLine !== undefined) {
       if (!matching) {
         await prisma.game.create({
           data: {
             awayTeam: scheduledGame.awayTeam,
             homeTeam: scheduledGame.homeTeam,
             date: createPacificPrismaDate(),
-            closingAwayLine: scheduledGame.awayLine,
-            closingTotalLine: scheduledGame.overLine,
+            closingAwayLine: 99,
+            closingTotalLine: scheduledGame.totalLine,
           },
         });
       } else {
         console.log("updating a pregame line:");
         console.log(
-          `${scheduledGame.awayTeam}/${scheduledGame.homeTeam} from ${matching.closingTotalLine} to ${scheduledGame.overLine}`
+          `${scheduledGame.awayTeam}/${scheduledGame.homeTeam} from ${matching.closingTotalLine} to ${scheduledGame.totalLine}`
         );
         await prisma.game.update({
           where: { id: matching.id },
           data: {
-            closingAwayLine: scheduledGame.awayLine,
-            closingTotalLine: scheduledGame.overLine,
+            closingAwayLine: 99,
+            closingTotalLine: scheduledGame.totalLine,
           },
         });
       }
@@ -115,7 +129,7 @@ export async function updateData() {
 
   const activeGames = filterActiveGames(allListedGames);
 
-  console.log("Scraping Scoreboard, found active games:", activeGames.length);
+  console.log("Scraping Draft Kings, found active games:", activeGames.length);
   for await (const activeGame of activeGames) {
     const matching = await prisma.game.findFirst({
       where: {
@@ -127,22 +141,23 @@ export async function updateData() {
 
     if (
       matching &&
-      activeGame.awayLine &&
-      activeGame.overLine &&
-      activeGame.quarter !== undefined &&
+      // activeGame.awayLine &&
+      activeGame.totalLine !== undefined &&
+      activeGame.period !== undefined &&
       activeGame.minute !== undefined &&
-      activeGame.awayScore !== undefined &&
-      activeGame.homeScore !== undefined
+      activeGame.homeTeamScore !== undefined &&
+      activeGame.awayTeamScore !== undefined
     ) {
       await prisma.liveGameLine.create({
         data: {
           gameId: matching.id,
-          awayLine: activeGame.awayLine,
-          totalLine: activeGame.overLine,
-          quarter: activeGame.quarter,
+          awayLine: 99,
+          totalLine: activeGame.totalLine,
+          quarter: PeriodLookup[activeGame.period],
           minute: activeGame.minute,
-          awayScore: activeGame.awayScore,
-          homeScore: activeGame.homeScore,
+          second: activeGame.second,
+          awayScore: activeGame.awayTeamScore,
+          homeScore: activeGame.homeTeamScore,
         },
       });
     }

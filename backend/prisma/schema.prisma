@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgres://keystoneuser:rock7900@localhost:5432/bet-bot-online"
+  url      = "postgres://brocktillotson:rock7900@localhost:5432/bet-bot-online"
 }
 
 
@@ -29,6 +29,7 @@ model LiveGameLine {
     totalLine   Float
     quarter     Int
     minute      Int
+    second      Int
     awayScore   Int
     homeScore   Int
 }
