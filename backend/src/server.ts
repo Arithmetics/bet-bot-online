@@ -6,7 +6,7 @@ import { printData } from "./draftKings";
 
 let lastMessage = Date.now();
 
-const MASTER_INTERVAL = 5 * 1000;
+const MASTER_INTERVAL = 250 * 1000;
 
 type ConnectionMessage = {
   messageTimestamp: number;
@@ -36,7 +36,7 @@ async function sendMessageToAllClients(): Promise<void> {
     await updateData();
     await printData();
   } catch (e) {
-    console.log("BIG BAD ERROR");
+    console.log("BIG BAD ERROR", e);
   }
 
   const games = await getAllTodaysGames();

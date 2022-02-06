@@ -22,20 +22,36 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element | null {
     return null;
   }
 
-  const maxY = data.reduce((acc, cur) => {
-    const maxData = cur.data.reduce((acc2, cur2) => {
-      const yVal = cur2?.y || 0;
-      if (yVal > acc2 && typeof yVal === "number") {
-        acc2 = yVal;
-      }
-      return acc2;
-    }, 0);
+  const yAxis = data.reduce(
+    (acc, cur) => {
+      const maxData = cur.data.reduce((acc2, cur2) => {
+        const yVal = cur2?.y || 0;
+        if (yVal > acc2 && typeof yVal === "number") {
+          acc2 = yVal;
+        }
+        return acc2;
+      }, 0);
 
-    if (maxData > acc) {
-      acc = maxData;
-    }
-    return acc;
-  }, 0);
+      const minData = cur.data.reduce((acc2, cur2) => {
+        const yVal = cur2?.y || 300;
+        if (yVal < acc2 && typeof yVal === "number") {
+          acc2 = yVal;
+        }
+        return acc2;
+      }, 300);
+
+      if (maxData > acc.maxY) {
+        acc.maxY = maxData;
+      }
+
+      if (minData < acc.minY) {
+        acc.minY = minData;
+      }
+
+      return acc;
+    },
+    { maxY: 0, minY: 300 }
+  );
 
   if (data.length === 0) {
     return <Activity color="red" />;
@@ -56,7 +72,12 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element | null {
         left: 60,
       }}
       xScale={{ type: "linear", min: 1, max: 48 }}
-      yScale={{ type: "linear", min: 0, max: maxY, reverse: false }}
+      yScale={{
+        type: "linear",
+        min: yAxis.minY,
+        max: yAxis.maxY,
+        reverse: false,
+      }}
       yFormat=" >-.2f"
       xFormat=" >-.2f"
       axisTop={null}

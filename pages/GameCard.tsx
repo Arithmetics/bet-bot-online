@@ -9,10 +9,21 @@ import {
   Image,
 } from "@geist-ui/react";
 import Activity from "@geist-ui/react-icons/activity";
-import { GamePlus } from "../backend/src/database";
+import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
 import { Serie } from "@nivo/line";
 
 import { TotalGraph } from "./TotalGraph";
+import { BarGraph } from "./BarGraph";
+
+function getTotalSecondsPlayed(
+  quarter: number,
+  minute: number,
+  second: number
+): number {
+  const secondsPlayedInQuarter = 12 * 60 - minute * 60 - second;
+  const secondsPlayedInPreviousQuarters = (quarter - 1) * 12 * 60;
+  return secondsPlayedInQuarter + secondsPlayedInPreviousQuarters;
+}
 
 type GameCardProps = {
   game?: GamePlus;
@@ -26,13 +37,23 @@ function getLogoUrl(teamName: string): string {
 }
 
 function createTotalGraphData(game: GamePlus): Serie[] {
+  const series: Serie[] = [];
+
+  const totalSecondsInRegulation = 48 * 60;
+
   const realScore = {
-    id: "Real Score",
+    id: "Current Pace",
     data:
-      game?.liveGameLines.map((line) => ({
-        x: line.totalMinutes,
-        y: line.awayScore + line.homeScore,
-      })) || [],
+      game?.liveGameLines.map((line) => {
+        const pace =
+          (line.awayScore + line.homeScore) *
+          (totalSecondsInRegulation /
+            getTotalSecondsPlayed(line.quarter, line.minute, line.second));
+        return {
+          x: line.totalMinutes,
+          y: Math.round(pace),
+        };
+      }) || [],
   };
 
   const vegasLine = {
@@ -53,7 +74,27 @@ function createTotalGraphData(game: GamePlus): Serie[] {
       })) || [],
   };
 
-  return [realScore, vegasLine, botProj];
+  series.push(realScore);
+  series.push(vegasLine);
+  series.push(botProj);
+
+  if (game.finalAwayScore && game.finalHomeScore) {
+    series.push({
+      id: "Final Total",
+      data: [
+        {
+          x: 0,
+          y: game.finalAwayScore + game.finalHomeScore,
+        },
+        {
+          x: 48,
+          y: game.finalAwayScore + game.finalHomeScore,
+        },
+      ],
+    });
+  }
+
+  return series;
 }
 
 function determineBadgeType(
@@ -86,14 +127,19 @@ export function GameCard({
     return acc;
   }, game.liveGameLines[0]);
 
+  const formatTime = (line: LiveGameLinePlus) => {
+    const secondString = line.second < 10 ? `0${line.second}` : line.second;
+    return `${line.minute}: ${secondString} - ${line.quarter}Q`;
+  };
+
   const mostRecentLineGrade =
     (mostRecentLine?.grade || 0) < 0
       ? `UNDER ${Math.abs(mostRecentLine?.grade || 0)}`
       : `OVER ${Math.abs(mostRecentLine?.grade || 0)}`;
 
-  // const gradeInAlert = Math.abs(mostRecentLine?.grade || 0)
+  const gameComplete = game.finalAwayScore && game.finalHomeScore;
 
-  const stale = disconnected;
+  const stale = disconnected || game.isStale === undefined;
   const gameData: Serie[] = createTotalGraphData(game);
 
   return (
@@ -146,7 +192,7 @@ export function GameCard({
                 Math.abs(parseFloat(mostRecentLineGrade)) > 6
               )}
             >
-               Grade: {started ? mostRecentLineGrade : "---"}
+              Grade: {started && !gameComplete ? mostRecentLineGrade : "---"}
             </Badge>
             <Spacer h={0.5} />
             {stale ? (
@@ -158,7 +204,12 @@ export function GameCard({
 
             {started ? (
               <Text h3 margin={0}>
-                {mostRecentLine.minute} mins - {mostRecentLine.quarter}Q
+                {formatTime(mostRecentLine)}
+              </Text>
+            ) : undefined}
+            {gameComplete ? (
+              <Text h3 margin={0}>
+                Final
               </Text>
             ) : undefined}
             {!started ? (
@@ -186,6 +237,18 @@ export function GameCard({
           ) : (
             <Activity color="red" size={36} />
           )}
+        </div>
+        <div
+          style={{
+            height: "300px",
+            width: "100%",
+            marginTop: "-1.5rem",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <BarGraph />
         </div>
       </Card.Content>
     </Card>

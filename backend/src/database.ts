@@ -17,6 +17,7 @@ export type LiveGameLinePlus = LiveGameLine & {
 
 export type GamePlus = Game & {
   liveGameLines: LiveGameLinePlus[];
+  isStale?: boolean;
 };
 
 function getTotalSeconds(
@@ -68,10 +69,10 @@ function addBettingData(game: GamePlus): GamePlus {
     };
   });
 
-  return game;
+  return { ...game, isStale: false };
 }
 
-export async function getAllTodaysGames() {
+export async function getAllTodaysGames(): Promise<GamePlus[]> {
   const games = await prisma.game.findMany({
     where: {
       date: createPacificPrismaDate(),

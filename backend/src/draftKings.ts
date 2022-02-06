@@ -35,7 +35,9 @@ export function filterNotStartedGames(
 export function filterActiveGames(
   games: DraftKingsGameReduced[]
 ): DraftKingsGameReduced[] {
-  return games.filter((game) => game.state === StateEnum.STARTED);
+  return games.filter(
+    (game) => game.state === StateEnum.STARTED && !game.isClockRunning
+  );
 }
 
 function reduceDraftKingsGames(
@@ -86,8 +88,9 @@ function reduceDraftKingsGames(
       awayTeam: teamName1,
       homeTeam: teamName2,
       isClockRunning,
-      homeTeamScore: homeTeamScore ? parseInt(homeTeamScore) : undefined,
-      awayTeamScore: awayTeamScore ? parseInt(awayTeamScore) : undefined,
+      // draft kings reversed?
+      awayTeamScore: homeTeamScore ? parseInt(homeTeamScore) : undefined,
+      homeTeamScore: awayTeamScore ? parseInt(awayTeamScore) : undefined,
       totalLine: matchingOutcome?.line ? matchingOutcome?.line : undefined,
     });
   });
