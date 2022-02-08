@@ -1,6 +1,29 @@
 import { useTheme, useMediaQuery, Grid } from "@geist-ui/react";
 import { ResponsiveBar, BarDatum, BarTooltipProps } from "@nivo/bar";
+import { GamePlus } from "../backend/src/database";
 // import { LegendAnchor } from "@nivo/legends";
+
+function createBarGraphData(game: GamePlus): BarDatum[] {
+  const datum: BarDatum[] = game.liveGameLines.map((line) => {
+    if (line.grade === undefined) {
+      return {
+        minute: 0,
+        grade: 0,
+        underGrade: 0,
+      };
+    }
+
+    const underGrade = line.grade < 0 ? line.grade : 0;
+    const overGrade = line.grade >= 0 ? line.grade : 0;
+    return {
+      minute: line.totalMinutes || 0,
+      grade: overGrade,
+      underGrade,
+    };
+  });
+
+  return datum;
+}
 
 // type BarGraphProps = {
 //   data?: BarDatum[];
@@ -147,25 +170,26 @@ const fakeData = [
   },
 ];
 
-// export function BarGraph({ data }: BarGraphProps): JSX.Element | null {
-export function BarGraph(): JSX.Element | null {
+type BarGraphProps = {
+  game?: GamePlus;
+};
+
+export function BarGraph({ game }: BarGraphProps): JSX.Element | null {
   const { palette } = useTheme();
   const isUpMD = useMediaQuery("md", { match: "up" });
 
   const marginRight = isUpMD ? 120 : 20;
   const marginBottom = isUpMD ? 60 : 130;
 
-  //   if (!data) {
-  //     return null;
-  //   }
+  if (!game) {
+    return null;
+  }
 
-  //   if (data.length === 0) {
-  //     return null;
-  //   }
+  const data = createBarGraphData(game);
 
   return (
     <ResponsiveBar
-      data={fakeData}
+      data={data}
       keys={["grade", "underGrade"]}
       indexBy="minute"
       theme={{

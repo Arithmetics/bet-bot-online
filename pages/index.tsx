@@ -107,7 +107,10 @@ export default function Home(): JSX.Element {
                 ) : undefined}
               </Grid>
             </Grid.Container>
-            <Games games={currentMessage?.games} disconnected={false} />
+            <Games
+              games={currentMessage?.games}
+              messageTimestamp={currentMessage?.messageTimestamp}
+            />
           </>
         ) : undefined}
       </Page>

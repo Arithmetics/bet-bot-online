@@ -17,7 +17,6 @@ export type LiveGameLinePlus = LiveGameLine & {
 
 export type GamePlus = Game & {
   liveGameLines: LiveGameLinePlus[];
-  isStale?: boolean;
 };
 
 function getTotalSeconds(
@@ -25,7 +24,7 @@ function getTotalSeconds(
   minute: number,
   second: number
 ): number {
-  const secondsPlayedInQuarter = (12 - minute) * 60 + second;
+  const secondsPlayedInQuarter = (12 - minute) * 60 - second;
   const oldQuarterSeconds = (quarter - 1) * 12 * 60;
 
   return secondsPlayedInQuarter + oldQuarterSeconds;
@@ -69,7 +68,7 @@ function addBettingData(game: GamePlus): GamePlus {
     };
   });
 
-  return { ...game, isStale: false };
+  return { ...game };
 }
 
 export async function getAllTodaysGames(): Promise<GamePlus[]> {
@@ -159,6 +158,7 @@ export async function updateData() {
           second: activeGame.second,
           awayScore: activeGame.awayTeamScore,
           homeScore: activeGame.homeTeamScore,
+          timestamp: new Date(),
         },
       });
     }

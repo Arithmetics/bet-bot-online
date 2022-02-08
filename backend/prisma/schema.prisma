@@ -34,4 +34,5 @@ model LiveGameLine {
     second      Int
     awayScore   Int
     homeScore   Int
+    timestamp   DateTime
 }

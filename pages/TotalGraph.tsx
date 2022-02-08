@@ -1,13 +1,86 @@
 import { useTheme, useMediaQuery, Grid } from "@geist-ui/react";
+import { GamePlus } from "../backend/src/database";
 import { ResponsiveLine, Serie, PointTooltipProps } from "@nivo/line";
 import { LegendAnchor } from "@nivo/legends";
 import Activity from "@geist-ui/react-icons/activity";
 
+function getTotalSecondsPlayed(
+  quarter: number,
+  minute: number,
+  second: number
+): number {
+  const secondsPlayedInQuarter = (12 - minute) * 60 - second;
+  const oldQuarterSeconds = (quarter - 1) * 12 * 60;
+
+  return secondsPlayedInQuarter + oldQuarterSeconds;
+}
+
+function createTotalGraphData(game: GamePlus): Serie[] {
+  const series: Serie[] = [];
+
+  const totalSecondsInRegulation = 48 * 60;
+
+  const realScore = {
+    id: "Current Pace",
+    data:
+      game?.liveGameLines.map((line) => {
+        const pace =
+          (line.awayScore + line.homeScore) *
+          (totalSecondsInRegulation /
+            getTotalSecondsPlayed(line.quarter, line.minute, line.second));
+        return {
+          x: line.totalMinutes,
+          y: Math.round(pace),
+        };
+      }) || [],
+  };
+
+  const vegasLine = {
+    id: "Vegas Line",
+    data:
+      game?.liveGameLines.map((line) => ({
+        x: line.totalMinutes,
+        y: line.totalLine,
+      })) || [],
+  };
+
+  const botProj = {
+    id: "Bot Projected",
+    data:
+      game?.liveGameLines.map((line) => ({
+        x: line.totalMinutes,
+        y: line.botProjectedTotal,
+      })) || [],
+  };
+
+  series.push(realScore);
+  series.push(vegasLine);
+  series.push(botProj);
+
+  if (game.finalAwayScore && game.finalHomeScore) {
+    series.push({
+      id: "Final Total",
+      data: [
+        {
+          x: 0,
+          y: game.finalAwayScore + game.finalHomeScore,
+        },
+        {
+          x: 48,
+          y: game.finalAwayScore + game.finalHomeScore,
+        },
+      ],
+    });
+  }
+
+  return series;
+}
+
 type TotalGraphProps = {
-  data?: Serie[];
+  game?: GamePlus;
 };
 
-export function TotalGraph({ data }: TotalGraphProps): JSX.Element | null {
+export function TotalGraph({ game }: TotalGraphProps): JSX.Element | null {
   const { palette } = useTheme();
   const isUpMD = useMediaQuery("md", { match: "up" });
 
@@ -18,9 +91,11 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element | null {
 
   const anchor: LegendAnchor = isUpMD ? "bottom-right" : "bottom-left";
 
-  if (!data) {
+  if (!game) {
     return null;
   }
+
+  const data: Serie[] = createTotalGraphData(game);
 
   const yAxis = data.reduce(
     (acc, cur) => {

@@ -15,86 +15,15 @@ import { Serie } from "@nivo/line";
 import { TotalGraph } from "./TotalGraph";
 import { BarGraph } from "./BarGraph";
 
-function getTotalSecondsPlayed(
-  quarter: number,
-  minute: number,
-  second: number
-): number {
-  const secondsPlayedInQuarter = 12 * 60 - minute * 60 - second;
-  const secondsPlayedInPreviousQuarters = (quarter - 1) * 12 * 60;
-  return secondsPlayedInQuarter + secondsPlayedInPreviousQuarters;
-}
-
 type GameCardProps = {
   game?: GamePlus;
   isLoading?: boolean;
-  disconnected: boolean;
+  messageTimestamp?: number;
 };
 
 function getLogoUrl(teamName: string): string {
   const noSpaces = teamName.replace(/\s/g, "");
   return `/nba_team_logos/${noSpaces}.png`;
-}
-
-function createTotalGraphData(game: GamePlus): Serie[] {
-  const series: Serie[] = [];
-
-  const totalSecondsInRegulation = 48 * 60;
-
-  const realScore = {
-    id: "Current Pace",
-    data:
-      game?.liveGameLines.map((line) => {
-        const pace =
-          (line.awayScore + line.homeScore) *
-          (totalSecondsInRegulation /
-            getTotalSecondsPlayed(line.quarter, line.minute, line.second));
-        return {
-          x: line.totalMinutes,
-          y: Math.round(pace),
-        };
-      }) || [],
-  };
-
-  const vegasLine = {
-    id: "Vegas Line",
-    data:
-      game?.liveGameLines.map((line) => ({
-        x: line.totalMinutes,
-        y: line.totalLine,
-      })) || [],
-  };
-
-  const botProj = {
-    id: "Bot Projected",
-    data:
-      game?.liveGameLines.map((line) => ({
-        x: line.totalMinutes,
-        y: line.botProjectedTotal,
-      })) || [],
-  };
-
-  series.push(realScore);
-  series.push(vegasLine);
-  series.push(botProj);
-
-  if (game.finalAwayScore && game.finalHomeScore) {
-    series.push({
-      id: "Final Total",
-      data: [
-        {
-          x: 0,
-          y: game.finalAwayScore + game.finalHomeScore,
-        },
-        {
-          x: 48,
-          y: game.finalAwayScore + game.finalHomeScore,
-        },
-      ],
-    });
-  }
-
-  return series;
 }
 
 function determineBadgeType(
@@ -112,7 +41,7 @@ function determineBadgeType(
 
 export function GameCard({
   game,
-  disconnected,
+  messageTimestamp,
 }: GameCardProps): JSX.Element | null {
   if (!game) {
     return null;
@@ -139,8 +68,13 @@ export function GameCard({
 
   const gameComplete = game.finalAwayScore && game.finalHomeScore;
 
-  const stale = disconnected || game.isStale === undefined;
-  const gameData: Serie[] = createTotalGraphData(game);
+  const timeStampNumber = mostRecentLine?.timestamp
+    ? new Date(mostRecentLine?.timestamp).getTime()
+    : 0;
+
+  console.log({ timeStampNumber, messageTimestamp });
+
+  const stale = (messageTimestamp || 0) - timeStampNumber > 30 * 1000;
 
   return (
     <Card>
@@ -233,23 +167,25 @@ export function GameCard({
           }}
         >
           {started ? (
-            <TotalGraph data={gameData} />
+            <TotalGraph game={game} />
           ) : (
             <Activity color="red" size={36} />
           )}
         </div>
-        <div
-          style={{
-            height: "300px",
-            width: "100%",
-            marginTop: "-1.5rem",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <BarGraph />
-        </div>
+        {started ? (
+          <div
+            style={{
+              height: "300px",
+              width: "100%",
+              marginTop: "-1.5rem",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <BarGraph game={game} />
+          </div>
+        ) : undefined}
       </Card.Content>
     </Card>
   );
