@@ -149,8 +149,8 @@ export function TotalGraph({ game }: TotalGraphProps): JSX.Element | null {
       xScale={{ type: "linear", min: 1, max: 48 }}
       yScale={{
         type: "linear",
-        min: yAxis.minY,
-        max: yAxis.maxY,
+        min: Math.min(yAxis.minY, 200),
+        max: Math.max(yAxis.maxY, 250),
         reverse: false,
       }}
       yFormat=" >-.2f"
@@ -160,7 +160,7 @@ export function TotalGraph({ game }: TotalGraphProps): JSX.Element | null {
       gridXValues={0}
       gridYValues={0}
       axisBottom={{
-        tickValues: 10,
+        tickValues: 12,
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,

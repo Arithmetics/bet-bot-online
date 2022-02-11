@@ -86,7 +86,7 @@ export function GameCard({
               style={{ marginBottom: "1rem" }}
             >
               <Grid xs={24}>
-                <Grid.Container alignItems="center" gap={1}>
+                <Grid.Container alignItems="center" gap={1} wrap="nowrap">
                   <Grid>
                     <Image
                       height="50px"
@@ -109,9 +109,12 @@ export function GameCard({
             </Grid.Container>
             <Spacer h={0.5} />
             <Text h4 margin={0}>
-              {started
-                ? `Score: ${mostRecentLine.awayScore} - ${mostRecentLine.homeScore}`
-                : "Not Started"}
+              {!started && !gameComplete && "Not Started"}
+              {started &&
+                !gameComplete &&
+                `Score: ${mostRecentLine.awayScore} - ${mostRecentLine.homeScore}`}
+              {gameComplete &&
+                `Final: ${game.finalAwayScore} - ${game.finalHomeScore}`}
             </Text>
           </Grid>
           <Grid
@@ -129,21 +132,29 @@ export function GameCard({
               Grade: {started && !gameComplete ? mostRecentLineGrade : "---"}
             </Badge>
             <Spacer h={0.5} />
-            {stale ? (
+            {stale && started && !gameComplete ? (
               <>
                 <Badge type="warning">Stale: Not updated</Badge>
                 <Spacer h={0.5} />
               </>
             ) : undefined}
+            {gameComplete ? (
+              <>
+                <Badge type="secondary">Complete</Badge>
+                <Spacer h={0.5} />
+              </>
+            ) : undefined}
 
-            {started ? (
+            {started && !gameComplete ? (
               <Text h3 margin={0}>
                 {formatTime(mostRecentLine)}
               </Text>
             ) : undefined}
             {gameComplete ? (
               <Text h3 margin={0}>
-                Final
+                {`Total: ${
+                  (game.finalAwayScore || 0) + (game.finalHomeScore || 0)
+                }`}
               </Text>
             ) : undefined}
             {!started ? (

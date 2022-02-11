@@ -6,6 +6,7 @@ import {
   filterActiveGames,
 } from "./draftKings";
 import { PeriodLookup } from "./DraftKingsTypes";
+import { getESPNGames, completePrismaGames } from "./espn";
 
 const prisma = new PrismaClient();
 
@@ -83,8 +84,23 @@ export async function getAllTodaysGames(): Promise<GamePlus[]> {
   return games.map(addBettingData);
 }
 
+export async function updateFinalScore(
+  id: number,
+  finalAwayScore: number,
+  finalHomeScore: number
+): Promise<void> {
+  await prisma.game.update({
+    where: { id },
+    data: {
+      finalAwayScore,
+      finalHomeScore,
+    },
+  });
+}
+
 export async function updateData() {
   const allListedGames = await getDraftKingsListings();
+  const allEspnGames = await getESPNGames();
 
   const scheduledGames = filterNotStartedGames(allListedGames);
 
@@ -163,4 +179,6 @@ export async function updateData() {
       });
     }
   }
+
+  await completePrismaGames(allEspnGames);
 }

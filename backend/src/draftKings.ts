@@ -10,7 +10,7 @@ import {
 const GAME_LINES_ID = 487;
 const SUBCATEGOGERY = 4511;
 
-type DraftKingsGameReduced = {
+export type DraftKingsGameReduced = {
   eventId: number;
   startDate: Date;
   period?: PeriodEnum;
