@@ -1,9 +1,74 @@
 import { useTheme, useMediaQuery, Grid } from "@geist-ui/react";
 import { ResponsiveBar, BarDatum, BarTooltipProps } from "@nivo/bar";
 import { GamePlus } from "../backend/src/database";
+import { line } from "d3-shape";
 // import { LegendAnchor } from "@nivo/legends";
 
-function createBarGraphData(game: GamePlus): BarDatum[] {
+const Line = (barProps: unknown) => {
+  const { palette } = useTheme();
+  const lineColor = palette.violetLight;
+  // @ts-ignore
+  const { bars, xScale, yScale } = barProps;
+
+  const lineGenerator = line()
+    // @ts-ignore
+    .x((bar: { x: number }) => {
+      return bar.x * 2;
+    })
+    .y(() => yScale(5));
+
+  const lineGenerator1 = line()
+    // @ts-ignore
+    .x((bar: { x: number }) => {
+      return bar.x * 2;
+    })
+    .y(() => yScale(10));
+
+  const lineGenerator2 = line()
+    // @ts-ignore
+    .x((bar: { x: number }) => {
+      return bar.x * 2;
+    })
+    .y(() => yScale(-5));
+
+  const lineGenerator3 = line()
+    // @ts-ignore
+    .x((bar: { x: number }) => {
+      return bar.x * 2;
+    })
+    .y(() => yScale(-10));
+
+  return (
+    <>
+      <path
+        d={lineGenerator(bars) ?? undefined}
+        fill="none"
+        stroke={lineColor}
+        style={{ pointerEvents: "none" }}
+      />
+      <path
+        d={lineGenerator1(bars) ?? undefined}
+        fill="none"
+        stroke={lineColor}
+        style={{ pointerEvents: "none" }}
+      />
+      <path
+        d={lineGenerator2(bars) ?? undefined}
+        fill="none"
+        stroke={lineColor}
+        style={{ pointerEvents: "none" }}
+      />
+      <path
+        d={lineGenerator3(bars) ?? undefined}
+        fill="none"
+        stroke={lineColor}
+        style={{ pointerEvents: "none" }}
+      />
+    </>
+  );
+};
+
+function createLiveBarGraphData(game: GamePlus): BarDatum[] {
   const datum: BarDatum[] = game.liveGameLines.map((line) => {
     if (line.grade === undefined) {
       return {
@@ -27,6 +92,38 @@ function createBarGraphData(game: GamePlus): BarDatum[] {
   return datum;
 }
 
+function createCompleteBarGraphData(game: GamePlus): BarDatum[] {
+  const finalScore = (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
+
+  const datum: BarDatum[] = game.liveGameLines.map((line) => {
+    if (line.grade === undefined) {
+      return {
+        minute: 0,
+        winGrade: 0,
+        lossGrade: 0,
+        total: 0,
+      };
+    }
+
+    const projected = line.totalLine + line.grade;
+    const projectedWin =
+      (finalScore > projected && line.totalLine < projected) ||
+      (finalScore < projected && line.totalLine > projected);
+
+    const winGrade = projectedWin ? line.grade : 0;
+    const lossGrade = !projectedWin ? line.grade : 0;
+
+    return {
+      minute: line.totalMinutes || 0,
+      winGrade,
+      lossGrade,
+      total: line.totalLine,
+    };
+  });
+
+  return datum;
+}
+
 type BarGraphProps = {
   game?: GamePlus;
 };
@@ -42,18 +139,31 @@ export function BarGraph({ game }: BarGraphProps): JSX.Element | null {
     return null;
   }
 
-  const data = createBarGraphData(game);
+  const gameComplete =
+    game.finalAwayScore && game.finalHomeScore ? true : false;
+
+  const data = gameComplete
+    ? createCompleteBarGraphData(game)
+    : createLiveBarGraphData(game);
+
+  const colors = gameComplete
+    ? [palette.cyan, palette.error]
+    : [palette.warning, palette.success];
+
+  const keys = gameComplete
+    ? ["winGrade", "lossGrade"]
+    : ["grade", "underGrade"];
 
   return (
     <ResponsiveBar
       data={data}
-      keys={["grade", "underGrade"]}
+      keys={keys}
       indexBy="minute"
       theme={{
         fontSize: 10,
         textColor: "#fff",
       }}
-      colors={[palette.error, palette.success, palette.warning, palette.cyan]}
+      colors={colors}
       margin={{
         top: 50,
         right: marginRight,
@@ -61,7 +171,6 @@ export function BarGraph({ game }: BarGraphProps): JSX.Element | null {
         left: 60,
       }}
       label={(d) => {
-        console.log(d);
         // @ts-ignore
         return String(d.data.total);
       }}
@@ -97,6 +206,7 @@ export function BarGraph({ game }: BarGraphProps): JSX.Element | null {
       tooltip={function (): JSX.Element {
         return <></>;
       }}
+      layers={["grid", "axes", "bars", Line, "markers", "legends"]}
     />
   );
 }

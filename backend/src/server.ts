@@ -66,6 +66,7 @@ wss.on("connection", (ws: ExtWebSocket) => {
 });
 
 // send data out on interval
+sendMessageToAllClients();
 setInterval(sendMessageToAllClients, MASTER_INTERVAL);
 
 // check on all connections every 10 secs and close broken connections
