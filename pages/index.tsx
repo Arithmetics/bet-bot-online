@@ -14,8 +14,8 @@ type ConnectionMessage = {
   msUntilNextUpdate: number;
 };
 
-const websocketUrl = "ws://localhost:8999";
-// const websocketUrl = "wss://brockcastle.pagekite.me/";
+// const websocketUrl = "ws://localhost:8999";
+const websocketUrl = "wss://brockcastle.pagekite.me/";
 
 export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
