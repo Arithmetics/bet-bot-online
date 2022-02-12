@@ -9,51 +9,21 @@ import {
   Image,
 } from "@geist-ui/react";
 import Activity from "@geist-ui/react-icons/activity";
-import { GamePlus } from "../backend/src/database";
+import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
 import { Serie } from "@nivo/line";
 
 import { TotalGraph } from "./TotalGraph";
+import { BarGraph } from "./BarGraph";
 
 type GameCardProps = {
   game?: GamePlus;
   isLoading?: boolean;
-  disconnected: boolean;
+  messageTimestamp?: number;
 };
 
 function getLogoUrl(teamName: string): string {
   const noSpaces = teamName.replace(/\s/g, "");
   return `/nba_team_logos/${noSpaces}.png`;
-}
-
-function createTotalGraphData(game: GamePlus): Serie[] {
-  const realScore = {
-    id: "Real Score",
-    data:
-      game?.liveGameLines.map((line) => ({
-        x: line.totalMinutes,
-        y: line.awayScore + line.homeScore,
-      })) || [],
-  };
-
-  const vegasLine = {
-    id: "Vegas Line",
-    data:
-      game?.liveGameLines.map((line) => ({
-        x: line.totalMinutes,
-        y: line.totalLine,
-      })) || [],
-  };
-
-  const botProj = {
-    id: "Bot Projected",
-    data:
-      game?.liveGameLines.map((line) => ({
-        x: line.totalMinutes,
-        y: line.botProjectedTotal,
-      })) || [],
-  };
-
-  return [realScore, vegasLine, botProj];
 }
 
 function determineBadgeType(
@@ -71,7 +41,7 @@ function determineBadgeType(
 
 export function GameCard({
   game,
-  disconnected,
+  messageTimestamp,
 }: GameCardProps): JSX.Element | null {
   if (!game) {
     return null;
@@ -86,15 +56,25 @@ export function GameCard({
     return acc;
   }, game.liveGameLines[0]);
 
+  const formatTime = (line: LiveGameLinePlus) => {
+    const secondString = line.second < 10 ? `0${line.second}` : line.second;
+    return `${line.minute}: ${secondString} - ${line.quarter}Q`;
+  };
+
   const mostRecentLineGrade =
     (mostRecentLine?.grade || 0) < 0
       ? `UNDER ${Math.abs(mostRecentLine?.grade || 0)}`
       : `OVER ${Math.abs(mostRecentLine?.grade || 0)}`;
 
-  // const gradeInAlert = Math.abs(mostRecentLine?.grade || 0)
+  const gameComplete = game.finalAwayScore && game.finalHomeScore;
 
-  const stale = disconnected;
-  const gameData: Serie[] = createTotalGraphData(game);
+  const timeStampNumber = mostRecentLine?.timestamp
+    ? new Date(mostRecentLine?.timestamp).getTime()
+    : 0;
+
+  console.log({ timeStampNumber, messageTimestamp });
+
+  const stale = (messageTimestamp || 0) - timeStampNumber > 30 * 1000;
 
   return (
     <Card>
@@ -106,7 +86,7 @@ export function GameCard({
               style={{ marginBottom: "1rem" }}
             >
               <Grid xs={24}>
-                <Grid.Container alignItems="center" gap={1}>
+                <Grid.Container alignItems="center" gap={1} wrap="nowrap">
                   <Grid>
                     <Image
                       height="50px"
@@ -129,9 +109,12 @@ export function GameCard({
             </Grid.Container>
             <Spacer h={0.5} />
             <Text h4 margin={0}>
-              {started
-                ? `Score: ${mostRecentLine.awayScore} - ${mostRecentLine.homeScore}`
-                : "Not Started"}
+              {!started && !gameComplete && "Not Started"}
+              {started &&
+                !gameComplete &&
+                `Score: ${mostRecentLine.awayScore} - ${mostRecentLine.homeScore}`}
+              {gameComplete &&
+                `Final: ${game.finalAwayScore} - ${game.finalHomeScore}`}
             </Text>
           </Grid>
           <Grid
@@ -146,19 +129,32 @@ export function GameCard({
                 Math.abs(parseFloat(mostRecentLineGrade)) > 6
               )}
             >
-               Grade: {started ? mostRecentLineGrade : "---"}
+              Grade: {started && !gameComplete ? mostRecentLineGrade : "---"}
             </Badge>
             <Spacer h={0.5} />
-            {stale ? (
+            {stale && started && !gameComplete ? (
               <>
                 <Badge type="warning">Stale: Not updated</Badge>
                 <Spacer h={0.5} />
               </>
             ) : undefined}
+            {gameComplete ? (
+              <>
+                <Badge type="secondary">Complete</Badge>
+                <Spacer h={0.5} />
+              </>
+            ) : undefined}
 
-            {started ? (
+            {started && !gameComplete ? (
               <Text h3 margin={0}>
-                {mostRecentLine.minute} mins - {mostRecentLine.quarter}Q
+                {formatTime(mostRecentLine)}
+              </Text>
+            ) : undefined}
+            {gameComplete ? (
+              <Text h3 margin={0}>
+                {`Total: ${
+                  (game.finalAwayScore || 0) + (game.finalHomeScore || 0)
+                }`}
               </Text>
             ) : undefined}
             {!started ? (
@@ -182,11 +178,25 @@ export function GameCard({
           }}
         >
           {started ? (
-            <TotalGraph data={gameData} />
+            <TotalGraph game={game} />
           ) : (
             <Activity color="red" size={36} />
           )}
         </div>
+        {started ? (
+          <div
+            style={{
+              height: "300px",
+              width: "100%",
+              marginTop: "-1.5rem",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <BarGraph game={game} />
+          </div>
+        ) : undefined}
       </Card.Content>
     </Card>
   );

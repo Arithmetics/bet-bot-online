@@ -2,10 +2,11 @@ import express from "express";
 import http from "http";
 import WebSocket from "ws";
 import { updateData, getAllTodaysGames, GamePlus } from "./database";
+import { printData } from "./draftKings";
 
 let lastMessage = Date.now();
 
-const MASTER_INTERVAL = 300 * 1000;
+const MASTER_INTERVAL = 250 * 1000;
 
 type ConnectionMessage = {
   messageTimestamp: number;
@@ -33,8 +34,9 @@ async function sendMessageToAllClients(): Promise<void> {
   console.log("updating data");
   try {
     await updateData();
+    await printData();
   } catch (e) {
-    console.log("BIG BAD ERROR");
+    console.log("BIG BAD ERROR", e);
   }
 
   const games = await getAllTodaysGames();
@@ -64,6 +66,7 @@ wss.on("connection", (ws: ExtWebSocket) => {
 });
 
 // send data out on interval
+sendMessageToAllClients();
 setInterval(sendMessageToAllClients, MASTER_INTERVAL);
 
 // check on all connections every 10 secs and close broken connections

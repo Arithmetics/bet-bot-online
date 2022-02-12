@@ -1,15 +1,16 @@
+/* eslint-disable no-unused-vars */
 import got from "got";
-import { GamePlus } from "./database";
+import { GamePlus, getAllTodaysGames, updateFinalScore } from "./database";
+import { DraftKingsGameReduced } from "./draftKings";
 import { createPacificPrismaDate } from "./utils";
-
-const url = "https://sports.oregonlottery.org/sports/basketball/nba";
 
 type ESPNCompetitor = {
   team: { shortDisplayName: string };
-  score: number;
+  homeAway: string;
+  score: string;
 };
 
-enum ESPNStatusEnum {
+export enum ESPNStatusEnum {
   STATUS_SCHEDULED = "STATUS_SCHEDULED",
   STATUS_HALFTIME = "STATUS_HALFTIME",
   STATUS_IN_PROGRESS = "STATUS_IN_PROGRESS",
@@ -43,7 +44,7 @@ export type ESPNGameReduced = {
   awayScore: number;
   homeScore: number;
   quarter: number;
-  minute: number;
+  secondsRemaining: number;
   status: ESPNStatusEnum;
 };
 
@@ -52,13 +53,24 @@ function reduceESPNGames(espnResponse: ESPNResponse): ESPNGameReduced[] {
 
   espnResponse.events.forEach((event) => {
     event.competitions.forEach((competition) => {
+      const homeTeam = competition.competitors.find(
+        (c) => c.homeAway === "home"
+      );
+      const awayTeam = competition.competitors.find(
+        (c) => c.homeAway === "away"
+      );
+
+      if (!homeTeam || !awayTeam) {
+        return;
+      }
+
       games.push({
-        awayTeam: competition.competitors[0].team.shortDisplayName,
-        awayScore: competition.competitors[0].score,
-        homeTeam: competition.competitors[1].team.shortDisplayName,
-        homeScore: competition.competitors[1].score,
+        awayTeam: awayTeam.team.shortDisplayName,
+        awayScore: parseInt(awayTeam.score, 10),
+        homeTeam: homeTeam.team.shortDisplayName,
+        homeScore: parseInt(homeTeam.score),
         quarter: competition.status.period,
-        minute: competition.status.clock,
+        secondsRemaining: competition.status.clock,
         status: competition.status.type.name,
       });
     });
@@ -90,13 +102,45 @@ export async function getESPNGames(): Promise<ESPNGameReduced[]> {
   }
 }
 
-export function findMatchingESPNScore(
-  ats: GamePlus,
-  scores: ESPNGameReduced[]
-): ESPNGameReduced | undefined {
-  return scores.find((s) => {
+// export function findMatchingESPNScore(
+//   draftKings: DraftKingsGameReduced,
+//   scores: ESPNGameReduced[]
+// ): ESPNGameReduced | undefined {
+//   return scores.find((s) => {
+//     return (
+//       draftKings.awayTeam.includes(s.awayTeam) &&
+//       draftKings.homeTeam.includes(s.homeTeam)
+//     );
+//   });
+// }
+
+export function findMatchingPrismaGame(
+  espn: ESPNGameReduced,
+  games: GamePlus[]
+): GamePlus | undefined {
+  return games.find((s) => {
     return (
-      ats.awayTeam.includes(s.awayTeam) && ats.homeTeam.includes(s.homeTeam)
+      s.awayTeam.includes(espn.awayTeam) && s.homeTeam.includes(espn.homeTeam)
     );
   });
+}
+
+export async function completePrismaGames(
+  espnGames: ESPNGameReduced[]
+): Promise<void> {
+  const completedGames = espnGames.filter(
+    (g) => g.status === ESPNStatusEnum.STATUS_FINAL
+  );
+  const prismaGames = await getAllTodaysGames();
+
+  for await (const espn of completedGames) {
+    const matchingPrisma = findMatchingPrismaGame(espn, prismaGames);
+    if (matchingPrisma) {
+      await updateFinalScore(
+        matchingPrisma?.id,
+        espn.awayScore,
+        espn.homeScore
+      );
+    }
+  }
 }

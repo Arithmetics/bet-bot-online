@@ -1,13 +1,86 @@
 import { useTheme, useMediaQuery, Grid } from "@geist-ui/react";
+import { GamePlus } from "../backend/src/database";
 import { ResponsiveLine, Serie, PointTooltipProps } from "@nivo/line";
 import { LegendAnchor } from "@nivo/legends";
 import Activity from "@geist-ui/react-icons/activity";
 
+function getTotalSecondsPlayed(
+  quarter: number,
+  minute: number,
+  second: number
+): number {
+  const secondsPlayedInQuarter = (12 - minute) * 60 - second;
+  const oldQuarterSeconds = (quarter - 1) * 12 * 60;
+
+  return secondsPlayedInQuarter + oldQuarterSeconds;
+}
+
+function createTotalGraphData(game: GamePlus): Serie[] {
+  const series: Serie[] = [];
+
+  const totalSecondsInRegulation = 48 * 60;
+
+  const realScore = {
+    id: "Current Pace",
+    data:
+      game?.liveGameLines.map((line) => {
+        const pace =
+          (line.awayScore + line.homeScore) *
+          (totalSecondsInRegulation /
+            getTotalSecondsPlayed(line.quarter, line.minute, line.second));
+        return {
+          x: line.totalMinutes,
+          y: Math.round(pace),
+        };
+      }) || [],
+  };
+
+  const vegasLine = {
+    id: "Vegas Line",
+    data:
+      game?.liveGameLines.map((line) => ({
+        x: line.totalMinutes,
+        y: line.totalLine,
+      })) || [],
+  };
+
+  const botProj = {
+    id: "Bot Projected",
+    data:
+      game?.liveGameLines.map((line) => ({
+        x: line.totalMinutes,
+        y: line.botProjectedTotal,
+      })) || [],
+  };
+
+  series.push(realScore);
+  series.push(vegasLine);
+  series.push(botProj);
+
+  if (game.finalAwayScore && game.finalHomeScore) {
+    series.push({
+      id: "Final Total",
+      data: [
+        {
+          x: 0,
+          y: game.finalAwayScore + game.finalHomeScore,
+        },
+        {
+          x: 48,
+          y: game.finalAwayScore + game.finalHomeScore,
+        },
+      ],
+    });
+  }
+
+  return series;
+}
+
 type TotalGraphProps = {
-  data?: Serie[];
+  game?: GamePlus;
 };
 
-export function TotalGraph({ data }: TotalGraphProps): JSX.Element | null {
+export function TotalGraph({ game }: TotalGraphProps): JSX.Element | null {
   const { palette } = useTheme();
   const isUpMD = useMediaQuery("md", { match: "up" });
 
@@ -18,24 +91,42 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element | null {
 
   const anchor: LegendAnchor = isUpMD ? "bottom-right" : "bottom-left";
 
-  if (!data) {
+  if (!game) {
     return null;
   }
 
-  const maxY = data.reduce((acc, cur) => {
-    const maxData = cur.data.reduce((acc2, cur2) => {
-      const yVal = cur2?.y || 0;
-      if (yVal > acc2 && typeof yVal === "number") {
-        acc2 = yVal;
-      }
-      return acc2;
-    }, 0);
+  const data: Serie[] = createTotalGraphData(game);
 
-    if (maxData > acc) {
-      acc = maxData;
-    }
-    return acc;
-  }, 0);
+  const yAxis = data.reduce(
+    (acc, cur) => {
+      const maxData = cur.data.reduce((acc2, cur2) => {
+        const yVal = cur2?.y || 0;
+        if (yVal > acc2 && typeof yVal === "number") {
+          acc2 = yVal;
+        }
+        return acc2;
+      }, 0);
+
+      const minData = cur.data.reduce((acc2, cur2) => {
+        const yVal = cur2?.y || 300;
+        if (yVal < acc2 && typeof yVal === "number") {
+          acc2 = yVal;
+        }
+        return acc2;
+      }, 300);
+
+      if (maxData > acc.maxY) {
+        acc.maxY = maxData;
+      }
+
+      if (minData < acc.minY) {
+        acc.minY = minData;
+      }
+
+      return acc;
+    },
+    { maxY: 0, minY: 300 }
+  );
 
   if (data.length === 0) {
     return <Activity color="red" />;
@@ -56,7 +147,12 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element | null {
         left: 60,
       }}
       xScale={{ type: "linear", min: 1, max: 48 }}
-      yScale={{ type: "linear", min: 0, max: maxY, reverse: false }}
+      yScale={{
+        type: "linear",
+        min: Math.min(yAxis.minY, 200),
+        max: Math.max(yAxis.maxY, 250),
+        reverse: false,
+      }}
       yFormat=" >-.2f"
       xFormat=" >-.2f"
       axisTop={null}
@@ -64,7 +160,7 @@ export function TotalGraph({ data }: TotalGraphProps): JSX.Element | null {
       gridXValues={0}
       gridYValues={0}
       axisBottom={{
-        tickValues: 10,
+        tickValues: 12,
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,

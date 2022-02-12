@@ -1,0 +1,1598 @@
+{
+  "eventGroup": {
+    "eventGroupId": 88670846,
+    "providerEventGroupId": "42648",
+    "providerId": 2,
+    "displayGroupId": 5319,
+    "name": "NBA",
+    "offerCategories": [
+      {
+        "offerCategoryId": 487,
+        "name": "Game Lines",
+        "offerSubcategoryDescriptors": [
+          {
+            "subcategoryId": 4511,
+            "name": "Game",
+            "offerSubcategory": {
+              "name": "Game",
+              "subcategoryId": 4511,
+              "componentId": 210,
+              "offers": [
+                [
+                  {
+                    "providerOfferId": "2_62983611",
+                    "providerId": 2,
+                    "providerEventId": "26097617",
+                    "providerEventGroupId": "42648",
+                    "label": "Spread",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 1,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "2_39",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0HC62983611P150_3",
+                        "providerId": 2,
+                        "providerOfferId": "2_62983611",
+                        "label": "LA Clippers",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 1.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0HC62983611N150_1",
+                        "providerId": 2,
+                        "providerOfferId": "2_62983611",
+                        "label": "CHA Hornets",
+                        "oddsAmerican": "-120",
+                        "oddsDecimal": 1.83333334,
+                        "oddsDecimalDisplay": "1.83",
+                        "oddsFractional": "5/6",
+                        "line": -1.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "3_62983611",
+                    "providerId": 2,
+                    "providerEventId": "26097617",
+                    "providerEventGroupId": "42648",
+                    "label": "Total",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 6,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "3_39",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0OU62983611O21250_1",
+                        "providerId": 2,
+                        "providerOfferId": "3_62983611",
+                        "label": "Over",
+                        "oddsAmerican": "-115",
+                        "oddsDecimal": 1.86956522,
+                        "oddsDecimalDisplay": "1.86",
+                        "oddsFractional": "20/23",
+                        "line": 212.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0OU62983611U21250_3",
+                        "providerId": 2,
+                        "providerOfferId": "3_62983611",
+                        "label": "Under",
+                        "oddsAmerican": "-115",
+                        "oddsDecimal": 1.86956522,
+                        "oddsDecimalDisplay": "1.86",
+                        "oddsFractional": "20/23",
+                        "line": 212.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "1_62983611",
+                    "providerId": 2,
+                    "providerEventId": "26097617",
+                    "providerEventGroupId": "42648",
+                    "label": "Moneyline",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 2,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "1_39",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0ML62983611_3",
+                        "providerId": 2,
+                        "providerOfferId": "1_62983611",
+                        "label": "LA Clippers",
+                        "oddsAmerican": "+105",
+                        "oddsDecimal": 2.05,
+                        "oddsDecimalDisplay": "2.05",
+                        "oddsFractional": "21/20",
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0ML62983611_1",
+                        "providerId": 2,
+                        "providerOfferId": "1_62983611",
+                        "label": "CHA Hornets",
+                        "oddsAmerican": "-135",
+                        "oddsDecimal": 1.74074075,
+                        "oddsDecimalDisplay": "1.74",
+                        "oddsFractional": "20/27",
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  }
+                ],
+                [
+                  {
+                    "providerOfferId": "2_62987746",
+                    "providerId": 2,
+                    "providerEventId": "26097616",
+                    "providerEventGroupId": "42648",
+                    "label": "Spread",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 1,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "2_39",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0HC62987746N150_3",
+                        "providerId": 2,
+                        "providerOfferId": "2_62987746",
+                        "label": "LA Lakers",
+                        "oddsAmerican": "-120",
+                        "oddsDecimal": 1.83333334,
+                        "oddsDecimalDisplay": "1.83",
+                        "oddsFractional": "5/6",
+                        "line": -1.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0HC62987746P150_1",
+                        "providerId": 2,
+                        "providerOfferId": "2_62987746",
+                        "label": "ATL Hawks",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 1.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "3_62987746",
+                    "providerId": 2,
+                    "providerEventId": "26097616",
+                    "providerEventGroupId": "42648",
+                    "label": "Total",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 6,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "3_39",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0OU62987746O24150_1",
+                        "providerId": 2,
+                        "providerOfferId": "3_62987746",
+                        "label": "Over",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 241.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0OU62987746U24150_3",
+                        "providerId": 2,
+                        "providerOfferId": "3_62987746",
+                        "label": "Under",
+                        "oddsAmerican": "-120",
+                        "oddsDecimal": 1.83333334,
+                        "oddsDecimalDisplay": "1.83",
+                        "oddsFractional": "5/6",
+                        "line": 241.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "1_62987746",
+                    "providerId": 2,
+                    "providerEventId": "26097616",
+                    "providerEventGroupId": "42648",
+                    "label": "Moneyline",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 2,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "1_39",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0ML62987746_3",
+                        "providerId": 2,
+                        "providerOfferId": "1_62987746",
+                        "label": "LA Lakers",
+                        "oddsAmerican": "-135",
+                        "oddsDecimal": 1.74074075,
+                        "oddsDecimalDisplay": "1.74",
+                        "oddsFractional": "20/27",
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0ML62987746_1",
+                        "providerId": 2,
+                        "providerOfferId": "1_62987746",
+                        "label": "ATL Hawks",
+                        "oddsAmerican": "+105",
+                        "oddsDecimal": 2.05,
+                        "oddsDecimalDisplay": "2.05",
+                        "oddsFractional": "21/20",
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  }
+                ],
+                [
+                  {
+                    "providerOfferId": "2_62953056",
+                    "providerId": 2,
+                    "providerEventId": "26097620",
+                    "providerEventGroupId": "42648",
+                    "label": "Spread",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 1,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "2_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0HC62953056P500_3",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953056",
+                        "label": "POR Trail Blazers",
+                        "oddsAmerican": "-115",
+                        "oddsDecimal": 1.86956522,
+                        "oddsDecimalDisplay": "1.86",
+                        "oddsFractional": "20/23",
+                        "line": 5.0,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0HC62953056N500_1",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953056",
+                        "label": "CHI Bulls",
+                        "oddsAmerican": "-105",
+                        "oddsDecimal": 1.95238096,
+                        "oddsDecimalDisplay": "1.95",
+                        "oddsFractional": "20/21",
+                        "line": -5.0,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "3_62953056",
+                    "providerId": 2,
+                    "providerEventId": "26097620",
+                    "providerEventGroupId": "42648",
+                    "label": "Total",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 6,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "3_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0OU62953056O23000_1",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953056",
+                        "label": "Over",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 230.0,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0OU62953056U23000_3",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953056",
+                        "label": "Under",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 230.0,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "1_62953056",
+                    "providerId": 2,
+                    "providerEventId": "26097620",
+                    "providerEventGroupId": "42648",
+                    "label": "Moneyline",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 2,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "1_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0ML62953056_3",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953056",
+                        "label": "POR Trail Blazers",
+                        "oddsAmerican": "+170",
+                        "oddsDecimal": 2.7,
+                        "oddsDecimalDisplay": "2.70",
+                        "oddsFractional": "17/10",
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0ML62953056_1",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953056",
+                        "label": "CHI Bulls",
+                        "oddsAmerican": "-200",
+                        "oddsDecimal": 1.5,
+                        "oddsDecimalDisplay": "1.50",
+                        "oddsFractional": "1/2",
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  }
+                ],
+                [
+                  {
+                    "providerOfferId": "2_62953058",
+                    "providerId": 2,
+                    "providerEventId": "26097622",
+                    "providerEventGroupId": "42648",
+                    "label": "Spread",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 1,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "2_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0HC62953058N750_3",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953058",
+                        "label": "CLE Cavaliers",
+                        "oddsAmerican": "-115",
+                        "oddsDecimal": 1.86956522,
+                        "oddsDecimalDisplay": "1.86",
+                        "oddsFractional": "20/23",
+                        "line": -7.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0HC62953058P750_1",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953058",
+                        "label": "DET Pistons",
+                        "oddsAmerican": "-105",
+                        "oddsDecimal": 1.95238096,
+                        "oddsDecimalDisplay": "1.95",
+                        "oddsFractional": "20/21",
+                        "line": 7.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "3_62953058",
+                    "providerId": 2,
+                    "providerEventId": "26097622",
+                    "providerEventGroupId": "42648",
+                    "label": "Total",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 6,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "3_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0OU62953058O20750_1",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953058",
+                        "label": "Over",
+                        "oddsAmerican": "-105",
+                        "oddsDecimal": 1.95238096,
+                        "oddsDecimalDisplay": "1.95",
+                        "oddsFractional": "20/21",
+                        "line": 207.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0OU62953058U20750_3",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953058",
+                        "label": "Under",
+                        "oddsAmerican": "-115",
+                        "oddsDecimal": 1.86956522,
+                        "oddsDecimalDisplay": "1.86",
+                        "oddsFractional": "20/23",
+                        "line": 207.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "1_62953058",
+                    "providerId": 2,
+                    "providerEventId": "26097622",
+                    "providerEventGroupId": "42648",
+                    "label": "Moneyline",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 2,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "1_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0ML62953058_3",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953058",
+                        "label": "CLE Cavaliers",
+                        "oddsAmerican": "-335",
+                        "oddsDecimal": 1.29850747,
+                        "oddsDecimalDisplay": "1.29",
+                        "oddsFractional": "20/67",
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0ML62953058_1",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953058",
+                        "label": "DET Pistons",
+                        "oddsAmerican": "+260",
+                        "oddsDecimal": 3.6,
+                        "oddsDecimalDisplay": "3.60",
+                        "oddsFractional": "13/5",
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  }
+                ],
+                [
+                  {
+                    "providerOfferId": "2_62953072",
+                    "providerId": 2,
+                    "providerEventId": "26097635",
+                    "providerEventGroupId": "42648",
+                    "label": "Spread",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 1,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "2_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0HC62953072N500_3",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953072",
+                        "label": "DAL Mavericks",
+                        "oddsAmerican": "-115",
+                        "oddsDecimal": 1.86956522,
+                        "oddsDecimalDisplay": "1.86",
+                        "oddsFractional": "20/23",
+                        "line": -5.0,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0HC62953072P500_1",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953072",
+                        "label": "ORL Magic",
+                        "oddsAmerican": "-105",
+                        "oddsDecimal": 1.95238096,
+                        "oddsDecimalDisplay": "1.95",
+                        "oddsFractional": "20/21",
+                        "line": 5.0,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "3_62953072",
+                    "providerId": 2,
+                    "providerEventId": "26097635",
+                    "providerEventGroupId": "42648",
+                    "label": "Total",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 6,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "3_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0OU62953072O21150_1",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953072",
+                        "label": "Over",
+                        "oddsAmerican": "-105",
+                        "oddsDecimal": 1.95238096,
+                        "oddsDecimalDisplay": "1.95",
+                        "oddsFractional": "20/21",
+                        "line": 211.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0OU62953072U21150_3",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953072",
+                        "label": "Under",
+                        "oddsAmerican": "-115",
+                        "oddsDecimal": 1.86956522,
+                        "oddsDecimalDisplay": "1.86",
+                        "oddsFractional": "20/23",
+                        "line": 211.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "1_62953072",
+                    "providerId": 2,
+                    "providerEventId": "26097635",
+                    "providerEventGroupId": "42648",
+                    "label": "Moneyline",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 2,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "1_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0ML62953072_3",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953072",
+                        "label": "DAL Mavericks",
+                        "oddsAmerican": "-210",
+                        "oddsDecimal": 1.47619048,
+                        "oddsDecimalDisplay": "1.47",
+                        "oddsFractional": "10/21",
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0ML62953072_1",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953072",
+                        "label": "ORL Magic",
+                        "oddsAmerican": "+175",
+                        "oddsDecimal": 2.75,
+                        "oddsDecimalDisplay": "2.75",
+                        "oddsFractional": "7/4",
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  }
+                ],
+                [
+                  {
+                    "providerOfferId": "2_62953061",
+                    "providerId": 2,
+                    "providerEventId": "26097624",
+                    "providerEventGroupId": "42648",
+                    "label": "Spread",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 1,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "2_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0HC62953061P650_3",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953061",
+                        "label": "DEN Nuggets",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 6.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0HC62953061N650_1",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953061",
+                        "label": "MIL Bucks",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": -6.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "3_62953061",
+                    "providerId": 2,
+                    "providerEventId": "26097624",
+                    "providerEventGroupId": "42648",
+                    "label": "Total",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 6,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "3_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0OU62953061O23250_1",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953061",
+                        "label": "Over",
+                        "oddsAmerican": "-115",
+                        "oddsDecimal": 1.86956522,
+                        "oddsDecimalDisplay": "1.86",
+                        "oddsFractional": "20/23",
+                        "line": 232.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0OU62953061U23250_3",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953061",
+                        "label": "Under",
+                        "oddsAmerican": "-105",
+                        "oddsDecimal": 1.95238096,
+                        "oddsDecimalDisplay": "1.95",
+                        "oddsFractional": "20/21",
+                        "line": 232.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "1_62953061",
+                    "providerId": 2,
+                    "providerEventId": "26097624",
+                    "providerEventGroupId": "42648",
+                    "label": "Moneyline",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 2,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "1_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0ML62953061_3",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953061",
+                        "label": "DEN Nuggets",
+                        "oddsAmerican": "+210",
+                        "oddsDecimal": 3.1,
+                        "oddsDecimalDisplay": "3.10",
+                        "oddsFractional": "21/10",
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0ML62953061_1",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953061",
+                        "label": "MIL Bucks",
+                        "oddsAmerican": "-260",
+                        "oddsDecimal": 1.38461539,
+                        "oddsDecimalDisplay": "1.38",
+                        "oddsFractional": "5/13",
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  }
+                ],
+                [
+                  {
+                    "providerOfferId": "2_62953076",
+                    "providerId": 2,
+                    "providerEventId": "26097638",
+                    "providerEventGroupId": "42648",
+                    "label": "Spread",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 1,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "2_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0HC62953076P1350_3",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953076",
+                        "label": "SA Spurs",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 13.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0HC62953076N1350_1",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953076",
+                        "label": "PHO Suns",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": -13.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "3_62953076",
+                    "providerId": 2,
+                    "providerEventId": "26097638",
+                    "providerEventGroupId": "42648",
+                    "label": "Total",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 6,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "3_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0OU62953076O22800_1",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953076",
+                        "label": "Over",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 228.0,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0OU62953076U22800_3",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953076",
+                        "label": "Under",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 228.0,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "1_62953076",
+                    "providerId": 2,
+                    "providerEventId": "26097638",
+                    "providerEventGroupId": "42648",
+                    "label": "Moneyline",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 2,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "1_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0ML62953076_3",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953076",
+                        "label": "SA Spurs",
+                        "oddsAmerican": "+650",
+                        "oddsDecimal": 7.5,
+                        "oddsDecimalDisplay": "7.50",
+                        "oddsFractional": "13/2",
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0ML62953076_1",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953076",
+                        "label": "PHO Suns",
+                        "oddsAmerican": "-1000",
+                        "oddsDecimal": 1.1,
+                        "oddsDecimalDisplay": "1.10",
+                        "oddsFractional": "1/10",
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  }
+                ],
+                [
+                  {
+                    "providerOfferId": "2_62953073",
+                    "providerId": 2,
+                    "providerEventId": "26097636",
+                    "providerEventGroupId": "42648",
+                    "label": "Spread",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 1,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "2_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0HC62953073P250_3",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953073",
+                        "label": "UTA Jazz",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 2.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0HC62953073N250_1",
+                        "providerId": 2,
+                        "providerOfferId": "2_62953073",
+                        "label": "MIN Timberwolves",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": -2.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "3_62953073",
+                    "providerId": 2,
+                    "providerEventId": "26097636",
+                    "providerEventGroupId": "42648",
+                    "label": "Total",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 6,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "3_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0OU62953073O22750_1",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953073",
+                        "label": "Over",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 227.5,
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0OU62953073U22750_3",
+                        "providerId": 2,
+                        "providerOfferId": "3_62953073",
+                        "label": "Under",
+                        "oddsAmerican": "-110",
+                        "oddsDecimal": 1.90909091,
+                        "oddsDecimalDisplay": "1.90",
+                        "oddsFractional": "10/11",
+                        "line": 227.5,
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  },
+                  {
+                    "providerOfferId": "1_62953073",
+                    "providerId": 2,
+                    "providerEventId": "26097636",
+                    "providerEventGroupId": "42648",
+                    "label": "Moneyline",
+                    "isSuspended": false,
+                    "isOpen": true,
+                    "offerSubcategoryId": 4511,
+                    "isSubcategoryFeatured": true,
+                    "betOfferTypeId": 2,
+                    "displayGroupId": 5319,
+                    "eventGroupId": 88670846,
+                    "providerCriterionId": "1_0",
+                    "outcomes": [
+                      {
+                        "providerOutcomeId": "0ML62953073_3",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953073",
+                        "label": "UTA Jazz",
+                        "oddsAmerican": "+120",
+                        "oddsDecimal": 2.2,
+                        "oddsDecimalDisplay": "2.20",
+                        "oddsFractional": "6/5",
+                        "main": true
+                      },
+                      {
+                        "providerOutcomeId": "0ML62953073_1",
+                        "providerId": 2,
+                        "providerOfferId": "1_62953073",
+                        "label": "MIN Timberwolves",
+                        "oddsAmerican": "-140",
+                        "oddsDecimal": 1.71428572,
+                        "oddsDecimalDisplay": "1.71",
+                        "oddsFractional": "5/7",
+                        "main": true
+                      }
+                    ],
+                    "offerUpdateState": "0",
+                    "offerSequence": 0,
+                    "source": "3",
+                    "main": true
+                  }
+                ]
+              ]
+            }
+          },
+          { "subcategoryId": 4606, "name": "Alternate Spread" },
+          { "subcategoryId": 4608, "name": "Alternate Total" },
+          { "subcategoryId": 10005, "name": "Spread/Total" },
+          { "subcategoryId": 10004, "name": "Moneyline / Total" }
+        ]
+      },
+      { "offerCategoryId": 914, "name": "Live Player Props" },
+      { "offerCategoryId": 697, "name": "Flash Props" },
+      { "offerCategoryId": 583, "name": "Player Props" },
+      { "offerCategoryId": 522, "name": "Quarters" },
+      { "offerCategoryId": 520, "name": "Halves" },
+      { "offerCategoryId": 521, "name": "Game Props" },
+      { "offerCategoryId": 519, "name": "Team Futures" },
+      { "offerCategoryId": 518, "name": "Awards" }
+    ],
+    "events": [
+      {
+        "eventId": 180202967,
+        "displayGroupId": 5319,
+        "eventGroupId": 88670846,
+        "eventGroupName": "NBA",
+        "providerEventId": "26097617",
+        "providerId": 2,
+        "name": "LA Clippers @ CHA Hornets",
+        "startDate": "2022-01-30T18:10:00.0000000Z",
+        "teamName1": "LA Clippers",
+        "teamName2": "CHA Hornets",
+        "teamShortName1": "LAC",
+        "teamShortName2": "CHA",
+        "eventStatus": {
+          "state": "STARTED",
+          "isClockDisabled": false,
+          "period": "3rd Quarter",
+          "minute": 12,
+          "second": 0,
+          "isClockRunning": false,
+          "homeTeamScore": "51",
+          "awayTeamScore": "47"
+        },
+        "eventScorecard": {
+          "mainScorecard": {
+            "intervalName": "T",
+            "intervalNumber": 2147483647,
+            "firstTeamScore": "51",
+            "secondTeamScore": "47"
+          },
+          "scoreCards": [
+            {
+              "intervalName": "Q1",
+              "intervalNumber": 1,
+              "firstTeamScore": "24",
+              "secondTeamScore": "25"
+            },
+            {
+              "intervalName": "Q2",
+              "intervalNumber": 2,
+              "firstTeamScore": "27",
+              "secondTeamScore": "22"
+            },
+            {
+              "intervalName": "Q3",
+              "intervalNumber": 3,
+              "firstTeamScore": "0",
+              "secondTeamScore": "0"
+            },
+            {
+              "intervalName": "Q4",
+              "intervalNumber": 4,
+              "firstTeamScore": "",
+              "secondTeamScore": ""
+            },
+            {
+              "intervalName": "T",
+              "intervalNumber": 2147483647,
+              "firstTeamScore": "51",
+              "secondTeamScore": "47"
+            }
+          ],
+          "scorecardComponentId": 1
+        },
+        "mediaList": [
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28810028",
+            "mediaTypeName": "MatchTracker",
+            "updatedAt": "2022-01-30T19:12:19.2832171Z"
+          },
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28810028",
+            "mediaTypeName": "Scoreboard",
+            "updatedAt": "2022-01-30T19:12:19.2832171Z"
+          },
+          {
+            "eventId": 2,
+            "mediaProviderName": "BetRadarStats",
+            "mediaId": "28810028",
+            "mediaTypeName": "Stats",
+            "updatedAt": "2022-01-30T19:12:19.2832171Z"
+          }
+        ],
+        "liveBettingOffered": false,
+        "liveBettingEnabled": false,
+        "flashBetOfferCount": 0
+      },
+      {
+        "eventId": 180202940,
+        "displayGroupId": 5319,
+        "eventGroupId": 88670846,
+        "eventGroupName": "NBA",
+        "providerEventId": "26097616",
+        "providerId": 2,
+        "name": "LA Lakers @ ATL Hawks",
+        "startDate": "2022-01-30T18:10:00.0000000Z",
+        "teamName1": "LA Lakers",
+        "teamName2": "ATL Hawks",
+        "teamShortName1": "LAL",
+        "teamShortName2": "ATL",
+        "eventStatus": {
+          "state": "STARTED",
+          "isClockDisabled": false,
+          "period": "3rd Quarter",
+          "minute": 12,
+          "second": 0,
+          "isClockRunning": false,
+          "homeTeamScore": "71",
+          "awayTeamScore": "62"
+        },
+        "eventScorecard": {
+          "mainScorecard": {
+            "intervalName": "T",
+            "intervalNumber": 2147483647,
+            "firstTeamScore": "71",
+            "secondTeamScore": "62"
+          },
+          "scoreCards": [
+            {
+              "intervalName": "Q1",
+              "intervalNumber": 1,
+              "firstTeamScore": "33",
+              "secondTeamScore": "34"
+            },
+            {
+              "intervalName": "Q2",
+              "intervalNumber": 2,
+              "firstTeamScore": "38",
+              "secondTeamScore": "28"
+            },
+            {
+              "intervalName": "Q3",
+              "intervalNumber": 3,
+              "firstTeamScore": "0",
+              "secondTeamScore": "0"
+            },
+            {
+              "intervalName": "Q4",
+              "intervalNumber": 4,
+              "firstTeamScore": "",
+              "secondTeamScore": ""
+            },
+            {
+              "intervalName": "T",
+              "intervalNumber": 2147483647,
+              "firstTeamScore": "71",
+              "secondTeamScore": "62"
+            }
+          ],
+          "scorecardComponentId": 1
+        },
+        "mediaList": [
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28809520",
+            "mediaTypeName": "MatchTracker",
+            "updatedAt": "2022-01-30T19:12:30.0786033Z"
+          },
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28809520",
+            "mediaTypeName": "Scoreboard",
+            "updatedAt": "2022-01-30T19:12:30.0786033Z"
+          },
+          {
+            "eventId": 2,
+            "mediaProviderName": "BetRadarStats",
+            "mediaId": "28809520",
+            "mediaTypeName": "Stats",
+            "updatedAt": "2022-01-30T19:12:30.0786033Z"
+          }
+        ],
+        "liveBettingOffered": false,
+        "liveBettingEnabled": false,
+        "flashBetOfferCount": 0
+      },
+      {
+        "eventId": 180203002,
+        "displayGroupId": 5319,
+        "eventGroupId": 88670846,
+        "eventGroupName": "NBA",
+        "providerEventId": "26097620",
+        "providerId": 2,
+        "name": "POR Trail Blazers @ CHI Bulls",
+        "startDate": "2022-01-30T20:40:00.0000000Z",
+        "teamName1": "POR Trail Blazers",
+        "teamName2": "CHI Bulls",
+        "teamShortName1": "POR",
+        "teamShortName2": "CHI",
+        "eventStatus": {
+          "state": "NOT_STARTED",
+          "isClockDisabled": false,
+          "minute": 0,
+          "second": 0,
+          "isClockRunning": false
+        },
+        "eventScorecard": { "scorecardComponentId": 1 },
+        "mediaList": [
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28807966",
+            "mediaTypeName": "MatchTracker",
+            "updatedAt": "2022-01-30T18:43:31.4437973Z"
+          },
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28807966",
+            "mediaTypeName": "Scoreboard",
+            "updatedAt": "2022-01-30T18:43:31.4437973Z"
+          },
+          {
+            "eventId": 2,
+            "mediaProviderName": "BetRadarStats",
+            "mediaId": "28807966",
+            "mediaTypeName": "Stats",
+            "updatedAt": "2022-01-30T18:43:31.4437973Z"
+          }
+        ],
+        "liveBettingOffered": false,
+        "liveBettingEnabled": false,
+        "isSameGameParlayEligible": true,
+        "flashBetOfferCount": 0
+      },
+      {
+        "eventId": 180203023,
+        "displayGroupId": 5319,
+        "eventGroupId": 88670846,
+        "eventGroupName": "NBA",
+        "providerEventId": "26097622",
+        "providerId": 2,
+        "name": "CLE Cavaliers @ DET Pistons",
+        "startDate": "2022-01-30T23:10:00.0000000Z",
+        "teamName1": "CLE Cavaliers",
+        "teamName2": "DET Pistons",
+        "teamShortName1": "CLE",
+        "teamShortName2": "DET",
+        "eventStatus": {
+          "state": "NOT_STARTED",
+          "isClockDisabled": false,
+          "minute": 0,
+          "second": 0,
+          "isClockRunning": false
+        },
+        "eventScorecard": { "scorecardComponentId": 1 },
+        "mediaList": [
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28809208",
+            "mediaTypeName": "MatchTracker",
+            "updatedAt": "2022-01-30T19:03:19.4649452Z"
+          },
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28809208",
+            "mediaTypeName": "Scoreboard",
+            "updatedAt": "2022-01-30T19:03:19.4649452Z"
+          },
+          {
+            "eventId": 2,
+            "mediaProviderName": "BetRadarStats",
+            "mediaId": "28809208",
+            "mediaTypeName": "Stats",
+            "updatedAt": "2022-01-30T19:03:19.4649452Z"
+          }
+        ],
+        "liveBettingOffered": false,
+        "liveBettingEnabled": false,
+        "isSameGameParlayEligible": true,
+        "flashBetOfferCount": 0
+      },
+      {
+        "eventId": 180203037,
+        "displayGroupId": 5319,
+        "eventGroupId": 88670846,
+        "eventGroupName": "NBA",
+        "providerEventId": "26097635",
+        "providerId": 2,
+        "name": "DAL Mavericks @ ORL Magic",
+        "startDate": "2022-01-31T00:10:00.0000000Z",
+        "teamName1": "DAL Mavericks",
+        "teamName2": "ORL Magic",
+        "teamShortName1": "DAL",
+        "teamShortName2": "ORL",
+        "eventStatus": {
+          "state": "NOT_STARTED",
+          "isClockDisabled": false,
+          "minute": 0,
+          "second": 0,
+          "isClockRunning": false
+        },
+        "eventScorecard": { "scorecardComponentId": 1 },
+        "mediaList": [
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28809902",
+            "mediaTypeName": "MatchTracker",
+            "updatedAt": "2022-01-30T19:05:07.4014164Z"
+          },
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28809902",
+            "mediaTypeName": "Scoreboard",
+            "updatedAt": "2022-01-30T19:05:07.4014164Z"
+          },
+          {
+            "eventId": 2,
+            "mediaProviderName": "BetRadarStats",
+            "mediaId": "28809902",
+            "mediaTypeName": "Stats",
+            "updatedAt": "2022-01-30T19:05:07.4014164Z"
+          }
+        ],
+        "liveBettingOffered": false,
+        "liveBettingEnabled": false,
+        "isSameGameParlayEligible": true,
+        "flashBetOfferCount": 0
+      },
+      {
+        "eventId": 180203028,
+        "displayGroupId": 5319,
+        "eventGroupId": 88670846,
+        "eventGroupName": "NBA",
+        "providerEventId": "26097624",
+        "providerId": 2,
+        "name": "DEN Nuggets @ MIL Bucks",
+        "startDate": "2022-01-31T00:10:00.0000000Z",
+        "teamName1": "DEN Nuggets",
+        "teamName2": "MIL Bucks",
+        "teamShortName1": "DEN",
+        "teamShortName2": "MIL",
+        "eventStatus": {
+          "state": "NOT_STARTED",
+          "isClockDisabled": false,
+          "minute": 0,
+          "second": 0,
+          "isClockRunning": false
+        },
+        "eventScorecard": { "scorecardComponentId": 1 },
+        "mediaList": [
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28807708",
+            "mediaTypeName": "MatchTracker",
+            "updatedAt": "2022-01-30T18:13:43.6263612Z"
+          },
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28807708",
+            "mediaTypeName": "Scoreboard",
+            "updatedAt": "2022-01-30T18:13:43.6263612Z"
+          },
+          {
+            "eventId": 2,
+            "mediaProviderName": "BetRadarStats",
+            "mediaId": "28807708",
+            "mediaTypeName": "Stats",
+            "updatedAt": "2022-01-30T18:13:43.6263612Z"
+          }
+        ],
+        "liveBettingOffered": false,
+        "liveBettingEnabled": false,
+        "isSameGameParlayEligible": true,
+        "flashBetOfferCount": 0
+      },
+      {
+        "eventId": 180203180,
+        "displayGroupId": 5319,
+        "eventGroupId": 88670846,
+        "eventGroupName": "NBA",
+        "providerEventId": "26097638",
+        "providerId": 2,
+        "name": "SA Spurs @ PHO Suns",
+        "startDate": "2022-01-31T01:10:00.0000000Z",
+        "teamName1": "SA Spurs",
+        "teamName2": "PHO Suns",
+        "teamShortName1": "SAS",
+        "teamShortName2": "PHO",
+        "eventStatus": {
+          "state": "NOT_STARTED",
+          "isClockDisabled": false,
+          "minute": 0,
+          "second": 0,
+          "isClockRunning": false
+        },
+        "eventScorecard": { "scorecardComponentId": 1 },
+        "mediaList": [
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28809420",
+            "mediaTypeName": "MatchTracker",
+            "updatedAt": "2022-01-30T18:56:32.3510569Z"
+          },
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28809420",
+            "mediaTypeName": "Scoreboard",
+            "updatedAt": "2022-01-30T18:56:32.3510569Z"
+          },
+          {
+            "eventId": 2,
+            "mediaProviderName": "BetRadarStats",
+            "mediaId": "28809420",
+            "mediaTypeName": "Stats",
+            "updatedAt": "2022-01-30T18:56:32.3510569Z"
+          }
+        ],
+        "liveBettingOffered": false,
+        "liveBettingEnabled": false,
+        "isSameGameParlayEligible": true,
+        "flashBetOfferCount": 0
+      },
+      {
+        "eventId": 180203177,
+        "displayGroupId": 5319,
+        "eventGroupId": 88670846,
+        "eventGroupName": "NBA",
+        "providerEventId": "26097636",
+        "providerId": 2,
+        "name": "UTA Jazz @ MIN Timberwolves",
+        "startDate": "2022-01-31T01:10:00.0000000Z",
+        "teamName1": "UTA Jazz",
+        "teamName2": "MIN Timberwolves",
+        "teamShortName1": "UTA",
+        "teamShortName2": "MIN",
+        "eventStatus": {
+          "state": "NOT_STARTED",
+          "isClockDisabled": false,
+          "minute": 0,
+          "second": 0,
+          "isClockRunning": false
+        },
+        "eventScorecard": { "scorecardComponentId": 1 },
+        "mediaList": [
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28808764",
+            "mediaTypeName": "MatchTracker",
+            "updatedAt": "2022-01-30T18:48:04.6037653Z"
+          },
+          {
+            "eventId": 1,
+            "mediaProviderName": "BetRadarV3",
+            "mediaId": "28808764",
+            "mediaTypeName": "Scoreboard",
+            "updatedAt": "2022-01-30T18:48:04.6037653Z"
+          },
+          {
+            "eventId": 2,
+            "mediaProviderName": "BetRadarStats",
+            "mediaId": "28808764",
+            "mediaTypeName": "Stats",
+            "updatedAt": "2022-01-30T18:48:04.6037653Z"
+          }
+        ],
+        "liveBettingOffered": false,
+        "liveBettingEnabled": false,
+        "isSameGameParlayEligible": true,
+        "flashBetOfferCount": 0
+      }
+    ]
+  }
+}

@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgres://keystoneuser:rock7900@localhost:5432/bet-bot-online"
+  url      = "postgres://brocktillotson:rock7900@localhost:5432/bet-bot-online"
 }
 
 
@@ -18,6 +18,8 @@ model Game {
     date                DateTime @db.Date
     closingAwayLine     Float
     closingTotalLine    Float
+    finalAwayScore      Float?
+    finalHomeScore      Float?
     liveGameLines       LiveGameLine[]
 }
 
@@ -29,6 +31,8 @@ model LiveGameLine {
     totalLine   Float
     quarter     Int
     minute      Int
+    second      Int
     awayScore   Int
     homeScore   Int
+    timestamp   DateTime
 }
