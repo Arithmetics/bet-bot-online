@@ -10,9 +10,12 @@
   "author": "arithmetics",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^6.0.0-alpha.7",
     "@prisma/client": "^3.4.0",
     "cheerio": "^1.0.0-rc.10",
+    "discord.js": "^12.5.3",
     "express": "^4.17.1",
+    "fs": "^0.0.1-security",
     "got": "11.8.3",
     "puppeteer": "^11.0.0",
     "ws": "^8.2.3"
