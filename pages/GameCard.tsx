@@ -72,8 +72,6 @@ export function GameCard({
     ? new Date(mostRecentLine?.timestamp).getTime()
     : 0;
 
-  console.log({ timeStampNumber, messageTimestamp });
-
   const stale = (messageTimestamp || 0) - timeStampNumber > 30 * 1000;
 
   return (

@@ -2,13 +2,12 @@ import { useTheme, useMediaQuery, Grid } from "@geist-ui/react";
 import { ResponsiveBar, BarDatum, BarTooltipProps } from "@nivo/bar";
 import { GamePlus } from "../backend/src/database";
 import { line } from "d3-shape";
-// import { LegendAnchor } from "@nivo/legends";
 
 const Line = (barProps: unknown) => {
   const { palette } = useTheme();
   const lineColor = palette.violetLight;
   // @ts-ignore
-  const { bars, xScale, yScale } = barProps;
+  const { bars, yScale } = barProps;
 
   const lineGenerator = line()
     // @ts-ignore
@@ -68,8 +67,23 @@ const Line = (barProps: unknown) => {
   );
 };
 
-function createLiveBarGraphData(game: GamePlus): BarDatum[] {
-  const datum: BarDatum[] = game.liveGameLines.map((line) => {
+interface LiveGameBarDatum extends BarDatum {
+  minute: number;
+  grade: number;
+  underGrade: number;
+
+  total: number;
+}
+
+interface CompleteGameBarDatum extends BarDatum {
+  minute: number;
+  winGrade: number;
+  lossGrade: number;
+  total: number;
+}
+
+function createLiveBarGraphData(game: GamePlus): LiveGameBarDatum[] {
+  const datum: LiveGameBarDatum[] = game.liveGameLines.map((line) => {
     if (line.grade === undefined) {
       return {
         minute: 0,
@@ -89,13 +103,22 @@ function createLiveBarGraphData(game: GamePlus): BarDatum[] {
     };
   });
 
+  [50, 60, 70, 80].forEach((n) => {
+    datum.push({
+      minute: n,
+      grade: 0,
+      underGrade: 0,
+      total: 0,
+    });
+  });
+
   return datum;
 }
 
-function createCompleteBarGraphData(game: GamePlus): BarDatum[] {
+function createCompleteBarGraphData(game: GamePlus): CompleteGameBarDatum[] {
   const finalScore = (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
 
-  const datum: BarDatum[] = game.liveGameLines.map((line) => {
+  const datum: CompleteGameBarDatum[] = game.liveGameLines.map((line) => {
     if (line.grade === undefined) {
       return {
         minute: 0,
@@ -119,6 +142,15 @@ function createCompleteBarGraphData(game: GamePlus): BarDatum[] {
       lossGrade,
       total: line.totalLine,
     };
+  });
+
+  [50, 60, 70, 80].forEach((n) => {
+    datum.push({
+      minute: n,
+      winGrade: 0,
+      lossGrade: 0,
+      total: 0,
+    });
   });
 
   return datum;
@@ -154,8 +186,11 @@ export function BarGraph({ game }: BarGraphProps): JSX.Element | null {
     ? ["winGrade", "lossGrade"]
     : ["grade", "underGrade"];
 
+  console.log(game);
+
   return (
     <ResponsiveBar
+      // @ts-ignore
       data={data}
       keys={keys}
       indexBy="minute"
@@ -166,27 +201,20 @@ export function BarGraph({ game }: BarGraphProps): JSX.Element | null {
       colors={colors}
       margin={{
         top: 50,
-        right: marginRight,
+        // right: marginRight,
         bottom: marginBottom,
         left: 60,
       }}
-      label={(d) => {
-        // @ts-ignore
-        return String(d.data.total);
-      }}
-      labelSkipHeight={12}
-      labelTextColor={{
-        from: "color",
-        modifiers: [["darker", 3]],
-      }}
+      enableLabel={false}
       axisTop={null}
       axisRight={null}
-      gridXValues={0}
+      gridXValues={10}
       gridYValues={0}
       minValue={-20}
       maxValue={20}
       axisBottom={{
-        tickValues: 10,
+        tickValues: 5,
+        format: ".2s",
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
@@ -194,6 +222,7 @@ export function BarGraph({ game }: BarGraphProps): JSX.Element | null {
         legendOffset: 36,
         legendPosition: "middle",
       }}
+      // enableGridX={true}
       axisLeft={{
         tickValues: 8,
         tickSize: 1,
@@ -203,8 +232,13 @@ export function BarGraph({ game }: BarGraphProps): JSX.Element | null {
         legendOffset: -40,
         legendPosition: "middle",
       }}
-      tooltip={function (): JSX.Element {
-        return <></>;
+      tooltip={function (bar: BarTooltipProps<LiveGameBarDatum>): JSX.Element {
+        return (
+          <Grid padding={1} style={{ backgroundColor: palette.accents_3 }}>
+            Bet {bar.data.grade > 0 || bar.data.winGrade > 0 ? "OVER" : "UNDER"}{" "}
+            {bar.data.total} at {bar.data.minute} mins
+          </Grid>
+        );
       }}
       layers={["grid", "axes", "bars", Line, "markers", "legends"]}
     />
