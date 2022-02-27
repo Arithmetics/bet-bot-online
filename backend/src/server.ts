@@ -2,7 +2,8 @@ import express from "express";
 import http from "http";
 import WebSocket from "ws";
 import { updateData, getAllTodaysGames, GamePlus } from "./database";
-import { printData } from "./draftKings";
+// import { printData } from "./draftKings";
+import { startUpDiscordClient, sendNewBetAlertsToDiscord } from "./discord";
 
 let lastMessage = Date.now();
 
@@ -29,17 +30,20 @@ function constructMessage(games: GamePlus[]): ConnectionMessage {
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+// setup message clients
+const discordClient = startUpDiscordClient();
 
 async function sendMessageToAllClients(): Promise<void> {
   console.log("updating data");
   try {
     await updateData();
-    await printData();
   } catch (e) {
     console.log("BIG BAD ERROR", e);
   }
 
   const games = await getAllTodaysGames();
+  sendNewBetAlertsToDiscord(discordClient, games, lastMessage);
+
   lastMessage = Date.now();
 
   console.log("cycle run, sending messages to all clients now", games.length);
