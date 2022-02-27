@@ -2,7 +2,7 @@ import Discord from "discord.js";
 // import faker from "@faker-js/faker";
 import fs from "fs";
 import { ownerIds } from "./botInformation";
-import { GamePlus, getAllTodaysGames } from "./database";
+import { GamePlus, LiveGameLinePlus, getAllTodaysGames } from "./database";
 
 const PREFIX = "!";
 
@@ -185,6 +185,11 @@ async function sendLineInfo(message: Discord.Message): Promise<void> {
   message.channel.send({ embed: gameEmbed });
 }
 
+function formatTime(line: LiveGameLinePlus) {
+  const secondString = line.second < 10 ? `0${line.second}` : line.second;
+  return `${line.minute}: ${secondString} - ${line.quarter}Q`;
+}
+
 export function sendNewBetAlertsToDiscord(
   client: Discord.Client,
   games: GamePlus[],
@@ -201,7 +206,7 @@ export function sendNewBetAlertsToDiscord(
       );
 
       newLines.forEach((line) => {
-        if (!line.grade || line.grade < 4) {
+        if (!line.grade || (line.grade < 4.999 && line.grade > -4.999)) {
           return;
         }
 
@@ -214,16 +219,22 @@ export function sendNewBetAlertsToDiscord(
               value: `${game.awayTeam} @ ${game.homeTeam}`,
             },
             {
-              name: "Game Time:",
-              value: `${line.quarter}Q, ${line.minute}:${line.second}`,
+              name: "Closing Total Line:",
+              value: `${game.closingTotalLine}`,
             },
             {
-              name: "Current Line:",
+              name: "Game Time:",
+              value: formatTime(line),
+            },
+            {
+              name: "Current Total Line:",
               value: line.totalLine,
             },
             {
-              name: "Grade:",
-              value: line.grade,
+              name: "Bet:",
+              value: `Betting ${Math.abs(line.grade)} units on the ${
+                line.grade < 0 ? "UNDER" : "OVER"
+              }`,
             },
           ],
         };
