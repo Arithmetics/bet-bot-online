@@ -24,6 +24,8 @@ function loadBetData(): BetData {
 function sendBetInfo(message: Discord.Message, args: string[]) {
   const bets = loadBetData();
 
+  const id = message.author.id;
+
   if (args.length === 0) {
     message.channel.send({
       embed: formatBetMessage(bets),
@@ -32,40 +34,27 @@ function sendBetInfo(message: Discord.Message, args: string[]) {
   }
 
   if (args.length === 1) {
-    const person = args[0];
-    if (bets[person]) {
-      message.channel.send({
-        embed: formatBetMessage({ [person]: bets[person] }),
-      });
-      return;
-    }
-    message.channel.send(`Can't find any bets for ${person}`);
-    return;
-  }
-
-  if (args.length > 1) {
-    const person = args[0];
-    const bet = parseInt(args[1]);
+    const bet = parseInt(args[0]);
 
     if (isNaN(bet)) {
-      message.channel.send("Please use format: !bet [name] [[+/-]amount]");
+      message.channel.send("Please use format: !bet [[+/-]amount]");
       return;
     }
 
-    if (!bets[person]) {
-      bets[person] = { wins: 0, losses: 0, profit: 0 };
+    if (!bets[id]) {
+      bets[id] = { wins: 0, losses: 0, profit: 0 };
     }
 
     if (bet > 0) {
-      bets[person].wins++;
+      bets[id].wins++;
     } else if (bet < 0) {
-      bets[person].losses++;
+      bets[id].losses++;
     }
 
-    bets[person].profit += bet;
+    bets[id].profit += bet;
     saveBetData(bets);
 
-    message.channel.send({ embed: formatBetMessage({ person: bets[person] }) });
+    message.channel.send({ embed: formatBetMessage({ person: bets[id] }) });
   }
 }
 
@@ -76,9 +65,9 @@ function formatBetMessage(bets: BetData) {
     fields: [] as any[],
   };
 
-  for (let [person, stats] of Object.entries(bets)) {
+  for (let [personId, stats] of Object.entries(bets)) {
     const field = {
-      name: person,
+      name: ownerIds[personId] || "unknown, have brock add your name",
       value: `Wins: ${stats.wins}, Losses: ${stats.losses}, Profit: ${stats.profit}`,
     };
     betEmbed.fields.push(field);

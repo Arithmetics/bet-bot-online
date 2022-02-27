@@ -53,7 +53,8 @@ function addBettingData(game: GamePlus): GamePlus {
 
     const secondsLeftInRegulation = 48 * 60 - totalSeconds;
 
-    const totalMinutes = Math.round(totalSeconds / 60);
+    const totalMinutes =
+      Math.round((totalSeconds / 60 + Number.EPSILON) * 10) / 10;
 
     const botProjectedTotal = botPredictedTotal(
       line.awayScore + line.homeScore,

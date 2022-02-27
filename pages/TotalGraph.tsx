@@ -23,16 +23,23 @@ function createTotalGraphData(game: GamePlus): Serie[] {
   const realScore = {
     id: "Current Pace",
     data:
-      game?.liveGameLines.map((line) => {
-        const pace =
-          (line.awayScore + line.homeScore) *
-          (totalSecondsInRegulation /
-            getTotalSecondsPlayed(line.quarter, line.minute, line.second));
-        return {
-          x: line.totalMinutes,
-          y: Math.round(pace),
-        };
-      }) || [],
+      game?.liveGameLines
+        .filter((line) => {
+          return (
+            // 4 minute min to display pace
+            getTotalSecondsPlayed(line.quarter, line.minute, line.second) > 360
+          );
+        })
+        .map((line) => {
+          const pace =
+            (line.awayScore + line.homeScore) *
+            (totalSecondsInRegulation /
+              getTotalSecondsPlayed(line.quarter, line.minute, line.second));
+          return {
+            x: line.totalMinutes,
+            y: Math.round(pace),
+          };
+        }) || [],
   };
 
   const vegasLine = {
