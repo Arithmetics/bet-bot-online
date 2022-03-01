@@ -23,6 +23,7 @@ export type DraftKingsGameReduced = {
   homeTeamScore?: number;
   awayTeamScore?: number;
   totalLine?: number;
+  atsLine?: number;
   isBettingAllowed?: number;
 };
 
@@ -74,9 +75,13 @@ function reduceDraftKingsGames(
       o?.some((p) => p.providerEventId === providerEventId)
     );
 
-    const matchingOutcome = matchingOffer
+    const matchingTotalOutcome = matchingOffer
       ?.find((mo) => mo.label === OfferLabelEnum.TOTAL)
-      ?.outcomes?.find((oc) => OutcomeLabelEnum.OVER);
+      ?.outcomes?.find((oc) => oc.label === OutcomeLabelEnum.OVER);
+
+    const matchingSpreadOutcome = matchingOffer?.find(
+      (mo) => mo.label === OfferLabelEnum.SPREAD
+    )?.outcomes?.[0];
 
     games.push({
       eventId,
@@ -91,7 +96,12 @@ function reduceDraftKingsGames(
       // draft kings reversed?
       awayTeamScore: homeTeamScore ? parseInt(homeTeamScore) : undefined,
       homeTeamScore: awayTeamScore ? parseInt(awayTeamScore) : undefined,
-      totalLine: matchingOutcome?.line ? matchingOutcome?.line : undefined,
+      totalLine: matchingTotalOutcome?.line
+        ? matchingTotalOutcome?.line
+        : undefined,
+      atsLine: matchingSpreadOutcome?.line
+        ? matchingSpreadOutcome?.line
+        : undefined,
     });
   });
 
