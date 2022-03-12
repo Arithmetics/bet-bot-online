@@ -12,7 +12,8 @@ import Activity from "@geist-ui/react-icons/activity";
 import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
 import { View } from "./index";
 import { TotalGraph } from "./TotalGraph";
-import { BarGraph } from "./BarGraph";
+import { TotalBarGraph } from "./BarGraph";
+import { ATSBarGraph } from "./ATSBarGraph";
 import SpreadGraph from "./SpreadGraph";
 
 type GameCardProps = {
@@ -204,7 +205,7 @@ export function GameCard({
           {started && view === "ats" ? <SpreadGraph game={game} /> : undefined}
           {!started && <Activity color="red" size={36} />}
         </div>
-        {started && view === "total" ? (
+        {started ? (
           <div
             style={{
               height: "300px",
@@ -215,7 +216,8 @@ export function GameCard({
               alignItems: "center",
             }}
           >
-            <BarGraph game={game} />
+            {view === "total" && <TotalBarGraph game={game} />}
+            {view === "ats" && <ATSBarGraph game={game} />}
           </div>
         ) : undefined}
       </Card.Content>
