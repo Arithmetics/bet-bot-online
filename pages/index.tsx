@@ -16,6 +16,7 @@ import { GamePlus } from "../backend/src/database";
 
 import { Games } from "./Games";
 import { RefreshCounter } from "./RefreshCounter";
+import { BetTable } from "./BetTable";
 
 type ConnectionMessage = {
   messageTimestamp: number;
@@ -129,11 +130,14 @@ export default function Home(): JSX.Element {
                 </ButtonGroup>
               </Grid>
             </Grid.Container>
-            <Games
-              view={view}
-              games={currentMessage?.games}
-              messageTimestamp={currentMessage?.messageTimestamp}
-            />
+            {view === "total" || view === "ats" ? (
+              <Games
+                view={view}
+                games={currentMessage?.games}
+                messageTimestamp={currentMessage?.messageTimestamp}
+              />
+            ) : undefined}
+            {view === "bets" ? <BetTable /> : undefined}
           </>
         ) : undefined}
       </Page>

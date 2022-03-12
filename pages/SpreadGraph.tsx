@@ -8,23 +8,25 @@ import { getTotalSecondsPlayed } from "./graphShared";
 function createSpreadGraphData(game: GamePlus): Serie[] {
   const series: Serie[] = [];
 
+  const legalLiveLines = game?.liveGameLines.filter((line) => {
+    const secondsPlayed = getTotalSecondsPlayed(
+      line.quarter,
+      line.minute,
+      line.second
+    );
+    return secondsPlayed > 720 && secondsPlayed < 2160; // second and third quarter only
+  });
+
   const realScore = {
     id: "Current Away Deficit",
     data:
-      game?.liveGameLines
-        .filter((line) => {
-          return (
-            // 4 minute min to display pace
-            getTotalSecondsPlayed(line.quarter, line.minute, line.second) > 360
-          );
-        })
-        .map((line) => {
-          const awayLead = line.awayScore - line.homeScore;
-          return {
-            x: line.totalMinutes,
-            y: -awayLead,
-          };
-        }) || [],
+      game?.liveGameLines.map((line) => {
+        const awayLead = line.awayScore - line.homeScore;
+        return {
+          x: line.totalMinutes,
+          y: -awayLead,
+        };
+      }) || [],
   };
 
   const vegasLine = {
@@ -39,7 +41,7 @@ function createSpreadGraphData(game: GamePlus): Serie[] {
   const botProj = {
     id: "Bot Projected",
     data:
-      game?.liveGameLines.map((line) => ({
+      legalLiveLines.map((line) => ({
         x: line.totalMinutes,
         y: line.botProjectedATS,
       })) || [],
