@@ -4,6 +4,7 @@ import {
   getDraftKingsListings,
   filterNotStartedGames,
   filterActiveGames,
+  filterNotTodaysGames,
 } from "./draftKings";
 import { PeriodLookup } from "./DraftKingsTypes";
 import { getESPNGames, completePrismaGames } from "./espn";
@@ -103,7 +104,8 @@ export async function updateData() {
   const allListedGames = await getDraftKingsListings();
   const allEspnGames = await getESPNGames();
 
-  const scheduledGames = filterNotStartedGames(allListedGames);
+  const todaysGames = filterNotTodaysGames(allListedGames);
+  const scheduledGames = filterNotStartedGames(todaysGames);
 
   console.log(
     "Querying Draft Kings, found scheduled games:",
@@ -124,7 +126,7 @@ export async function updateData() {
             awayTeam: scheduledGame.awayTeam,
             homeTeam: scheduledGame.homeTeam,
             date: createPacificPrismaDate(),
-            closingAwayLine: 99,
+            closingAwayLine: scheduledGame.atsLine || 999,
             closingTotalLine: scheduledGame.totalLine,
           },
         });
@@ -136,7 +138,7 @@ export async function updateData() {
         await prisma.game.update({
           where: { id: matching.id },
           data: {
-            closingAwayLine: 99,
+            closingAwayLine: scheduledGame.atsLine,
             closingTotalLine: scheduledGame.totalLine,
           },
         });
@@ -160,6 +162,7 @@ export async function updateData() {
       matching &&
       // activeGame.awayLine &&
       activeGame.totalLine !== undefined &&
+      activeGame.atsLine !== undefined &&
       activeGame.period !== undefined &&
       activeGame.minute !== undefined &&
       activeGame.homeTeamScore !== undefined &&
@@ -168,7 +171,7 @@ export async function updateData() {
       await prisma.liveGameLine.create({
         data: {
           gameId: matching.id,
-          awayLine: 99,
+          awayLine: activeGame.atsLine,
           totalLine: activeGame.totalLine,
           quarter: PeriodLookup[activeGame.period],
           minute: activeGame.minute,

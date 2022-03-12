@@ -6,6 +6,7 @@ import {
   PeriodEnum,
   StateEnum,
 } from "./DraftKingsTypes";
+import { convertToPacificPrismaDate, createPacificPrismaDate } from "./utils";
 
 const GAME_LINES_ID = 487;
 const SUBCATEGOGERY = 4511;
@@ -23,6 +24,7 @@ export type DraftKingsGameReduced = {
   homeTeamScore?: number;
   awayTeamScore?: number;
   totalLine?: number;
+  atsLine?: number;
   isBettingAllowed?: number;
 };
 
@@ -38,6 +40,16 @@ export function filterActiveGames(
   return games.filter(
     (game) => game.state === StateEnum.STARTED && !game.isClockRunning
   );
+}
+
+export function filterNotTodaysGames(
+  games: DraftKingsGameReduced[]
+): DraftKingsGameReduced[] {
+  const today = createPacificPrismaDate();
+  return games.filter((game) => {
+    const gamePacificDate = convertToPacificPrismaDate(game.startDate);
+    return gamePacificDate.getDay() === today.getDay();
+  });
 }
 
 function reduceDraftKingsGames(
@@ -74,9 +86,13 @@ function reduceDraftKingsGames(
       o?.some((p) => p.providerEventId === providerEventId)
     );
 
-    const matchingOutcome = matchingOffer
+    const matchingTotalOutcome = matchingOffer
       ?.find((mo) => mo.label === OfferLabelEnum.TOTAL)
-      ?.outcomes?.find((oc) => OutcomeLabelEnum.OVER);
+      ?.outcomes?.find((oc) => oc.label === OutcomeLabelEnum.OVER);
+
+    const matchingSpreadOutcome = matchingOffer?.find(
+      (mo) => mo.label === OfferLabelEnum.SPREAD
+    )?.outcomes?.[0];
 
     games.push({
       eventId,
@@ -91,7 +107,12 @@ function reduceDraftKingsGames(
       // draft kings reversed?
       awayTeamScore: homeTeamScore ? parseInt(homeTeamScore) : undefined,
       homeTeamScore: awayTeamScore ? parseInt(awayTeamScore) : undefined,
-      totalLine: matchingOutcome?.line ? matchingOutcome?.line : undefined,
+      totalLine: matchingTotalOutcome?.line
+        ? matchingTotalOutcome?.line
+        : undefined,
+      atsLine: matchingSpreadOutcome?.line
+        ? matchingSpreadOutcome?.line
+        : undefined,
     });
   });
 
