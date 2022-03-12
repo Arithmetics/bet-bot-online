@@ -1,5 +1,7 @@
 import Discord from "discord.js";
-// import faker from "@faker-js/faker";
+// @ts-ignore
+import ReadText from "text-from-image";
+
 import fs from "fs";
 import { ownerIds } from "./botInformation";
 import { GamePlus, LiveGameLinePlus, getAllTodaysGames } from "./database";
@@ -19,6 +21,56 @@ function loadBetData(): BetData {
   // @ts-ignore
   let bets = JSON.parse(rawdata);
   return bets as BetData;
+}
+
+type BetResult = {
+  result: string;
+  wager: number;
+  paid: number;
+};
+
+function processText(text: string): BetResult[] {
+  const betResults: BetResult[] = [];
+  const allLines = text.split(/\r?\n/);
+
+  const currentBet: BetResult = {
+    result: "",
+    wager: 0,
+    paid: 0,
+  };
+
+  allLines.forEach((line, i) => {
+    if (line.endsWith("LOST")) {
+      if (i !== 0) {
+        betResults.push({ ...currentBet });
+        currentBet.paid = 0;
+        currentBet.wager = 0;
+      }
+      currentBet.result = "LOST";
+    }
+    if (line.endsWith("WON")) {
+      if (i !== 0) {
+        betResults.push({ ...currentBet });
+        currentBet.paid = 0;
+        currentBet.wager = 0;
+      }
+      currentBet.result = "WON";
+    }
+    if (line.startsWith("Wager")) {
+      const lineSplit = line.split("$");
+      const money = parseFloat(lineSplit[1]);
+      currentBet.wager = money;
+    }
+    if (line.startsWith("Paid")) {
+      const lineSplit = line.split("$");
+      const money = parseFloat(lineSplit[1]);
+      currentBet.paid = money;
+    }
+    if (i === allLines.length - 1) {
+      betResults.push({ ...currentBet });
+    }
+  });
+  return betResults;
 }
 
 function sendBetInfo(message: Discord.Message, args: string[]) {
@@ -54,7 +106,51 @@ function sendBetInfo(message: Discord.Message, args: string[]) {
     bets[id].profit += bet;
     saveBetData(bets);
 
-    message.channel.send({ embed: formatBetMessage({ person: bets[id] }) });
+    message.channel.send({ embed: formatBetMessage({ [id]: bets[id] }) });
+  }
+}
+
+async function sendSlipInfo(
+  message: Discord.Message
+  // , args: string[]
+) {
+  const bets = loadBetData();
+  const id = message.author.id;
+  const images = Array.from(message.attachments.values());
+  try {
+    images.forEach((image) => {
+      ReadText(image.attachment)
+        // @ts-ignore
+        .then((text) => {
+          const submittedBetSlips = processText(text);
+          submittedBetSlips.forEach((submittedSlip) => {
+            if (!bets[id]) {
+              bets[id] = { wins: 0, losses: 0, profit: 0 };
+            }
+            console.log({ id });
+            console.log({ bets: bets[id] });
+            if (submittedSlip.result === "WON") {
+              console.log("adding");
+              bets[id].wins++;
+              bets[id].profit -= submittedSlip.wager;
+              bets[id].profit += submittedSlip.paid;
+            }
+            if (submittedSlip.result === "LOST") {
+              console.log("subbing");
+              bets[id].losses++;
+              bets[id].profit -= submittedSlip.wager;
+            }
+          });
+          saveBetData(bets);
+          message.channel.send({ embed: formatSlips(submittedBetSlips) });
+        })
+        // @ts-ignore
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+  } catch (e) {
+    message.channel.send("COULDNT READ YOUR SLIP");
   }
 }
 
@@ -72,6 +168,24 @@ function formatBetMessage(bets: BetData) {
     };
     betEmbed.fields.push(field);
   }
+
+  return betEmbed;
+}
+
+function formatSlips(slips: BetResult[]) {
+  const betEmbed = {
+    color: 0x0099ff,
+    title: "Bet Update",
+    fields: [] as any[],
+  };
+
+  slips.forEach((slip, i) => {
+    const field = {
+      name: `Slip: ${i + 1}`,
+      value: `Result: ${slip.result}, Wager: ${slip.wager}, Paid: ${slip.paid}`,
+    };
+    betEmbed.fields.push(field);
+  });
 
   return betEmbed;
 }
@@ -258,6 +372,8 @@ export function startUpDiscordClient(): Discord.Client {
         message.channel.send("no live line info yet...");
       } else if (command === "bet" || command === "bets") {
         sendBetInfo(message, args);
+      } else if (command === "slips") {
+        sendSlipInfo(message);
       }
     });
   });

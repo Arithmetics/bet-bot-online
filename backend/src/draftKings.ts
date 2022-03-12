@@ -6,6 +6,7 @@ import {
   PeriodEnum,
   StateEnum,
 } from "./DraftKingsTypes";
+import { convertToPacificPrismaDate, createPacificPrismaDate } from "./utils";
 
 const GAME_LINES_ID = 487;
 const SUBCATEGOGERY = 4511;
@@ -39,6 +40,16 @@ export function filterActiveGames(
   return games.filter(
     (game) => game.state === StateEnum.STARTED && !game.isClockRunning
   );
+}
+
+export function filterNotTodaysGames(
+  games: DraftKingsGameReduced[]
+): DraftKingsGameReduced[] {
+  const today = createPacificPrismaDate();
+  return games.filter((game) => {
+    const gamePacificDate = convertToPacificPrismaDate(game.startDate);
+    return gamePacificDate.getDay() === today.getDay();
+  });
 }
 
 function reduceDraftKingsGames(

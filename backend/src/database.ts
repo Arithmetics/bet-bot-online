@@ -4,6 +4,7 @@ import {
   getDraftKingsListings,
   filterNotStartedGames,
   filterActiveGames,
+  filterNotTodaysGames,
 } from "./draftKings";
 import { PeriodLookup } from "./DraftKingsTypes";
 import { getESPNGames, completePrismaGames } from "./espn";
@@ -103,7 +104,8 @@ export async function updateData() {
   const allListedGames = await getDraftKingsListings();
   const allEspnGames = await getESPNGames();
 
-  const scheduledGames = filterNotStartedGames(allListedGames);
+  const todaysGames = filterNotTodaysGames(allListedGames);
+  const scheduledGames = filterNotStartedGames(todaysGames);
 
   console.log(
     "Querying Draft Kings, found scheduled games:",
