@@ -182,7 +182,7 @@ export function ATSBarGraph({ game }: BarGraphProps): JSX.Element | null {
   const { palette } = useTheme();
   const isUpMD = useMediaQuery("md", { match: "up" });
 
-  const marginRight = isUpMD ? 120 : 20;
+  // const marginRight = isUpMD ? 120 : 20;
   const marginBottom = isUpMD ? 60 : 130;
 
   if (!game) {
