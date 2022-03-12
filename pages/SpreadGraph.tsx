@@ -3,13 +3,13 @@ import { GamePlus } from "../backend/src/database";
 import { ResponsiveLine, Serie, PointTooltipProps } from "@nivo/line";
 import { LegendAnchor } from "@nivo/legends";
 import Activity from "@geist-ui/react-icons/activity";
-import { getTotalSecondsPlayed, totalSecondsInRegulation } from "./graphShared";
+import { getTotalSecondsPlayed } from "./graphShared";
 
-function createTotalGraphData(game: GamePlus): Serie[] {
+function createSpreadGraphData(game: GamePlus): Serie[] {
   const series: Serie[] = [];
 
   const realScore = {
-    id: "Current Pace",
+    id: "Current Away Deficit",
     data:
       game?.liveGameLines
         .filter((line) => {
@@ -19,23 +19,20 @@ function createTotalGraphData(game: GamePlus): Serie[] {
           );
         })
         .map((line) => {
-          const pace =
-            (line.awayScore + line.homeScore) *
-            (totalSecondsInRegulation /
-              getTotalSecondsPlayed(line.quarter, line.minute, line.second));
+          const awayLead = line.awayScore - line.homeScore;
           return {
             x: line.totalMinutes,
-            y: Math.round(pace),
+            y: -awayLead,
           };
         }) || [],
   };
 
   const vegasLine = {
-    id: "Vegas Line",
+    id: "Vegas Away Spread",
     data:
       game?.liveGameLines.map((line) => ({
         x: line.totalMinutes,
-        y: line.totalLine,
+        y: line.awayLine,
       })) || [],
   };
 
@@ -44,7 +41,7 @@ function createTotalGraphData(game: GamePlus): Serie[] {
     data:
       game?.liveGameLines.map((line) => ({
         x: line.totalMinutes,
-        y: line.botProjectedTotal,
+        y: line.botProjectedATS,
       })) || [],
   };
 
@@ -54,15 +51,15 @@ function createTotalGraphData(game: GamePlus): Serie[] {
 
   if (game.finalAwayScore && game.finalHomeScore) {
     series.push({
-      id: "Final Total",
+      id: "Final Away Deficit",
       data: [
         {
           x: 0,
-          y: game.finalAwayScore + game.finalHomeScore,
+          y: -1 * (game.finalAwayScore - game.finalHomeScore),
         },
         {
           x: 48,
-          y: game.finalAwayScore + game.finalHomeScore,
+          y: -1 * (game.finalAwayScore - game.finalHomeScore),
         },
       ],
     });
@@ -71,17 +68,17 @@ function createTotalGraphData(game: GamePlus): Serie[] {
   return series;
 }
 
-type TotalGraphProps = {
+type SpreadGraphProps = {
   game?: GamePlus;
 };
 
-export function TotalGraph({ game }: TotalGraphProps): JSX.Element | null {
+export function SpreadGraph({ game }: SpreadGraphProps): JSX.Element | null {
   const { palette } = useTheme();
   const isUpMD = useMediaQuery("md", { match: "up" });
 
   const marginRight = isUpMD ? 120 : 20;
   const marginBottom = isUpMD ? 60 : 130;
-  const translateX = isUpMD ? 120 : 0;
+  const translateX = isUpMD ? 100 : 0;
   const translateY = isUpMD ? 0 : 120;
 
   const anchor: LegendAnchor = isUpMD ? "bottom-right" : "bottom-left";
@@ -90,7 +87,7 @@ export function TotalGraph({ game }: TotalGraphProps): JSX.Element | null {
     return null;
   }
 
-  const data: Serie[] = createTotalGraphData(game);
+  const data: Serie[] = createSpreadGraphData(game);
 
   const yAxis = data.reduce(
     (acc, cur) => {
@@ -144,8 +141,8 @@ export function TotalGraph({ game }: TotalGraphProps): JSX.Element | null {
       xScale={{ type: "linear", min: 1, max: 48 }}
       yScale={{
         type: "linear",
-        min: Math.min(yAxis.minY, 200),
-        max: Math.max(yAxis.maxY, 250),
+        min: Math.min(yAxis.minY, -10),
+        max: Math.max(yAxis.maxY, 10),
         reverse: false,
       }}
       yFormat=" >-.2f"
@@ -168,7 +165,7 @@ export function TotalGraph({ game }: TotalGraphProps): JSX.Element | null {
         tickSize: 1,
         tickPadding: 5,
         tickRotation: 0,
-        legend: "Total Points",
+        legend: "Away Spread",
         legendOffset: -40,
         legendPosition: "middle",
       }}
@@ -205,4 +202,4 @@ export function TotalGraph({ game }: TotalGraphProps): JSX.Element | null {
   );
 }
 
-export default TotalGraph;
+export default SpreadGraph;
