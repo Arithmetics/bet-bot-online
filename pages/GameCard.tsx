@@ -10,15 +10,17 @@ import {
 } from "@geist-ui/react";
 import Activity from "@geist-ui/react-icons/activity";
 import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
-import { Serie } from "@nivo/line";
-
+import { View } from "./index";
 import { TotalGraph } from "./TotalGraph";
-import { BarGraph } from "./BarGraph";
+import { TotalBarGraph } from "./BarGraph";
+import { ATSBarGraph } from "./ATSBarGraph";
+import SpreadGraph from "./SpreadGraph";
 
 type GameCardProps = {
   game?: GamePlus;
   isLoading?: boolean;
   messageTimestamp?: number;
+  view: View;
 };
 
 function getLogoUrl(teamName: string): string {
@@ -42,6 +44,7 @@ function determineBadgeType(
 export function GameCard({
   game,
   messageTimestamp,
+  view,
 }: GameCardProps): JSX.Element | null {
   if (!game) {
     return null;
@@ -61,10 +64,15 @@ export function GameCard({
     return `${line.minute}: ${secondString} - ${line.quarter}Q`;
   };
 
-  const mostRecentLineGrade =
+  const mostRecentLineTotalGrade =
     (mostRecentLine?.grade || 0) < 0
       ? `UNDER ${Math.abs(mostRecentLine?.grade || 0)}`
       : `OVER ${Math.abs(mostRecentLine?.grade || 0)}`;
+
+  const mostRecentLineSpreadGrade =
+    (mostRecentLine?.grade || 0) < 0
+      ? `AWAY ${Math.abs(mostRecentLine?.atsGrade || 0)}`
+      : `HOME ${Math.abs(mostRecentLine?.atsGrade || 0)}`;
 
   const gameComplete = game.finalAwayScore && game.finalHomeScore;
 
@@ -121,14 +129,28 @@ export function GameCard({
             alignItems="flex-end"
             justify="space-between"
           >
-            <Badge
-              type={determineBadgeType(
-                started,
-                Math.abs(parseFloat(mostRecentLineGrade)) > 6
-              )}
-            >
-              Grade: {started && !gameComplete ? mostRecentLineGrade : "---"}
-            </Badge>
+            {view === "total" && (
+              <Badge
+                type={determineBadgeType(
+                  started,
+                  Math.abs(parseFloat(mostRecentLineTotalGrade)) > 6
+                )}
+              >
+                Grade:{" "}
+                {started && !gameComplete ? mostRecentLineTotalGrade : "---"}
+              </Badge>
+            )}
+            {view === "ats" && (
+              <Badge
+                type={determineBadgeType(
+                  started,
+                  Math.abs(parseFloat(mostRecentLineSpreadGrade)) > 6
+                )}
+              >
+                Grade:{" "}
+                {started && !gameComplete ? mostRecentLineSpreadGrade : "---"}
+              </Badge>
+            )}
             <Spacer h={0.5} />
             {stale && started && !gameComplete ? (
               <>
@@ -157,7 +179,11 @@ export function GameCard({
             ) : undefined}
             {!started ? (
               <Text h4 margin={0}>
-                Total Line: {game.closingTotalLine}
+                {view === "total" && `Total Line: ${game.closingTotalLine}`}
+                {view === "ats" &&
+                  `Away Spread: ${game.closingAwayLine >= 0 ? "+" : ""}${
+                    game.closingAwayLine
+                  }`}
               </Text>
             ) : undefined}
           </Grid>
@@ -175,11 +201,9 @@ export function GameCard({
             alignItems: "center",
           }}
         >
-          {started ? (
-            <TotalGraph game={game} />
-          ) : (
-            <Activity color="red" size={36} />
-          )}
+          {started && view === "total" ? <TotalGraph game={game} /> : undefined}
+          {started && view === "ats" ? <SpreadGraph game={game} /> : undefined}
+          {!started && <Activity color="red" size={36} />}
         </div>
         {started ? (
           <div
@@ -192,7 +216,8 @@ export function GameCard({
               alignItems: "center",
             }}
           >
-            <BarGraph game={game} />
+            {view === "total" && <TotalBarGraph game={game} />}
+            {view === "ats" && <ATSBarGraph game={game} />}
           </div>
         ) : undefined}
       </Card.Content>

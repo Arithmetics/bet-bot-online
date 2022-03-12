@@ -14,7 +14,9 @@ const prisma = new PrismaClient();
 export type LiveGameLinePlus = LiveGameLine & {
   totalMinutes?: number;
   botProjectedTotal?: number;
+  botProjectedATS?: number;
   grade?: number;
+  atsGrade?: number;
 };
 
 export type GamePlus = Game & {
@@ -44,6 +46,18 @@ function botPredictedTotal(
   );
 }
 
+function botPredictedATS(
+  awayScore: number,
+  homeScore: number,
+  closingAwayLine: number
+): number {
+  const factor = 0.65;
+  const currentAwayTeamLead = awayScore - homeScore;
+  return (
+    (-1 * currentAwayTeamLead - closingAwayLine) * factor + closingAwayLine
+  );
+}
+
 function addBettingData(game: GamePlus): GamePlus {
   game.liveGameLines = game.liveGameLines.map((line) => {
     const totalSeconds = getTotalSeconds(
@@ -63,11 +77,19 @@ function addBettingData(game: GamePlus): GamePlus {
       secondsLeftInRegulation
     );
 
+    const botProjectedATS = botPredictedATS(
+      line.awayScore,
+      line.homeScore,
+      game.closingAwayLine
+    );
+
     return {
       ...line,
       totalMinutes,
       botProjectedTotal,
+      botProjectedATS,
       grade: parseFloat((botProjectedTotal - line.totalLine).toFixed(2)),
+      atsGrade: parseFloat((botProjectedATS - line.awayLine).toFixed(2)),
     };
   });
 

@@ -3,10 +3,12 @@ import { Grid } from "@geist-ui/react";
 import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
 
 import { GameCard } from "./GameCard";
+import { View } from "./index";
 
 type GamesProps = {
   games?: GamePlus[];
   messageTimestamp?: number;
+  view: View;
 };
 
 function sortStarted(a: GamePlus, b: GamePlus): number {
@@ -24,7 +26,11 @@ function sortTimestamp(a: LiveGameLinePlus, b: LiveGameLinePlus): number {
   return a.timestamp > b.timestamp ? 1 : -1;
 }
 
-export function Games({ games, messageTimestamp }: GamesProps): JSX.Element {
+export function Games({
+  games,
+  messageTimestamp,
+  view,
+}: GamesProps): JSX.Element {
   const gamesWithSortedLines = games?.map((game) => {
     const lines = [...game.liveGameLines];
     lines.sort(sortTimestamp);
@@ -36,7 +42,11 @@ export function Games({ games, messageTimestamp }: GamesProps): JSX.Element {
     <Grid.Container gap={2} justify="center">
       {gamesWithSortedLines?.sort(sortStarted).map((game) => (
         <Grid key={game?.id} style={{ width: "500px", maxWidth: "95vw" }}>
-          <GameCard game={game} messageTimestamp={messageTimestamp} />
+          <GameCard
+            game={game}
+            messageTimestamp={messageTimestamp}
+            view={view}
+          />
         </Grid>
       ))}
     </Grid.Container>

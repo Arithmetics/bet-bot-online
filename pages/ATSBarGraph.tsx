@@ -2,6 +2,7 @@ import { useTheme, useMediaQuery, Grid } from "@geist-ui/react";
 import { ResponsiveBar, BarDatum, BarTooltipProps } from "@nivo/bar";
 import { GamePlus } from "../backend/src/database";
 import { line } from "d3-shape";
+import { getTotalSecondsPlayed } from "./graphShared";
 
 const Line = (barProps: unknown) => {
   const { palette } = useTheme();
@@ -69,46 +70,54 @@ const Line = (barProps: unknown) => {
 
 interface LiveGameBarDatum extends BarDatum {
   minute: number;
-  grade: number;
-  underGrade: number;
-
-  total: number;
+  homeGrade: number;
+  awayGrade: number;
+  awayLine: number;
 }
 
 interface CompleteGameBarDatum extends BarDatum {
   minute: number;
   winGrade: number;
   lossGrade: number;
-  total: number;
+  awayLine: number;
 }
 
 function createLiveBarGraphData(game: GamePlus): LiveGameBarDatum[] {
-  const datum: LiveGameBarDatum[] = game.liveGameLines.map((line) => {
-    if (line.grade === undefined) {
+  const legalLiveLines = game?.liveGameLines.filter((line) => {
+    const secondsPlayed = getTotalSecondsPlayed(
+      line.quarter,
+      line.minute,
+      line.second
+    );
+    return secondsPlayed > 720 && secondsPlayed < 2160; // second and third quarter only
+  });
+
+  const datum: LiveGameBarDatum[] = legalLiveLines.map((line) => {
+    if (line.atsGrade === undefined) {
       return {
         minute: 0,
-        grade: 0,
-        underGrade: 0,
-        total: 0,
+        homeGrade: 0,
+        awayGrade: 0,
+        awayLine: 0,
       };
     }
 
-    const underGrade = line.grade < 0 ? line.grade : 0;
-    const overGrade = line.grade >= 0 ? line.grade : 0;
+    const awayGrade = line.atsGrade < 0 ? line.atsGrade : 0;
+    const homeGrade = line.atsGrade >= 0 ? line.atsGrade : 0;
     return {
       minute: line.totalMinutes || 0,
-      grade: overGrade,
-      underGrade,
-      total: line.totalLine,
+      homeGrade: homeGrade,
+      awayGrade: awayGrade,
+      awayLine: line.awayLine,
     };
   });
 
   [50, 60, 70, 80].forEach((n) => {
     datum.push({
       minute: n,
-      grade: 0,
-      underGrade: 0,
-      total: 0,
+      homeGrade: 0,
+      awayGrade: 0,
+      awayLine: 0,
     });
   });
 
@@ -118,29 +127,38 @@ function createLiveBarGraphData(game: GamePlus): LiveGameBarDatum[] {
 function createCompleteBarGraphData(game: GamePlus): CompleteGameBarDatum[] {
   const finalScore = (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
 
-  const datum: CompleteGameBarDatum[] = game.liveGameLines.map((line) => {
-    if (line.grade === undefined) {
+  const legalLiveLines = game?.liveGameLines.filter((line) => {
+    const secondsPlayed = getTotalSecondsPlayed(
+      line.quarter,
+      line.minute,
+      line.second
+    );
+    return secondsPlayed > 720 && secondsPlayed < 2160; // second and third quarter only
+  });
+
+  const datum: CompleteGameBarDatum[] = legalLiveLines.map((line) => {
+    if (line.atsGrade === undefined) {
       return {
         minute: 0,
         winGrade: 0,
         lossGrade: 0,
-        total: 0,
+        awayLine: 0,
       };
     }
 
-    const projected = line.totalLine + line.grade;
+    const projected = line.awayLine + line.atsGrade;
     const projectedWin =
-      (finalScore > projected && line.totalLine < projected) ||
-      (finalScore < projected && line.totalLine > projected);
+      (finalScore > projected && line.awayLine < projected) ||
+      (finalScore < projected && line.awayLine > projected);
 
-    const winGrade = projectedWin ? line.grade : 0;
-    const lossGrade = !projectedWin ? line.grade : 0;
+    const winGrade = projectedWin ? line.atsGrade : 0;
+    const lossGrade = !projectedWin ? line.atsGrade : 0;
 
     return {
       minute: line.totalMinutes || 0,
       winGrade,
       lossGrade,
-      total: line.totalLine,
+      awayLine: line.awayLine,
     };
   });
 
@@ -149,7 +167,7 @@ function createCompleteBarGraphData(game: GamePlus): CompleteGameBarDatum[] {
       minute: n,
       winGrade: 0,
       lossGrade: 0,
-      total: 0,
+      awayLine: 0,
     });
   });
 
@@ -160,11 +178,11 @@ type BarGraphProps = {
   game?: GamePlus;
 };
 
-export function TotalBarGraph({ game }: BarGraphProps): JSX.Element | null {
+export function ATSBarGraph({ game }: BarGraphProps): JSX.Element | null {
   const { palette } = useTheme();
   const isUpMD = useMediaQuery("md", { match: "up" });
 
-  const marginRight = isUpMD ? 120 : 20;
+  // const marginRight = isUpMD ? 120 : 20;
   const marginBottom = isUpMD ? 60 : 130;
 
   if (!game) {
@@ -184,9 +202,9 @@ export function TotalBarGraph({ game }: BarGraphProps): JSX.Element | null {
 
   const keys = gameComplete
     ? ["winGrade", "lossGrade"]
-    : ["grade", "underGrade"];
+    : ["awayGrade", "homeGrade"];
 
-  console.log(game);
+  console.log({ data });
 
   return (
     <ResponsiveBar
@@ -232,10 +250,15 @@ export function TotalBarGraph({ game }: BarGraphProps): JSX.Element | null {
         legendPosition: "middle",
       }}
       tooltip={function (bar: BarTooltipProps<LiveGameBarDatum>): JSX.Element {
+        const betHome = bar.data.atsGrade > 0 || bar.data.winGrade > 0;
+        const lineDisplay = betHome
+          ? bar.data.awayLine * -1
+          : bar.data.awayLine;
+        const sign = lineDisplay >= 0 ? "+" : "";
         return (
           <Grid padding={1} style={{ backgroundColor: palette.accents_3 }}>
-            Bet {bar.data.grade > 0 || bar.data.winGrade > 0 ? "OVER" : "UNDER"}{" "}
-            {bar.data.total} at {bar.data.minute} mins
+            Bet {betHome ? "HOME" : "AWAY"} {sign}
+            {lineDisplay} at {bar.data.minute} mins
           </Grid>
         );
       }}
@@ -244,4 +267,4 @@ export function TotalBarGraph({ game }: BarGraphProps): JSX.Element | null {
   );
 }
 
-export default TotalBarGraph;
+export default ATSBarGraph;

@@ -1,18 +1,30 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import { Page, Text, Display, Grid, useToasts, Loading } from "@geist-ui/react";
+import {
+  Page,
+  Text,
+  Display,
+  Grid,
+  useToasts,
+  Loading,
+  ButtonGroup,
+  Button,
+} from "@geist-ui/react";
 import AlertTriangle from "@geist-ui/react-icons/alertTriangle";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { GamePlus } from "../backend/src/database";
 
 import { Games } from "./Games";
 import { RefreshCounter } from "./RefreshCounter";
+import { BetTable } from "./BetTable";
 
 type ConnectionMessage = {
   messageTimestamp: number;
   games: GamePlus[];
   msUntilNextUpdate: number;
 };
+
+export type View = "ats" | "total" | "bets";
 
 // const websocketUrl = "ws://localhost:8999";
 const websocketUrl = "wss://brockcastle.pagekite.me/";
@@ -21,6 +33,8 @@ export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
 
   const { lastMessage, readyState } = useWebSocket(websocketUrl);
+
+  const [view, setView] = useState<View>("total");
 
   const [currentMessage, setCurrentMessage] =
     useState<ConnectionMessage | null>(null);
@@ -107,10 +121,23 @@ export default function Home(): JSX.Element {
                 ) : undefined}
               </Grid>
             </Grid.Container>
-            <Games
-              games={currentMessage?.games}
-              messageTimestamp={currentMessage?.messageTimestamp}
-            />
+            <Grid.Container justify="center" gap={3} marginBottom={2}>
+              <Grid>
+                <ButtonGroup>
+                  <Button onClick={() => setView("total")}>Totals</Button>
+                  <Button onClick={() => setView("ats")}>Spreads</Button>
+                  <Button onClick={() => setView("bets")}>Bets</Button>
+                </ButtonGroup>
+              </Grid>
+            </Grid.Container>
+            {view === "total" || view === "ats" ? (
+              <Games
+                view={view}
+                games={currentMessage?.games}
+                messageTimestamp={currentMessage?.messageTimestamp}
+              />
+            ) : undefined}
+            {view === "bets" ? <BetTable /> : undefined}
           </>
         ) : undefined}
       </Page>
