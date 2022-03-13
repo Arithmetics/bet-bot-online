@@ -1,6 +1,6 @@
 import { Table, Text } from "@geist-ui/react";
 
-export function BetTable(): JSX.Element {
+export default function BetTable(): JSX.Element {
   const data = [
     {
       Bet: "-",

@@ -16,7 +16,7 @@ import { GamePlus } from "../backend/src/database";
 
 import { Games } from "./Games";
 import { RefreshCounter } from "./RefreshCounter";
-import { BetTable } from "./BetTable";
+import BetTable from "./BetTable";
 
 type ConnectionMessage = {
   messageTimestamp: number;
