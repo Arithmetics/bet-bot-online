@@ -2,7 +2,7 @@ import { useTheme, useMediaQuery, Grid } from "@geist-ui/react";
 import { ResponsiveBar, BarDatum, BarTooltipProps } from "@nivo/bar";
 import { GamePlus } from "../backend/src/database";
 import { line } from "d3-shape";
-import { getTotalSecondsPlayed } from "./graphShared";
+import { getTotalSecondsPlayed } from "./SpreadGraph";
 
 const Line = (barProps: unknown) => {
   const { palette } = useTheme();
