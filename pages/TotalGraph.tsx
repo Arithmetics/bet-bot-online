@@ -3,7 +3,7 @@ import { GamePlus } from "../backend/src/database";
 import { ResponsiveLine, Serie, PointTooltipProps } from "@nivo/line";
 import { LegendAnchor } from "@nivo/legends";
 import Activity from "@geist-ui/react-icons/activity";
-import { getTotalSecondsPlayed, totalSecondsInRegulation } from "./graphShared";
+import { getTotalSecondsPlayed, totalSecondsInRegulation } from "./SpreadGraph";
 
 function createTotalGraphData(game: GamePlus): Serie[] {
   const series: Serie[] = [];

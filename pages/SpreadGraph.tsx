@@ -3,7 +3,19 @@ import { GamePlus } from "../backend/src/database";
 import { ResponsiveLine, Serie, PointTooltipProps } from "@nivo/line";
 import { LegendAnchor } from "@nivo/legends";
 import Activity from "@geist-ui/react-icons/activity";
-import { getTotalSecondsPlayed } from "./graphShared";
+
+export function getTotalSecondsPlayed(
+  quarter: number,
+  minute: number,
+  second: number
+): number {
+  const secondsPlayedInQuarter = (12 - minute) * 60 - second;
+  const oldQuarterSeconds = (quarter - 1) * 12 * 60;
+
+  return secondsPlayedInQuarter + oldQuarterSeconds;
+}
+
+export const totalSecondsInRegulation = 48 * 60;
 
 function createSpreadGraphData(game: GamePlus): Serie[] {
   const series: Serie[] = [];
