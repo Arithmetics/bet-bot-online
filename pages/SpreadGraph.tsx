@@ -29,17 +29,17 @@ function createSpreadGraphData(game: GamePlus): Serie[] {
     return secondsPlayed > 720 && secondsPlayed < 2160; // second and third quarter only
   });
 
-  const realScore = {
-    id: "Current Away Deficit",
-    data:
-      game?.liveGameLines.map((line) => {
-        const awayLead = line.awayScore - line.homeScore;
-        return {
-          x: line.totalMinutes,
-          y: -awayLead,
-        };
-      }) || [],
-  };
+  // const realScore = {
+  //   id: "Current Away Deficit",
+  //   data:
+  //     game?.liveGameLines.map((line) => {
+  //       const awayLead = line.awayScore - line.homeScore;
+  //       return {
+  //         x: line.totalMinutes,
+  //         y: -awayLead,
+  //       };
+  //     }) || [],
+  // };
 
   const vegasLine = {
     id: "Vegas Away Spread",
@@ -59,7 +59,7 @@ function createSpreadGraphData(game: GamePlus): Serie[] {
       })) || [],
   };
 
-  series.push(realScore);
+  // series.push(realScore);
   series.push(vegasLine);
   series.push(botProj);
 
@@ -90,7 +90,7 @@ export function SpreadGraph({ game }: SpreadGraphProps): JSX.Element | null {
   const { palette } = useTheme();
   const isUpMD = useMediaQuery("md", { match: "up" });
 
-  const marginRight = isUpMD ? 120 : 20;
+  const marginRight = isUpMD ? 125 : 20;
   const marginBottom = isUpMD ? 60 : 130;
   const translateX = isUpMD ? 100 : 0;
   const translateY = isUpMD ? 0 : 120;
@@ -145,7 +145,12 @@ export function SpreadGraph({ game }: SpreadGraphProps): JSX.Element | null {
         fontSize: 10,
         textColor: "#fff",
       }}
-      colors={[palette.error, palette.success, palette.warning, palette.cyan]}
+      colors={[
+        palette.error,
+        palette.success,
+        // palette.warning,
+        palette.cyan,
+      ]}
       margin={{
         top: 50,
         right: marginRight,
