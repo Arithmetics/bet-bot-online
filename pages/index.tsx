@@ -141,7 +141,9 @@ export default function Home(): JSX.Element {
               />
             ) : undefined}
             {view === "bets" ? (
-              <BetTable historicalBetting={currentMessage?.historicalBetting} />
+              <BetTable
+                historicalBetting={currentMessage?.historicalBetting || null}
+              />
             ) : undefined}
           </>
         ) : undefined}

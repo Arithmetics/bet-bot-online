@@ -64,7 +64,7 @@ export default function BetTable({
       }}
     >
       <Text h3 type="secondary">
-        TOTALS
+        This Week&apos;s Totals
       </Text>
       <Table<Bet> data={totals}>
         <Table.Column<Bet> prop="date" label="Date" render={dateRender} />
@@ -73,7 +73,7 @@ export default function BetTable({
         <Table.Column<Bet> prop="win" label="Result" render={resultRender} />
       </Table>
       <Text h3 marginTop={2} type="secondary">
-        ATS
+        This Week&apos;s ATS
       </Text>
       <Table<Bet> data={ats}>
         <Table.Column<Bet> prop="date" label="Date" render={dateRender} />
