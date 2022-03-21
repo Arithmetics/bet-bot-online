@@ -1,5 +1,5 @@
 import { PrismaClient, Game, LiveGameLine } from "@prisma/client";
-import { createPacificPrismaDate } from "./utils";
+import { convertToPacificPrismaDate, createPacificPrismaDate } from "./utils";
 import {
   getDraftKingsListings,
   filterNotStartedGames,
@@ -94,6 +94,20 @@ function addBettingData(game: GamePlus): GamePlus {
   });
 
   return { ...game };
+}
+
+export async function getAllGamesBeforeToday(): Promise<GamePlus[]> {
+  const games = await prisma.game.findMany({
+    where: {
+      date: {
+        lt: createPacificPrismaDate(),
+      },
+    },
+    include: {
+      liveGameLines: true,
+    },
+  });
+  return games.map(addBettingData);
 }
 
 export async function getAllTodaysGames(): Promise<GamePlus[]> {
@@ -207,4 +221,90 @@ export async function updateData() {
   }
 
   await completePrismaGames(allEspnGames);
+}
+
+export type Bet = {
+  date: Date;
+  betType: "total" | "ats";
+  title: string;
+  units: number;
+  win: boolean;
+};
+
+export type HistoricalBetting = {
+  weeksBets: Bet[];
+};
+
+export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
+  const gradedGames = await getAllGamesBeforeToday();
+
+  const oneWeekAgo = convertToPacificPrismaDate(
+    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  );
+
+  const weeksBets: Bet[] = [];
+
+  const weeksGames = gradedGames.filter(
+    (g) => g.date.getTime() > oneWeekAgo.getTime()
+  );
+
+  weeksGames.forEach((game) => {
+    game.liveGameLines.forEach((line) => {
+      // bet on home team
+      if (line.atsGrade && line.atsGrade > 5) {
+        const finalAwayDeficit =
+          (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
+        weeksBets.push({
+          date: game.date,
+          title: `${game.homeTeam} ${-1 * line.awayLine} vs ${game.awayTeam}`,
+          betType: "ats",
+          units: line.atsGrade,
+          win: finalAwayDeficit > line.awayLine,
+        });
+      }
+
+      // bet on away team
+      if (line.atsGrade && line.atsGrade < -5) {
+        const finalAwayDeficit =
+          (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
+        weeksBets.push({
+          date: game.date,
+          title: `${game.awayTeam} ${line.awayLine} vs ${game.homeTeam}`,
+          betType: "ats",
+          units: line.atsGrade,
+          win: finalAwayDeficit < line.awayLine,
+        });
+      }
+
+      // bet on over
+      if (line.grade && line.grade > 5) {
+        const finalTotal =
+          (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
+        weeksBets.push({
+          date: game.date,
+          title: `${game.awayTeam} @ ${game.homeTeam} over ${line.totalLine}`,
+          betType: "total",
+          units: line.grade,
+          win: finalTotal > line.totalLine,
+        });
+      }
+
+      // bet on under
+      if (line.grade && line.grade < -5) {
+        const finalTotal =
+          (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
+        weeksBets.push({
+          date: game.date,
+          title: `${game.awayTeam} @ ${game.homeTeam} under ${line.totalLine}`,
+          betType: "total",
+          units: line.grade,
+          win: finalTotal < line.totalLine,
+        });
+      }
+    });
+  });
+
+  return {
+    weeksBets,
+  };
 }
