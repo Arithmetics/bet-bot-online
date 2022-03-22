@@ -233,7 +233,12 @@ export type Bet = {
 
 export type HistoricalBetting = {
   weeksBets: Bet[];
+  profits: Record<string, number>;
 };
+
+function sortTimestamp(a: Bet, b: Bet): number {
+  return a.date > b.date ? 1 : -1;
+}
 
 export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
   const gradedGames = await getAllGamesBeforeToday();
@@ -242,19 +247,19 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
     new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
   );
 
-  const weeksBets: Bet[] = [];
-
-  const weeksGames = gradedGames.filter(
-    (g) => g.date.getTime() > oneWeekAgo.getTime()
+  const threeWeeksAgo = convertToPacificPrismaDate(
+    new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)
   );
 
-  weeksGames.forEach((game) => {
+  const allBets: Bet[] = [];
+
+  gradedGames.forEach((game) => {
     game.liveGameLines.forEach((line) => {
       // bet on home team
       if (line.atsGrade && line.atsGrade > 5) {
         const finalAwayDeficit =
           (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
-        weeksBets.push({
+        allBets.push({
           date: game.date,
           title: `${game.homeTeam} ${-1 * line.awayLine} vs ${game.awayTeam}`,
           betType: "ats",
@@ -267,7 +272,7 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
       if (line.atsGrade && line.atsGrade < -5) {
         const finalAwayDeficit =
           (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
-        weeksBets.push({
+        allBets.push({
           date: game.date,
           title: `${game.awayTeam} ${line.awayLine} vs ${game.homeTeam}`,
           betType: "ats",
@@ -280,7 +285,7 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
       if (line.grade && line.grade > 5) {
         const finalTotal =
           (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
-        weeksBets.push({
+        allBets.push({
           date: game.date,
           title: `${game.awayTeam} @ ${game.homeTeam} over ${line.totalLine}`,
           betType: "total",
@@ -293,7 +298,7 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
       if (line.grade && line.grade < -5) {
         const finalTotal =
           (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
-        weeksBets.push({
+        allBets.push({
           date: game.date,
           title: `${game.awayTeam} @ ${game.homeTeam} under ${line.totalLine}`,
           betType: "total",
@@ -304,7 +309,32 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
     });
   });
 
+  const weeksBets = allBets.filter(
+    (g) => g.date.getTime() > oneWeekAgo.getTime()
+  );
+
+  const threeWeeksBets = allBets.filter(
+    (g) => g.date.getTime() > threeWeeksAgo.getTime()
+  );
+
+  const profits: Record<string, number> = {};
+
+  let lastDaysProfit = 0;
+  threeWeeksBets.sort(sortTimestamp).forEach((bet) => {
+    const day = bet.date.toISOString().split("T")[0];
+    const winSign = bet.win ? 0.9 : -1;
+    if (!profits[day]) {
+      console.log(`last days: ${lastDaysProfit}`);
+      profits[day] = lastDaysProfit;
+    }
+    const profit = bet.units * winSign;
+    console.log(`profit: ${profit}`);
+    lastDaysProfit += profit;
+    profits[day] += profit;
+  });
+
   return {
     weeksBets,
+    profits,
   };
 }

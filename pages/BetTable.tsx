@@ -1,5 +1,6 @@
 import { Table, Text, useTheme } from "@geist-ui/react";
 import { HistoricalBetting, Bet } from "../backend/src/database";
+import ProfitGraph from "./ProfitGraph";
 
 type BetTableProps = {
   historicalBetting: HistoricalBetting | null;
@@ -63,6 +64,9 @@ export default function BetTable({
         marginRight: "auto",
       }}
     >
+      <div style={{ height: "500px" }}>
+        <ProfitGraph profits={historicalBetting.profits} />
+      </div>
       <Text h3 type="secondary">
         This Week&apos;s Totals
       </Text>
