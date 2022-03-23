@@ -9,7 +9,7 @@ function createGraphData(profits: Record<string, number>): Serie[] {
       data: Object.keys(profits).map((k, i) => {
         return {
           x: k,
-          y: profits[k],
+          y: profits[k].toFixed(2),
         };
       }),
     },
@@ -53,6 +53,8 @@ export default function ProfitGraph({
       yScale={{
         type: "linear",
         reverse: false,
+        min: "auto",
+        max: "auto",
       }}
       yFormat=" >-.2f"
       xFormat="time:%Y-%m-%d"

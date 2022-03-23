@@ -65,8 +65,17 @@ async function sendMessageToAllClients(): Promise<void> {
 
 async function sendConnectionMessage(ws: ExtWebSocket): Promise<void> {
   console.log("new wb connecting, sending current data");
+
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
   const games = await getAllTodaysGames();
-  if (!historicalBetting) {
+  if (
+    !historicalBetting ||
+    !lastMetaDataUpdate ||
+    lastMetaDataUpdate < yesterday
+  ) {
     historicalBetting = await getHistoricalBettingData();
   }
   ws.send(JSON.stringify(constructMessage(games)));

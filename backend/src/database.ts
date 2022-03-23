@@ -247,8 +247,9 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
     new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
   );
 
-  const threeWeeksAgo = convertToPacificPrismaDate(
-    new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)
+  const goodBetsStart = convertToPacificPrismaDate(
+    // new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)
+    new Date("2022-03-02T00:00:00")
   );
 
   const allBets: Bet[] = [];
@@ -261,7 +262,9 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
           (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
         allBets.push({
           date: game.date,
-          title: `${game.homeTeam} ${-1 * line.awayLine} vs ${game.awayTeam}`,
+          title: `${game.homeTeam} ${line.awayLine < 0 ? "+" : ""}${
+            -1 * line.awayLine
+          } vs ${game.awayTeam}`,
           betType: "ats",
           units: line.atsGrade,
           win: finalAwayDeficit > line.awayLine,
@@ -274,7 +277,9 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
           (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
         allBets.push({
           date: game.date,
-          title: `${game.awayTeam} ${line.awayLine} vs ${game.homeTeam}`,
+          title: `${game.awayTeam} ${line.awayLine > 0 ? "+" : ""}${
+            line.awayLine
+          } vs ${game.homeTeam}`,
           betType: "ats",
           units: line.atsGrade,
           win: finalAwayDeficit < line.awayLine,
@@ -309,12 +314,13 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
     });
   });
 
-  const weeksBets = allBets.filter(
-    (g) => g.date.getTime() > oneWeekAgo.getTime()
-  );
+  const weeksBets = allBets
+    .filter((g) => g.date.getTime() > oneWeekAgo.getTime())
+    .sort(sortTimestamp)
+    .reverse();
 
   const threeWeeksBets = allBets.filter(
-    (g) => g.date.getTime() > threeWeeksAgo.getTime()
+    (g) => g.date.getTime() > goodBetsStart.getTime()
   );
 
   const profits: Record<string, number> = {};
@@ -327,7 +333,8 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
       console.log(`last days: ${lastDaysProfit}`);
       profits[day] = lastDaysProfit;
     }
-    const profit = bet.units * winSign;
+    const profit =
+      Math.round((bet.units * winSign + Number.EPSILON) * 100) / 100;
     console.log(`profit: ${profit}`);
     lastDaysProfit += profit;
     profits[day] += profit;

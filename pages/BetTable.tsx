@@ -1,4 +1,4 @@
-import { Table, Text, useTheme } from "@geist-ui/react";
+import { Table, Text, Divider, useTheme } from "@geist-ui/react";
 import { HistoricalBetting, Bet } from "../backend/src/database";
 import ProfitGraph from "./ProfitGraph";
 
@@ -64,9 +64,13 @@ export default function BetTable({
         marginRight: "auto",
       }}
     >
+      <Text h3 type="secondary">
+        Lifetime Profit
+      </Text>
       <div style={{ height: "500px" }}>
         <ProfitGraph profits={historicalBetting.profits} />
       </div>
+      <Divider marginTop={4} marginBottom={4} />
       <Text h3 type="secondary">
         This Week&apos;s Totals
       </Text>
@@ -76,7 +80,8 @@ export default function BetTable({
         <Table.Column<Bet> prop="units" label="Units" render={unitRender} />
         <Table.Column<Bet> prop="win" label="Result" render={resultRender} />
       </Table>
-      <Text h3 marginTop={2} type="secondary">
+      <Divider marginTop={4} marginBottom={4} />
+      <Text h3 type="secondary">
         This Week&apos;s ATS
       </Text>
       <Table<Bet> data={ats}>
