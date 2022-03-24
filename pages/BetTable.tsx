@@ -70,7 +70,7 @@ export default function BetTable({
       <div style={{ height: "500px" }}>
         <ProfitGraph profits={historicalBetting.profits} />
       </div>
-      <Divider marginTop={4} marginBottom={4} />
+      <Divider type="success" marginTop={4} marginBottom={4} />
       <Text h3 type="secondary">
         This Week&apos;s Totals
       </Text>
@@ -80,7 +80,7 @@ export default function BetTable({
         <Table.Column<Bet> prop="units" label="Units" render={unitRender} />
         <Table.Column<Bet> prop="win" label="Result" render={resultRender} />
       </Table>
-      <Divider marginTop={4} marginBottom={4} />
+      <Divider type="success" marginTop={4} marginBottom={4} />
       <Text h3 type="secondary">
         This Week&apos;s ATS
       </Text>
