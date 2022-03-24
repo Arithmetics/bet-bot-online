@@ -3,7 +3,7 @@ import { Grid } from "@geist-ui/react";
 import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
 
 import { GameCard } from "./GameCard";
-import { View } from "./index";
+import { View } from "../pages/index";
 
 type GamesProps = {
   games?: GamePlus[];

@@ -14,9 +14,9 @@ import AlertTriangle from "@geist-ui/react-icons/alertTriangle";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { GamePlus, HistoricalBetting } from "../backend/src/database";
 
-import { Games } from "./Games";
-import { RefreshCounter } from "./RefreshCounter";
-import BetTable from "./BetTable";
+import { Games } from "../components/Games";
+import { RefreshCounter } from "../components/RefreshCounter";
+import BetTable from "../components/BetTable";
 
 type ConnectionMessage = {
   messageTimestamp: number;

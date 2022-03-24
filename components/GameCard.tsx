@@ -10,7 +10,7 @@ import {
 } from "@geist-ui/react";
 import Activity from "@geist-ui/react-icons/activity";
 import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
-import { View } from "./index";
+import { View } from "../pages/index";
 import { TotalGraph } from "./TotalGraph";
 import { TotalBarGraph } from "./BarGraph";
 import { ATSBarGraph } from "./ATSBarGraph";
