@@ -1,5 +1,5 @@
 import { PrismaClient, Game, LiveGameLine } from "@prisma/client";
-import { createPacificPrismaDate } from "./utils";
+import { convertToPacificPrismaDate, createPacificPrismaDate } from "./utils";
 import {
   getDraftKingsListings,
   filterNotStartedGames,
@@ -94,6 +94,20 @@ function addBettingData(game: GamePlus): GamePlus {
   });
 
   return { ...game };
+}
+
+export async function getAllGamesBeforeToday(): Promise<GamePlus[]> {
+  const games = await prisma.game.findMany({
+    where: {
+      date: {
+        lt: createPacificPrismaDate(),
+      },
+    },
+    include: {
+      liveGameLines: true,
+    },
+  });
+  return games.map(addBettingData);
 }
 
 export async function getAllTodaysGames(): Promise<GamePlus[]> {
@@ -207,4 +221,127 @@ export async function updateData() {
   }
 
   await completePrismaGames(allEspnGames);
+}
+
+export type Bet = {
+  date: Date;
+  betType: "total" | "ats";
+  title: string;
+  units: number;
+  win: boolean;
+};
+
+export type HistoricalBetting = {
+  weeksBets: Bet[];
+  profits: Record<string, number>;
+};
+
+function sortTimestamp(a: Bet, b: Bet): number {
+  return a.date > b.date ? 1 : -1;
+}
+
+export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
+  const gradedGames = await getAllGamesBeforeToday();
+
+  const oneWeekAgo = convertToPacificPrismaDate(
+    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  );
+
+  const goodBetsStart = convertToPacificPrismaDate(
+    // new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)
+    new Date("2022-03-02T00:00:00")
+  );
+
+  const allBets: Bet[] = [];
+
+  gradedGames.forEach((game) => {
+    game.liveGameLines.forEach((line) => {
+      // bet on home team
+      if (line.atsGrade && line.atsGrade > 5) {
+        const finalAwayDeficit =
+          (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
+        allBets.push({
+          date: game.date,
+          title: `${game.homeTeam} ${line.awayLine < 0 ? "+" : ""}${
+            -1 * line.awayLine
+          } vs ${game.awayTeam}`,
+          betType: "ats",
+          units: line.atsGrade,
+          win: finalAwayDeficit > line.awayLine,
+        });
+      }
+
+      // bet on away team
+      if (line.atsGrade && line.atsGrade < -5) {
+        const finalAwayDeficit =
+          (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
+        allBets.push({
+          date: game.date,
+          title: `${game.awayTeam} ${line.awayLine > 0 ? "+" : ""}${
+            line.awayLine
+          } vs ${game.homeTeam}`,
+          betType: "ats",
+          units: line.atsGrade,
+          win: finalAwayDeficit < line.awayLine,
+        });
+      }
+
+      // bet on over
+      if (line.grade && line.grade > 5) {
+        const finalTotal =
+          (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
+        allBets.push({
+          date: game.date,
+          title: `${game.awayTeam} @ ${game.homeTeam} over ${line.totalLine}`,
+          betType: "total",
+          units: line.grade,
+          win: finalTotal > line.totalLine,
+        });
+      }
+
+      // bet on under
+      if (line.grade && line.grade < -5) {
+        const finalTotal =
+          (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
+        allBets.push({
+          date: game.date,
+          title: `${game.awayTeam} @ ${game.homeTeam} under ${line.totalLine}`,
+          betType: "total",
+          units: line.grade,
+          win: finalTotal < line.totalLine,
+        });
+      }
+    });
+  });
+
+  const weeksBets = allBets
+    .filter((g) => g.date.getTime() > oneWeekAgo.getTime())
+    .sort(sortTimestamp)
+    .reverse();
+
+  const threeWeeksBets = allBets.filter(
+    (g) => g.date.getTime() > goodBetsStart.getTime()
+  );
+
+  const profits: Record<string, number> = {};
+
+  let lastDaysProfit = 0;
+  threeWeeksBets.sort(sortTimestamp).forEach((bet) => {
+    const day = bet.date.toISOString().split("T")[0];
+    const winSign = bet.win ? 0.9 : -1;
+    if (!profits[day]) {
+      console.log(`last days: ${lastDaysProfit}`);
+      profits[day] = lastDaysProfit;
+    }
+    const profit =
+      Math.round((bet.units * winSign + Number.EPSILON) * 100) / 100;
+    console.log(`profit: ${profit}`);
+    lastDaysProfit += profit;
+    profits[day] += profit;
+  });
+
+  return {
+    weeksBets,
+    profits,
+  };
 }

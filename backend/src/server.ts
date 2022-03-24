@@ -1,18 +1,27 @@
 import express from "express";
 import http from "http";
 import WebSocket from "ws";
-import { updateData, getAllTodaysGames, GamePlus } from "./database";
-// import { printData } from "./draftKings";
+import {
+  updateData,
+  getAllTodaysGames,
+  GamePlus,
+  HistoricalBetting,
+  getHistoricalBettingData,
+} from "./database";
 import { startUpDiscordClient, sendNewBetAlertsToDiscord } from "./discord";
 
+let lastMetaDataUpdate: Date | null = null;
 let lastMessage = Date.now();
 
 const MASTER_INTERVAL = 250 * 1000;
+
+let historicalBetting: HistoricalBetting | null = null;
 
 type ConnectionMessage = {
   messageTimestamp: number;
   games: GamePlus[];
   msUntilNextUpdate: number;
+  historicalBetting: HistoricalBetting | null;
 };
 
 interface ExtWebSocket extends WebSocket {
@@ -24,6 +33,7 @@ function constructMessage(games: GamePlus[]): ConnectionMessage {
     messageTimestamp: lastMessage,
     games,
     msUntilNextUpdate: MASTER_INTERVAL,
+    historicalBetting,
   };
 }
 
@@ -55,7 +65,19 @@ async function sendMessageToAllClients(): Promise<void> {
 
 async function sendConnectionMessage(ws: ExtWebSocket): Promise<void> {
   console.log("new wb connecting, sending current data");
+
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
   const games = await getAllTodaysGames();
+  if (
+    !historicalBetting ||
+    !lastMetaDataUpdate ||
+    lastMetaDataUpdate < yesterday
+  ) {
+    historicalBetting = await getHistoricalBettingData();
+  }
   ws.send(JSON.stringify(constructMessage(games)));
 }
 

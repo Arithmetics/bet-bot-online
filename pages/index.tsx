@@ -12,7 +12,7 @@ import {
 } from "@geist-ui/react";
 import AlertTriangle from "@geist-ui/react-icons/alertTriangle";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { GamePlus } from "../backend/src/database";
+import { GamePlus, HistoricalBetting } from "../backend/src/database";
 
 import { Games } from "./Games";
 import { RefreshCounter } from "./RefreshCounter";
@@ -22,6 +22,7 @@ type ConnectionMessage = {
   messageTimestamp: number;
   games: GamePlus[];
   msUntilNextUpdate: number;
+  historicalBetting: HistoricalBetting | null;
 };
 
 export type View = "ats" | "total" | "bets";
@@ -38,6 +39,8 @@ export default function Home(): JSX.Element {
 
   const [currentMessage, setCurrentMessage] =
     useState<ConnectionMessage | null>(null);
+
+  console.log({ currentMessage });
 
   useEffect(() => {
     if (readyState === ReadyState.CLOSED) {
@@ -137,7 +140,11 @@ export default function Home(): JSX.Element {
                 messageTimestamp={currentMessage?.messageTimestamp}
               />
             ) : undefined}
-            {view === "bets" ? <BetTable /> : undefined}
+            {view === "bets" ? (
+              <BetTable
+                historicalBetting={currentMessage?.historicalBetting || null}
+              />
+            ) : undefined}
           </>
         ) : undefined}
       </Page>

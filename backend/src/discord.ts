@@ -309,43 +309,82 @@ export function sendNewBetAlertsToDiscord(
       );
 
       newLines.forEach((line) => {
-        if (!line.grade || (line.grade < 4.999 && line.grade > -4.999)) {
-          return;
+        if (line.grade && (line.grade > 4.999 || line.grade < -4.999)) {
+          const betEmbed = {
+            color: 0x0099ff,
+            title: "BET BOT TOTAL ALERT",
+            fields: [
+              {
+                name: "Game:",
+                value: `${game.awayTeam} @ ${game.homeTeam}`,
+              },
+              {
+                name: "Closing Total Line:",
+                value: `${game.closingTotalLine}`,
+              },
+              {
+                name: "Game Time:",
+                value: formatTime(line),
+              },
+              {
+                name: "Current Total Line:",
+                value: line.totalLine,
+              },
+              {
+                name: "Bet:",
+                value: `Betting ${Math.abs(line.grade)} units on the ${
+                  line.grade < 0 ? "UNDER" : "OVER"
+                }`,
+              },
+            ],
+          };
+
+          betsChannel?.send({ embed: betEmbed });
+          // tag me and kev
+          betsChannel.send("<@507719783014465537>");
+          betsChannel.send("<@306086225016782849>");
         }
+        if (
+          line.atsGrade &&
+          (line.atsGrade > 4.999 || line.atsGrade < -4.999) &&
+          line.totalMinutes &&
+          line.totalMinutes > 12 &&
+          line.totalMinutes < 36
+        ) {
+          const betEmbed = {
+            color: 0x0099ff,
+            title: "BET BOT ATS ALERT",
+            fields: [
+              {
+                name: "Game:",
+                value: `${game.awayTeam} @ ${game.homeTeam}`,
+              },
+              {
+                name: "Closing Away Line:",
+                value: `${game.closingAwayLine}`,
+              },
+              {
+                name: "Game Time:",
+                value: formatTime(line),
+              },
+              {
+                name: "Current Away Line:",
+                value: line.awayLine,
+              },
+              {
+                name: "Bet:",
+                value: `Betting ${Math.abs(line.atsGrade)} units on the ${
+                  line.atsGrade < 0 ? game.awayTeam : game.homeTeam
+                }`,
+              },
+            ],
+          };
 
-        const betEmbed = {
-          color: 0x0099ff,
-          title: "BET BOT TOTAL ALERT",
-          fields: [
-            {
-              name: "Game:",
-              value: `${game.awayTeam} @ ${game.homeTeam}`,
-            },
-            {
-              name: "Closing Total Line:",
-              value: `${game.closingTotalLine}`,
-            },
-            {
-              name: "Game Time:",
-              value: formatTime(line),
-            },
-            {
-              name: "Current Total Line:",
-              value: line.totalLine,
-            },
-            {
-              name: "Bet:",
-              value: `Betting ${Math.abs(line.grade)} units on the ${
-                line.grade < 0 ? "UNDER" : "OVER"
-              }`,
-            },
-          ],
-        };
-
-        betsChannel?.send({ embed: betEmbed });
-        // tag me and kev
-        betsChannel.send("<@507719783014465537>");
-        betsChannel.send("<@306086225016782849>");
+          betsChannel?.send({ embed: betEmbed });
+          // tag me and kev
+          betsChannel.send("<@507719783014465537>");
+          betsChannel.send("<@306086225016782849>");
+        }
       });
     });
   }
