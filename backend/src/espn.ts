@@ -88,7 +88,6 @@ export async function getESPNGames(): Promise<ESPNGameReduced[]> {
     ).slice(-2)}${("0" + today.getDate().toString()).slice(-2)}`;
 
     const url = `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${todaysDateString}`;
-    console.log(`scraping: ${url}`);
 
     const response = await got(url, {});
 

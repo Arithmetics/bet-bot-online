@@ -208,8 +208,6 @@ export function ATSBarGraph({ game }: BarGraphProps): JSX.Element | null {
     ? ["winGrade", "lossGrade"]
     : ["awayGrade", "homeGrade"];
 
-  console.log({ data });
-
   return (
     <ResponsiveBar
       // @ts-ignore

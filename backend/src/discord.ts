@@ -5,6 +5,7 @@ import ReadText from "text-from-image";
 import fs from "fs";
 import { ownerIds } from "./botInformation";
 import { GamePlus, LiveGameLinePlus, getAllTodaysGames } from "./database";
+import { createPacificPrismaDate } from "./utils";
 
 const PREFIX = "!";
 
@@ -127,16 +128,12 @@ async function sendSlipInfo(
             if (!bets[id]) {
               bets[id] = { wins: 0, losses: 0, profit: 0 };
             }
-            console.log({ id });
-            console.log({ bets: bets[id] });
             if (submittedSlip.result === "WON") {
-              console.log("adding");
               bets[id].wins++;
               bets[id].profit -= submittedSlip.wager;
               bets[id].profit += submittedSlip.paid;
             }
             if (submittedSlip.result === "LOST") {
-              console.log("subbing");
               bets[id].losses++;
               bets[id].profit -= submittedSlip.wager;
             }
@@ -293,11 +290,35 @@ function formatTime(line: LiveGameLinePlus) {
   return `${line.minute}: ${secondString} - ${line.quarter}Q`;
 }
 
+type BetTracking = {
+  date: string | null;
+  totals: string[];
+  ats: string[];
+};
+
+let betTracking: BetTracking = {
+  date: null,
+  totals: [],
+  ats: [],
+};
+
 export function sendNewBetAlertsToDiscord(
   client: Discord.Client,
   games: GamePlus[],
   lastMessage: number
 ): void {
+  if (betTracking.date === null) {
+    betTracking.date = createPacificPrismaDate().toISOString().split("T")[0];
+  }
+
+  const today = createPacificPrismaDate().toISOString().split("T")[0];
+  if (betTracking.date !== today) {
+    console.log("updating bet tracking at", new Date());
+    betTracking.date = createPacificPrismaDate().toISOString().split("T")[0];
+    betTracking.ats = [];
+    betTracking.totals = [];
+  }
+
   const betsChannel = client.channels.cache.find(
     (c) => c.id === "675574196268564525"
   );
@@ -309,7 +330,12 @@ export function sendNewBetAlertsToDiscord(
       );
 
       newLines.forEach((line) => {
-        if (line.grade && (line.grade > 4.999 || line.grade < -4.999)) {
+        if (
+          line.grade &&
+          (line.grade > 4.999 || line.grade < -4.999) &&
+          !betTracking.totals.some((t) => t === game.awayTeam)
+        ) {
+          betTracking.totals.push(game.awayTeam);
           const betEmbed = {
             color: 0x0099ff,
             title: "BET BOT TOTAL ALERT",
@@ -349,8 +375,10 @@ export function sendNewBetAlertsToDiscord(
           (line.atsGrade > 4.999 || line.atsGrade < -4.999) &&
           line.totalMinutes &&
           line.totalMinutes > 12 &&
-          line.totalMinutes < 36
+          line.totalMinutes < 36 &&
+          !betTracking.ats.some((t) => t === game.awayTeam)
         ) {
+          betTracking.ats.push(game.awayTeam);
           const betEmbed = {
             color: 0x0099ff,
             title: "BET BOT ATS ALERT",

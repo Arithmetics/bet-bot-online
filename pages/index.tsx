@@ -40,8 +40,6 @@ export default function Home(): JSX.Element {
   const [currentMessage, setCurrentMessage] =
     useState<ConnectionMessage | null>(null);
 
-  console.log({ currentMessage });
-
   useEffect(() => {
     if (readyState === ReadyState.CLOSED) {
       setToast({
@@ -60,7 +58,6 @@ export default function Home(): JSX.Element {
 
   useEffect(() => {
     if (lastMessage && lastMessage.data) {
-      console.log("setting new message", JSON.parse(lastMessage.data));
       setCurrentMessage(JSON.parse(lastMessage.data));
     }
   }, [lastMessage, setCurrentMessage]);

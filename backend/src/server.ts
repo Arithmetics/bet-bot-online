@@ -10,11 +10,10 @@ import {
 } from "./database";
 import { startUpDiscordClient, sendNewBetAlertsToDiscord } from "./discord";
 
-let lastMetaDataUpdate: Date | null = null;
-let lastMessage = Date.now();
-
 const MASTER_INTERVAL = 250 * 1000;
 
+let lastMetaDataUpdate: Date | null = null;
+let lastMessage = Date.now();
 let historicalBetting: HistoricalBetting | null = null;
 
 type ConnectionMessage = {
@@ -44,7 +43,7 @@ const wss = new WebSocket.Server({ server });
 const discordClient = startUpDiscordClient();
 
 async function sendMessageToAllClients(): Promise<void> {
-  console.log("updating data");
+  // console.log("updating data");
   try {
     await updateData();
   } catch (e) {
@@ -56,7 +55,6 @@ async function sendMessageToAllClients(): Promise<void> {
 
   lastMessage = Date.now();
 
-  console.log("cycle run, sending messages to all clients now", games.length);
   console.log("----------------");
   wss.clients.forEach((client) => {
     client.send(JSON.stringify(constructMessage(games)));
@@ -64,8 +62,6 @@ async function sendMessageToAllClients(): Promise<void> {
 }
 
 async function sendConnectionMessage(ws: ExtWebSocket): Promise<void> {
-  console.log("new wb connecting, sending current data");
-
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);

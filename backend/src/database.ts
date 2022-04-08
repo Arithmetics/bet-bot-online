@@ -167,10 +167,10 @@ export async function updateData() {
           },
         });
       } else {
-        console.log("updating a pregame line:");
-        console.log(
-          `${scheduledGame.awayTeam}/${scheduledGame.homeTeam} from ${matching.closingTotalLine} to ${scheduledGame.totalLine}`
-        );
+        // console.log("updating a pregame line:");
+        // console.log(
+        //   `${scheduledGame.awayTeam}/${scheduledGame.homeTeam} from ${matching.closingTotalLine} to ${scheduledGame.totalLine}`
+        // );
         await prisma.game.update({
           where: { id: matching.id },
           data: {
@@ -184,7 +184,7 @@ export async function updateData() {
 
   const activeGames = filterActiveGames(allListedGames);
 
-  console.log("Scraping Draft Kings, found active games:", activeGames.length);
+  // console.log("Scraping Draft Kings, found active games:", activeGames.length);
   for await (const activeGame of activeGames) {
     const matching = await prisma.game.findFirst({
       where: {
@@ -330,14 +330,15 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
     const day = bet.date.toISOString().split("T")[0];
     const winSign = bet.win ? 0.9 : -1;
     if (!profits[day]) {
-      console.log(`last days: ${lastDaysProfit}`);
+      console.log(`last day rollover: ${day}: ${lastDaysProfit}`);
       profits[day] = lastDaysProfit;
     }
     const profit =
-      Math.round((bet.units * winSign + Number.EPSILON) * 100) / 100;
+      Math.round((Math.abs(bet.units) * winSign + Number.EPSILON) * 100) / 100;
     console.log(`profit: ${profit}`);
     lastDaysProfit += profit;
     profits[day] += profit;
+    console.log(`${day}: ${lastDaysProfit}`);
   });
 
   return {

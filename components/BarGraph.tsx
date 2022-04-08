@@ -186,8 +186,6 @@ export function TotalBarGraph({ game }: BarGraphProps): JSX.Element | null {
     ? ["winGrade", "lossGrade"]
     : ["grade", "underGrade"];
 
-  console.log(game);
-
   return (
     <ResponsiveBar
       // @ts-ignore
