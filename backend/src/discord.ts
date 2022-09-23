@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { GatewayIntentBits } from "discord.js";
 // @ts-ignore
 import ReadText from "text-from-image";
 
@@ -80,7 +80,7 @@ function sendBetInfo(message: Discord.Message, args: string[]) {
 
   if (args.length === 0) {
     message.channel.send({
-      embed: formatBetMessage(bets),
+      embeds: [formatBetMessage(bets)],
     });
     return;
   }
@@ -106,7 +106,7 @@ function sendBetInfo(message: Discord.Message, args: string[]) {
     bets[id].profit += bet;
     saveBetData(bets);
 
-    message.channel.send({ embed: formatBetMessage({ [id]: bets[id] }) });
+    message.channel.send({ embeds: [formatBetMessage({ [id]: bets[id] })] });
   }
 }
 
@@ -142,7 +142,7 @@ async function sendSlipInfo(
             }
           });
           saveBetData(bets);
-          message.channel.send({ embed: formatSlips(submittedBetSlips) });
+          message.channel.send({ embeds: [formatSlips(submittedBetSlips)] });
         })
         // @ts-ignore
         .catch((err) => {
@@ -154,7 +154,7 @@ async function sendSlipInfo(
   }
 }
 
-function formatBetMessage(bets: BetData) {
+function formatBetMessage(bets: BetData): Discord.APIEmbed {
   const betEmbed = {
     color: 0x0099ff,
     title: "Bet Update",
@@ -172,7 +172,7 @@ function formatBetMessage(bets: BetData) {
   return betEmbed;
 }
 
-function formatSlips(slips: BetResult[]) {
+function formatSlips(slips: BetResult[]): Discord.APIEmbed {
   const betEmbed = {
     color: 0x0099ff,
     title: "Bet Update",
@@ -258,17 +258,19 @@ async function sendLineInfo(message: Discord.Message): Promise<void> {
 
   if (!games || games.length < 1) {
     message.channel.send({
-      embed: {
-        color: 0x0099ff,
-        title: "No lines today as far as I can tell...",
-        fields: [],
-      },
+      embeds: [
+        {
+          color: 0x0099ff,
+          title: "No lines today as far as I can tell...",
+          fields: [],
+        },
+      ],
     });
 
     return;
   }
 
-  const gameEmbed: Partial<Discord.MessageEmbed> = {
+  const gameEmbed: Partial<Discord.APIEmbed> = {
     color: 0x0099ff,
     title: "Sup losers, this is what i'm seeing for todays lines",
     fields: [],
@@ -302,7 +304,7 @@ export function sendNewBetAlertsToDiscord(
     (c) => c.id === "675574196268564525"
   );
 
-  if (betsChannel?.isText()) {
+  if (betsChannel?.isTextBased()) {
     games.forEach((game) => {
       const newLines = game.liveGameLines.filter(
         (l) => l.timestamp.getTime() > lastMessage
@@ -328,7 +330,7 @@ export function sendNewBetAlertsToDiscord(
               },
               {
                 name: "Current Total Line:",
-                value: line.totalLine,
+                value: `${line.totalLine}`,
               },
               {
                 name: "Bet:",
@@ -339,7 +341,7 @@ export function sendNewBetAlertsToDiscord(
             ],
           };
 
-          betsChannel?.send({ embed: betEmbed });
+          betsChannel?.send({ embeds: [betEmbed] });
           // tag me and kev
           betsChannel.send("<@507719783014465537>");
           betsChannel.send("<@306086225016782849>");
@@ -369,7 +371,7 @@ export function sendNewBetAlertsToDiscord(
               },
               {
                 name: "Current Away Line:",
-                value: line.awayLine,
+                value: `${line.awayLine}`,
               },
               {
                 name: "Bet:",
@@ -380,7 +382,7 @@ export function sendNewBetAlertsToDiscord(
             ],
           };
 
-          betsChannel?.send({ embed: betEmbed });
+          betsChannel?.send({ embeds: [betEmbed] });
           // tag me and kev
           betsChannel.send("<@507719783014465537>");
           betsChannel.send("<@306086225016782849>");
@@ -391,7 +393,14 @@ export function sendNewBetAlertsToDiscord(
 }
 
 export function startUpDiscordClient(): Discord.Client {
-  const client = new Discord.Client();
+  const client = new Discord.Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+      GatewayIntentBits.GuildMembers,
+    ],
+  });
 
   client.once("ready", () => {
     client.on("message", (message) => {
