@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { GatewayIntentBits } from "discord.js";
 // @ts-ignore
 import ReadText from "text-from-image";
 
@@ -87,7 +87,7 @@ function sendBetInfo(message: Discord.Message, args: string[]) {
   }
 
   if (args.length === 1) {
-    const bet = parseInt(args[0]);
+    const bet = parseFloat(args[0]);
 
     if (isNaN(bet)) {
       message.channel.send("Please use format: !bet [[+/-]amount]");
@@ -159,9 +159,11 @@ function formatBetMessage(bets: BetData) {
   };
 
   for (let [personId, stats] of Object.entries(bets)) {
+    const roundedProfit =
+      Math.round((stats.profit + Number.EPSILON) * 100) / 100;
     const field = {
       name: ownerIds[personId] || "unknown, have brock add your name",
-      value: `Wins: ${stats.wins}, Losses: ${stats.losses}, Profit: ${stats.profit}`,
+      value: `Wins: ${stats.wins}, Losses: ${stats.losses}, Profit: ${roundedProfit}`,
     };
     betEmbed.fields.push(field);
   }
@@ -419,10 +421,19 @@ export function sendNewBetAlertsToDiscord(
 }
 
 export function startUpDiscordClient(): Discord.Client {
-  const client = new Discord.Client();
+  const client = new Discord.Client({
+    intents: [
+      GatewayIntentBits.DirectMessages,
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildBans,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+    ],
+  });
 
   client.once("ready", () => {
     client.on("message", (message) => {
+      console.log(message);
       if (message.mentions.has(client?.user?.id || "")) {
         sendPersonalReply(message);
         return;
@@ -433,6 +444,7 @@ export function startUpDiscordClient(): Discord.Client {
       const args = message.content.slice(PREFIX.length).split(/ +/);
       const command = args?.shift()?.toLowerCase();
 
+      console.log(command);
       if (command === "lines") {
         sendLineInfo(message);
       } else if (command === "livelines") {

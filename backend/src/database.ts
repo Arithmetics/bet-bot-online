@@ -236,6 +236,13 @@ export type HistoricalBetting = {
   profits: Record<string, number>;
 };
 
+type BetsMade = {
+  totals: string[];
+  ats: string[];
+};
+
+type DuplicateTracker = Record<string, BetsMade>;
+
 function sortTimestamp(a: Bet, b: Bet): number {
   return a.date > b.date ? 1 : -1;
 }
@@ -254,10 +261,28 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
 
   const allBets: Bet[] = [];
 
+  const duplicateTracker: DuplicateTracker = {};
+
   gradedGames.forEach((game) => {
+    const dayKey = game.date.toISOString().split("T")[0];
+    if (!duplicateTracker[dayKey]) {
+      duplicateTracker[dayKey] = {
+        totals: [],
+        ats: [],
+      };
+    }
+
     game.liveGameLines.forEach((line) => {
       // bet on home team
-      if (line.atsGrade && line.atsGrade > 5) {
+      const hasATSBet = duplicateTracker[dayKey].ats.some(
+        (at) => at === game.awayTeam
+      );
+
+      const hasTotalBet = duplicateTracker[dayKey].totals.some(
+        (at) => at === game.awayTeam
+      );
+      if (line.atsGrade && line.atsGrade > 5 && !hasATSBet) {
+        duplicateTracker[dayKey].ats.push(game.awayTeam);
         const finalAwayDeficit =
           (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
         allBets.push({
@@ -272,7 +297,8 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
       }
 
       // bet on away team
-      if (line.atsGrade && line.atsGrade < -5) {
+      if (line.atsGrade && line.atsGrade < -5 && !hasATSBet) {
+        duplicateTracker[dayKey].ats.push(game.awayTeam);
         const finalAwayDeficit =
           (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
         allBets.push({
@@ -287,7 +313,8 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
       }
 
       // bet on over
-      if (line.grade && line.grade > 5) {
+      if (line.grade && line.grade > 5 && !hasTotalBet) {
+        duplicateTracker[dayKey].totals.push(game.awayTeam);
         const finalTotal =
           (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
         allBets.push({
@@ -300,7 +327,8 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
       }
 
       // bet on under
-      if (line.grade && line.grade < -5) {
+      if (line.grade && line.grade < -5 && !hasTotalBet) {
+        duplicateTracker[dayKey].totals.push(game.awayTeam);
         const finalTotal =
           (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
         allBets.push({
@@ -330,15 +358,12 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
     const day = bet.date.toISOString().split("T")[0];
     const winSign = bet.win ? 0.9 : -1;
     if (!profits[day]) {
-      console.log(`last day rollover: ${day}: ${lastDaysProfit}`);
       profits[day] = lastDaysProfit;
     }
     const profit =
       Math.round((Math.abs(bet.units) * winSign + Number.EPSILON) * 100) / 100;
-    console.log(`profit: ${profit}`);
     lastDaysProfit += profit;
     profits[day] += profit;
-    console.log(`${day}: ${lastDaysProfit}`);
   });
 
   return {
