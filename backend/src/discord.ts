@@ -434,7 +434,7 @@ export function startUpDiscordClient(): Discord.Client {
   });
 
   client.once("ready", () => {
-    client.on("message", (message) => {
+    client.on("messageCreate", (message) => {
       console.log(message);
       if (message.mentions.has(client?.user?.id || "")) {
         sendPersonalReply(message);

@@ -10,7 +10,7 @@ import {
 } from "./database";
 import { startUpDiscordClient, sendNewBetAlertsToDiscord } from "./discord";
 
-const MASTER_INTERVAL = 250 * 1000;
+const MASTER_INTERVAL = 250 * 100000;
 
 let lastMetaDataUpdate: Date | null = null;
 let lastMessage = Date.now();
