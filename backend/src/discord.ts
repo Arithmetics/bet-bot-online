@@ -8,6 +8,8 @@ import { GamePlus, LiveGameLinePlus, getAllTodaysGames } from "./database";
 import { createPacificPrismaDate } from "./utils";
 
 const PREFIX = "!";
+const ATS_BET_THRESHOLD = 4.999;
+const TOTAL_BET_THRESHOLD = 4.999;
 
 type BetResults = {
   wins: number;
@@ -336,7 +338,8 @@ export function sendNewBetAlertsToDiscord(
       newLines.forEach((line) => {
         if (
           line.grade &&
-          (line.grade > 4.999 || line.grade < -4.999) &&
+          (line.grade > TOTAL_BET_THRESHOLD ||
+            line.grade < -1 * TOTAL_BET_THRESHOLD) &&
           !betTracking.totals.some((t) => t === game.awayTeam)
         ) {
           betTracking.totals.push(game.awayTeam);
@@ -376,7 +379,8 @@ export function sendNewBetAlertsToDiscord(
         }
         if (
           line.atsGrade &&
-          (line.atsGrade > 4.999 || line.atsGrade < -4.999) &&
+          (line.atsGrade > ATS_BET_THRESHOLD ||
+            line.atsGrade < -1 * ATS_BET_THRESHOLD) &&
           line.totalMinutes &&
           line.totalMinutes > 12 &&
           line.totalMinutes < 36 &&

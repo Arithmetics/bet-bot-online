@@ -255,6 +255,7 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
   );
 
   const goodBetsStart = convertToPacificPrismaDate(
+    // fix this?
     // new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)
     new Date("2022-03-02T00:00:00")
   );
