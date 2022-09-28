@@ -136,7 +136,7 @@ export async function updateFinalScore(
   });
 }
 
-export async function updateData() {
+export async function runDraftKingsCycle() {
   const allListedGames = await getDraftKingsListings();
   const allEspnGames = await getESPNGames();
 

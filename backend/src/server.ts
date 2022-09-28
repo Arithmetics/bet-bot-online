@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import WebSocket from "ws";
 import {
-  updateData,
+  runDraftKingsCycle,
   getAllTodaysGames,
   GamePlus,
   HistoricalBetting,
@@ -46,7 +46,7 @@ const discordClient = startUpDiscordClient();
 async function sendMessageToAllClients(): Promise<void> {
   try {
     if (featureFlags.queryDraftKings) {
-      await updateData();
+      await runDraftKingsCycle();
     } else {
       console.log("Not querying DK: flag off");
     }
