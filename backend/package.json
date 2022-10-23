@@ -19,6 +19,7 @@
     "fs": "^0.0.1-security",
     "got": "11.8.3",
     "log-to-file": "^3.0.0",
+    "osa2": "^0.2.3",
     "puppeteer": "^11.0.0",
     "text-from-image": "^1.1.1",
     "ws": "^8.2.3"

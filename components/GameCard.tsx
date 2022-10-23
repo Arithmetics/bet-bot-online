@@ -7,6 +7,7 @@ import {
   Spacer,
   Grid,
   Image,
+  useMediaQuery,
 } from "@geist-ui/react";
 import Activity from "@geist-ui/react-icons/activity";
 import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
@@ -49,6 +50,8 @@ export function GameCard({
   if (!game) {
     return null;
   }
+
+  const downMd = useMediaQuery("sm", { match: "down" });
 
   const started = game.liveGameLines.length > 0;
 
@@ -178,7 +181,7 @@ export function GameCard({
               </Text>
             ) : undefined}
             {!started ? (
-              <Text h4 margin={0}>
+              <Text h4 margin={0} style={{ textAlign: "right" }}>
                 {view === "total" && `Total Line: ${game.closingTotalLine}`}
                 {view === "ats" &&
                   `Away Spread: ${game.closingAwayLine >= 0 ? "+" : ""}${
@@ -193,7 +196,7 @@ export function GameCard({
       <Card.Content>
         <div
           style={{
-            height: "600px",
+            height: downMd && !started ? "100px" : "420px",
             width: "100%",
             marginTop: "-1.5rem",
             display: "flex",

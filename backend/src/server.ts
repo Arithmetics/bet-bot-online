@@ -9,7 +9,7 @@ import {
   getHistoricalBettingData,
 } from "./database";
 import { startUpDiscordClient, sendNewBetAlertsToDiscord } from "./discord";
-import featureFlags from "./featureFlags";
+import featureFlags from "./features";
 
 const MASTER_INTERVAL = 250 * 1000;
 

@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Text, Input, Button, Grid, Modal } from "@geist-ui/react";
+import {
+  Text,
+  Input,
+  Button,
+  Grid,
+  Modal,
+  useMediaQuery,
+} from "@geist-ui/react";
 import RefreshCcw from "@geist-ui/react-icons/refreshCcw";
 
 import TimeAgo from "react-timeago";
@@ -15,7 +22,7 @@ export function RefreshCounter({
 }: RefreshCounterProps): JSX.Element {
   const [state, setState] = useState(false);
 
-  // const handler = () => setState(true);
+  const downMd = useMediaQuery("sm", { match: "down" });
 
   const closeHandler = () => {
     setState(false);
@@ -27,7 +34,8 @@ export function RefreshCounter({
 
   return (
     <Grid justify="center">
-      <Text h2>Next update: {nextUpdateTime}</Text>
+      {!downMd && <Text h2>Next update: {nextUpdateTime}</Text>}
+      {downMd && <Text h4>Next update: {nextUpdateTime}</Text>}
 
       <TimeAgo
         date={new Date(messageTimestamp)}

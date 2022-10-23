@@ -1,15 +1,27 @@
 import Discord, { GatewayIntentBits } from "discord.js";
 // @ts-ignore
 import ReadText from "text-from-image";
-
 import fs from "fs";
 import { ownerIds } from "./botInformation";
-import { GamePlus, LiveGameLinePlus, getAllTodaysGames } from "./database";
+import {
+  GamePlus,
+  LiveGameLinePlus,
+  getAllTodaysGames,
+  shouldATSBetAwayTeam,
+  shouldATSBetHomeTeam,
+  shouldTotalBetOver,
+  shouldTotalBetUnder,
+} from "./database";
 import { createPacificPrismaDate } from "./utils";
+import {
+  ATS_BET_THRESHOLD,
+  TOTAL_BET_THRESHOLD,
+  ATS_LOW_MINUTE,
+  ATS_HIGH_MINUTE,
+} from "./features";
+import { sendIMessage } from "./iMessage";
 
 const PREFIX = "!";
-const ATS_BET_THRESHOLD = 4.999;
-const TOTAL_BET_THRESHOLD = 4.999;
 
 type BetResults = {
   wins: number;
@@ -256,7 +268,7 @@ export function formatLine(line?: number): string {
 
 async function sendLineInfo(message: Discord.Message): Promise<void> {
   const games = await getAllTodaysGames();
-
+  console.log(games);
   if (!games || games.length < 1) {
     message.channel.send({
       embeds: [
@@ -278,17 +290,35 @@ async function sendLineInfo(message: Discord.Message): Promise<void> {
   };
 
   games.forEach((g, i) => {
+    let addendum = "";
+    if (g.finalAwayScore && g.finalHomeScore) {
+      let coveringTotal =
+        g.finalAwayScore + g.finalHomeScore > g.closingTotalLine
+          ? "OVER"
+          : "UNDER";
+      if (g.finalAwayScore + g.finalHomeScore === g.closingTotalLine) {
+        coveringTotal = "PUSH";
+      }
+      let coveringTeam =
+        g.finalAwayScore + g.closingAwayLine > g.finalHomeScore
+          ? g.awayTeam
+          : g.homeTeam;
+      if (g.finalAwayScore + g.closingAwayLine === g.finalHomeScore) {
+        coveringTeam = "PUSH";
+      }
+      addendum = `Final: ${coveringTeam} covers with the ${coveringTotal} total`;
+    }
+
     gameEmbed.fields?.push({
       name: `Game: ${i + 1}`,
       value: `${g.awayTeam} are ${formatLine(g.closingAwayLine)} @ ${
         g.homeTeam
-      }, the total is ${g.closingTotalLine}`,
+      }, the total is ${g.closingTotalLine}\n${addendum}`,
       inline: false,
     });
   });
 
-  // @ts-ignore
-  message.channel.send({ embed: gameEmbed });
+  message.channel.send({ embeds: [gameEmbed] });
 }
 
 function formatTime(line: LiveGameLinePlus) {
@@ -376,14 +406,22 @@ export function sendNewBetAlertsToDiscord(
           // tag me and kev
           betsChannel.send("<@507719783014465537>");
           betsChannel.send("<@306086225016782849>");
+          sendIMessage(
+            "+15038033676",
+            `${game.awayTeam} @ ${game.homeTeam} Betting ${Math.abs(
+              line.grade
+            )} units on the ${line.grade < 0 ? "UNDER" : "OVER"}: ${
+              line.totalLine
+            }`
+          );
         }
         if (
           line.atsGrade &&
           (line.atsGrade > ATS_BET_THRESHOLD ||
             line.atsGrade < -1 * ATS_BET_THRESHOLD) &&
           line.totalMinutes &&
-          line.totalMinutes > 12 &&
-          line.totalMinutes < 36 &&
+          line.totalMinutes > ATS_LOW_MINUTE &&
+          line.totalMinutes < ATS_HIGH_MINUTE &&
           !betTracking.ats.some((t) => t === game.awayTeam)
         ) {
           betTracking.ats.push(game.awayTeam);
@@ -420,6 +458,14 @@ export function sendNewBetAlertsToDiscord(
           // tag me and kev
           betsChannel.send("<@507719783014465537>");
           betsChannel.send("<@306086225016782849>");
+          sendIMessage(
+            "+15038033676",
+            `${game.awayTeam} @ ${game.homeTeam} Betting ${Math.abs(
+              line.atsGrade
+            )} units on the ${
+              line.atsGrade < 0 ? game.awayTeam : game.homeTeam
+            }: ${line.awayLine}`
+          );
         }
       });
     });
@@ -439,7 +485,6 @@ export function startUpDiscordClient(): Discord.Client {
 
   client.once("ready", () => {
     client.on("messageCreate", (message) => {
-      console.log(message);
       if (message.mentions.has(client?.user?.id || "")) {
         sendPersonalReply(message);
         return;
