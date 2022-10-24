@@ -8,6 +8,12 @@ import {
 } from "./draftKings";
 import { PeriodLookup } from "./DraftKingsTypes";
 import { getESPNGames, completePrismaGames } from "./espn";
+import {
+  ATS_BET_THRESHOLD,
+  TOTAL_BET_THRESHOLD,
+  ATS_LOW_MINUTE,
+  ATS_HIGH_MINUTE,
+} from "./features";
 
 const prisma = new PrismaClient();
 
@@ -136,7 +142,7 @@ export async function updateFinalScore(
   });
 }
 
-export async function updateData() {
+export async function runDraftKingsCycle() {
   const allListedGames = await getDraftKingsListings();
   const allEspnGames = await getESPNGames();
 
@@ -247,6 +253,64 @@ function sortTimestamp(a: Bet, b: Bet): number {
   return a.date > b.date ? 1 : -1;
 }
 
+export function shouldATSBetHomeTeam(
+  line: LiveGameLinePlus,
+  hasDuplicate: boolean
+): boolean {
+  if (
+    line.atsGrade &&
+    line.atsGrade > ATS_BET_THRESHOLD &&
+    line.totalMinutes &&
+    line.totalMinutes > ATS_LOW_MINUTE &&
+    line.totalMinutes < ATS_HIGH_MINUTE &&
+    !hasDuplicate
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+export function shouldATSBetAwayTeam(
+  line: LiveGameLinePlus,
+  hasDuplicate: boolean
+): boolean {
+  if (
+    line.atsGrade &&
+    line.atsGrade < -1 * ATS_BET_THRESHOLD &&
+    line.totalMinutes &&
+    line.totalMinutes > ATS_LOW_MINUTE &&
+    line.totalMinutes < ATS_HIGH_MINUTE &&
+    !hasDuplicate
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+export function shouldTotalBetUnder(
+  line: LiveGameLinePlus,
+  hasDuplicate: boolean
+): boolean {
+  if (line.grade && line.grade < -1 * TOTAL_BET_THRESHOLD && !hasDuplicate) {
+    return true;
+  }
+
+  return false;
+}
+
+export function shouldTotalBetOver(
+  line: LiveGameLinePlus,
+  hasDuplicate: boolean
+): boolean {
+  if (line.grade && line.grade > TOTAL_BET_THRESHOLD && !hasDuplicate) {
+    return true;
+  }
+
+  return false;
+}
+
 export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
   const gradedGames = await getAllGamesBeforeToday();
 
@@ -255,6 +319,7 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
   );
 
   const goodBetsStart = convertToPacificPrismaDate(
+    // fix this?
     // new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)
     new Date("2022-03-02T00:00:00")
   );
@@ -273,7 +338,6 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
     }
 
     game.liveGameLines.forEach((line) => {
-      // bet on home team
       const hasATSBet = duplicateTracker[dayKey].ats.some(
         (at) => at === game.awayTeam
       );
@@ -281,7 +345,9 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
       const hasTotalBet = duplicateTracker[dayKey].totals.some(
         (at) => at === game.awayTeam
       );
-      if (line.atsGrade && line.atsGrade > 5 && !hasATSBet) {
+
+      // bet on home team
+      if (shouldATSBetHomeTeam(line, hasATSBet)) {
         duplicateTracker[dayKey].ats.push(game.awayTeam);
         const finalAwayDeficit =
           (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
@@ -289,15 +355,17 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
           date: game.date,
           title: `${game.homeTeam} ${line.awayLine < 0 ? "+" : ""}${
             -1 * line.awayLine
-          } vs ${game.awayTeam}`,
+          } vs ${game.awayTeam} (${line.totalMinutes} mins, ${
+            line.awayScore
+          } - ${line.homeScore})`,
           betType: "ats",
-          units: line.atsGrade,
+          units: line.atsGrade || 0,
           win: finalAwayDeficit > line.awayLine,
         });
       }
 
       // bet on away team
-      if (line.atsGrade && line.atsGrade < -5 && !hasATSBet) {
+      if (shouldATSBetAwayTeam(line, hasATSBet)) {
         duplicateTracker[dayKey].ats.push(game.awayTeam);
         const finalAwayDeficit =
           (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
@@ -305,37 +373,39 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
           date: game.date,
           title: `${game.awayTeam} ${line.awayLine > 0 ? "+" : ""}${
             line.awayLine
-          } vs ${game.homeTeam}`,
+          } vs ${game.homeTeam} (${line.totalMinutes} mins, ${
+            line.awayScore
+          } - ${line.homeScore})`,
           betType: "ats",
-          units: line.atsGrade,
+          units: line.atsGrade || 0,
           win: finalAwayDeficit < line.awayLine,
         });
       }
 
       // bet on over
-      if (line.grade && line.grade > 5 && !hasTotalBet) {
+      if (shouldTotalBetOver(line, hasTotalBet)) {
         duplicateTracker[dayKey].totals.push(game.awayTeam);
         const finalTotal =
           (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
         allBets.push({
           date: game.date,
-          title: `${game.awayTeam} @ ${game.homeTeam} over ${line.totalLine}`,
+          title: `${game.awayTeam} @ ${game.homeTeam} over ${line.totalLine}  (${line.totalMinutes} mins, ${line.awayScore} - ${line.homeScore})`,
           betType: "total",
-          units: line.grade,
+          units: line.grade || 0,
           win: finalTotal > line.totalLine,
         });
       }
 
       // bet on under
-      if (line.grade && line.grade < -5 && !hasTotalBet) {
+      if (shouldTotalBetUnder(line, hasTotalBet)) {
         duplicateTracker[dayKey].totals.push(game.awayTeam);
         const finalTotal =
           (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
         allBets.push({
           date: game.date,
-          title: `${game.awayTeam} @ ${game.homeTeam} under ${line.totalLine}`,
+          title: `${game.awayTeam} @ ${game.homeTeam} under ${line.totalLine} (${line.totalMinutes} mins, ${line.awayScore} - ${line.homeScore})`,
           betType: "total",
-          units: line.grade,
+          units: line.grade || 0,
           win: finalTotal < line.totalLine,
         });
       }

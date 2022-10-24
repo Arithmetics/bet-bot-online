@@ -7,6 +7,8 @@ import {
   StateEnum,
 } from "./DraftKingsTypes";
 import { convertToPacificPrismaDate, createPacificPrismaDate } from "./utils";
+// @ts-ignore
+import log from "log-to-file";
 
 const GAME_LINES_ID = 487;
 const SUBCATEGOGERY = 4511;
@@ -129,7 +131,13 @@ export async function getDraftKingsListings(): Promise<
 
     const data = JSON.parse(response.body) as DraftKingsResponse;
 
-    return reduceDraftKingsGames(data);
+    const games = reduceDraftKingsGames(data);
+
+    games.forEach((g) => {
+      log(JSON.stringify(g), "draft-kings.log");
+    });
+
+    return games;
   } catch (e) {
     console.log("DRAFT KINGS ERROR");
     console.log(e);
@@ -138,6 +146,6 @@ export async function getDraftKingsListings(): Promise<
 }
 
 export async function printData() {
-  const g = await getDraftKingsListings();
-  console.log(g);
+  const games = await getDraftKingsListings();
+  console.log(games);
 }

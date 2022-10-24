@@ -2,15 +2,16 @@ import express from "express";
 import http from "http";
 import WebSocket from "ws";
 import {
-  updateData,
+  runDraftKingsCycle,
   getAllTodaysGames,
   GamePlus,
   HistoricalBetting,
   getHistoricalBettingData,
 } from "./database";
 import { startUpDiscordClient, sendNewBetAlertsToDiscord } from "./discord";
+import featureFlags from "./features";
 
-const MASTER_INTERVAL = 250 * 100000;
+const MASTER_INTERVAL = 250 * 1000;
 
 let lastMetaDataUpdate: Date | null = null;
 let lastMessage = Date.now();
@@ -43,15 +44,22 @@ const wss = new WebSocket.Server({ server });
 const discordClient = startUpDiscordClient();
 
 async function sendMessageToAllClients(): Promise<void> {
-  // console.log("updating data");
   try {
-    await updateData();
+    if (featureFlags.queryDraftKings) {
+      await runDraftKingsCycle();
+    } else {
+      console.log("Not querying DK: flag off");
+    }
   } catch (e) {
     console.log("BIG BAD ERROR", e);
   }
 
   const games = await getAllTodaysGames();
-  sendNewBetAlertsToDiscord(discordClient, games, lastMessage);
+  if (featureFlags.reportBets) {
+    sendNewBetAlertsToDiscord(discordClient, games, lastMessage);
+  } else {
+    console.log("No discord alert: flag off");
+  }
 
   lastMessage = Date.now();
 

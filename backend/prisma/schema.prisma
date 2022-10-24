@@ -35,4 +35,19 @@ model LiveGameLine {
     awayScore   Int
     homeScore   Int
     timestamp   DateTime
+    liveBets    LiveBet[]
+}
+
+enum BetType {
+  TOTAL
+  ATS
+}
+
+model LiveBet {
+  id                  Int              @id @default(autoincrement())
+  liveGameLine        LiveGameLine     @relation(fields: [liveGameLineId], references: [id])
+  liveGameLineId      Int
+  betType             BetType
+  unitSize            Float
+  date                DateTime @db.Date
 }
