@@ -306,7 +306,7 @@ async function sendLineInfo(message: Discord.Message): Promise<void> {
       if (g.finalAwayScore + g.closingAwayLine === g.finalHomeScore) {
         coveringTeam = "PUSH";
       }
-      addendum = `Final: ${coveringTeam} covers with the ${coveringTotal} total`;
+      addendum = `Final: [${g.finalAwayScore}-${g.finalHomeScore}] ${coveringTeam} covers with the ${coveringTotal} total`;
     }
 
     gameEmbed.fields?.push({
