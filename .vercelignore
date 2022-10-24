@@ -1,2 +1,1 @@
-/backend/*
-!/backend/src/database.ts
+/backend/node_modules/*
