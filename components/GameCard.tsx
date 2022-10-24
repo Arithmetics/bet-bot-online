@@ -47,11 +47,11 @@ export function GameCard({
   messageTimestamp,
   view,
 }: GameCardProps): JSX.Element | null {
+  const downMd = useMediaQuery("sm", { match: "down" });
+
   if (!game) {
     return null;
   }
-
-  const downMd = useMediaQuery("sm", { match: "down" });
 
   const started = game.liveGameLines.length > 0;
 
