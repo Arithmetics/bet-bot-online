@@ -34,8 +34,8 @@ export function RefreshCounter({
 
   return (
     <Grid justify="center">
-      {!downMd && <Text h2>Next update: {nextUpdateTime}</Text>}
-      {downMd && <Text h4>Next update: {nextUpdateTime}</Text>}
+      {!downMd && <Text h3>🤖 🏀 Next update: {nextUpdateTime}</Text>}
+      {downMd && <Text h5>🤖 🏀 Next update: {nextUpdateTime}</Text>}
 
       <TimeAgo
         date={new Date(messageTimestamp)}

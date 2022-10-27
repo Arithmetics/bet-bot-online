@@ -11,16 +11,16 @@ type GamesProps = {
   view: View;
 };
 
-function sortStarted(a: GamePlus, b: GamePlus): number {
-  if (!a.liveGameLines.length) {
-    return 1;
-  }
-  if (!b.liveGameLines.length) {
-    return -1;
-  }
+// function sortStarted(a: GamePlus, b: GamePlus): number {
+//   if (!a.liveGameLines.length) {
+//     return 1;
+//   }
+//   if (!b.liveGameLines.length) {
+//     return -1;
+//   }
 
-  return a.liveGameLines.length > b.liveGameLines.length ? 1 : -1;
-}
+//   return a.liveGameLines.length > b.liveGameLines.length ? 1 : -1;
+// }
 
 function sortTimestamp(a: LiveGameLinePlus, b: LiveGameLinePlus): number {
   return a.timestamp > b.timestamp ? 1 : -1;
@@ -38,17 +38,28 @@ export function Games({
     return game;
   });
 
+  const completeGames =
+    gamesWithSortedLines?.filter((g) => g.finalAwayScore && g.finalHomeScore) ||
+    [];
+  const liveGames =
+    gamesWithSortedLines?.filter((g) => g.liveGameLines.length > 0) || [];
+  const notStartedGames =
+    gamesWithSortedLines?.filter((g) => g.liveGameLines.length === 0) || [];
+  console.log({ notStartedGames, liveGames });
+
   return (
     <Grid.Container gap={2} justify="center">
-      {gamesWithSortedLines?.sort(sortStarted).map((game) => (
-        <Grid key={game?.id} style={{ width: "500px", maxWidth: "95vw" }}>
-          <GameCard
-            game={game}
-            messageTimestamp={messageTimestamp}
-            view={view}
-          />
-        </Grid>
-      ))}
+      {[liveGames, notStartedGames, completeGames].map((gameSet) =>
+        gameSet.map((game) => (
+          <Grid key={game?.id} style={{ width: "425px", maxWidth: "95vw" }}>
+            <GameCard
+              game={game}
+              messageTimestamp={messageTimestamp}
+              view={view}
+            />
+          </Grid>
+        ))
+      )}
     </Grid.Container>
   );
 }

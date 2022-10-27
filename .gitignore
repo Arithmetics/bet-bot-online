@@ -36,3 +36,5 @@ yarn-error.log*
 
 # me
 *.env
+*draft-kings.log*
+backend/draft-kings.log

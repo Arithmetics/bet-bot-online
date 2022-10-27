@@ -10,6 +10,7 @@ import {
   ButtonGroup,
   useMediaQuery,
   Button,
+  useTheme,
 } from "@geist-ui/react";
 import AlertTriangle from "@geist-ui/react-icons/alertTriangle";
 import useWebSocket, { ReadyState } from "react-use-websocket";
@@ -33,6 +34,8 @@ const websocketUrl = "wss://brockcastle.pagekite.me/";
 
 export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
+  const { palette } = useTheme();
+  const downMd = useMediaQuery("sm", { match: "down" });
 
   const { lastMessage, readyState } = useWebSocket(websocketUrl);
 
@@ -67,8 +70,6 @@ export default function Home(): JSX.Element {
   const isDisconnected = readyState === ReadyState.CLOSED;
   const isConnected = readyState === ReadyState.OPEN;
 
-  const downMd = useMediaQuery("sm", { match: "down" });
-
   return (
     <div>
       <Head>
@@ -83,6 +84,7 @@ export default function Home(): JSX.Element {
         style={{
           maxWidth: "2200px",
           width: downMd ? "100%" : "95%",
+          padding: "0px",
         }}
         padding={0}
       >
@@ -91,7 +93,7 @@ export default function Home(): JSX.Element {
           caption={<>welcome to the bet bot</>}
           margin={0}
         >
-          <Text h1>🤖 🏀</Text>
+          {/* <Text h1>🤖 🏀</Text> */}
         </Display>
 
         {isDisconnected ? (
@@ -134,9 +136,36 @@ export default function Home(): JSX.Element {
             <Grid.Container justify="center" gap={3} marginBottom={2}>
               <Grid>
                 <ButtonGroup>
-                  <Button onClick={() => setView("total")}>Totals</Button>
-                  <Button onClick={() => setView("ats")}>Spreads</Button>
-                  <Button onClick={() => setView("bets")}>Bets</Button>
+                  <Button
+                    style={{
+                      backgroundColor:
+                        view === "total" ? palette.violet : "inherit",
+                      color: view === "total" ? palette.foreground : "inherit",
+                    }}
+                    onClick={() => setView("total")}
+                  >
+                    Totals
+                  </Button>
+                  <Button
+                    style={{
+                      backgroundColor:
+                        view === "ats" ? palette.violet : "inherit",
+                      color: view === "ats" ? palette.foreground : "inherit",
+                    }}
+                    onClick={() => setView("ats")}
+                  >
+                    Spreads
+                  </Button>
+                  <Button
+                    style={{
+                      backgroundColor:
+                        view === "bets" ? palette.violet : "inherit",
+                      color: view === "bets" ? palette.foreground : "inherit",
+                    }}
+                    onClick={() => setView("bets")}
+                  >
+                    Bets
+                  </Button>
                 </ButtonGroup>
               </Grid>
             </Grid.Container>

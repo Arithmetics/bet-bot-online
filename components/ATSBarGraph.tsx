@@ -230,8 +230,8 @@ export function ATSBarGraph({ game }: BarGraphProps): JSX.Element | null {
       axisRight={null}
       gridXValues={10}
       gridYValues={0}
-      minValue={-20}
-      maxValue={20}
+      minValue={-10}
+      maxValue={10}
       axisBottom={{
         tickValues: 5,
         format: ".2s",

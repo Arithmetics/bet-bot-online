@@ -73,7 +73,7 @@ export function GameCard({
       : `OVER ${Math.abs(mostRecentLine?.grade || 0)}`;
 
   const mostRecentLineSpreadGrade =
-    (mostRecentLine?.grade || 0) < 0
+    (mostRecentLine?.grade || 0) > 0
       ? `AWAY ${Math.abs(mostRecentLine?.atsGrade || 0)}`
       : `HOME ${Math.abs(mostRecentLine?.atsGrade || 0)}`;
 
@@ -98,7 +98,7 @@ export function GameCard({
                 <Grid.Container alignItems="center" gap={1} wrap="nowrap">
                   <Grid>
                     <Image
-                      height="50px"
+                      height="35px"
                       src={getLogoUrl(game.awayTeam)}
                       alt={game.awayTeam}
                     />
@@ -108,7 +108,7 @@ export function GameCard({
                   </Grid>
                   <Grid>
                     <Image
-                      height="50px"
+                      height="35px"
                       src={getLogoUrl(game.homeTeam)}
                       alt={game.homeTeam}
                     />
@@ -116,8 +116,8 @@ export function GameCard({
                 </Grid.Container>
               </Grid>
             </Grid.Container>
-            <Spacer h={0.5} />
-            <Text h4 margin={0}>
+            <Spacer h={0.4} />
+            <Text h5 margin={0}>
               {!started && !gameComplete && "Not Started"}
               {started &&
                 !gameComplete &&
@@ -154,34 +154,34 @@ export function GameCard({
                 {started && !gameComplete ? mostRecentLineSpreadGrade : "---"}
               </Badge>
             )}
-            <Spacer h={0.5} />
+            <Spacer h={0.4} />
             {stale && started && !gameComplete ? (
               <>
                 <Badge type="warning">Stale: Not updated</Badge>
-                <Spacer h={0.5} />
+                <Spacer h={0.4} />
               </>
             ) : undefined}
             {gameComplete ? (
               <>
                 <Badge type="secondary">Complete</Badge>
-                <Spacer h={0.5} />
+                <Spacer h={0.4} />
               </>
             ) : undefined}
 
             {started && !gameComplete ? (
-              <Text h3 margin={0}>
+              <Text h5 margin={0}>
                 {formatTime(mostRecentLine)}
               </Text>
             ) : undefined}
             {gameComplete ? (
-              <Text h3 margin={0}>
+              <Text h5 margin={0}>
                 {`Total: ${
                   (game.finalAwayScore || 0) + (game.finalHomeScore || 0)
                 }`}
               </Text>
             ) : undefined}
             {!started ? (
-              <Text h4 margin={0} style={{ textAlign: "right" }}>
+              <Text h5 margin={0} style={{ textAlign: "right" }}>
                 {view === "total" && `Total Line: ${game.closingTotalLine}`}
                 {view === "ats" &&
                   `Away Spread: ${game.closingAwayLine >= 0 ? "+" : ""}${
@@ -196,7 +196,7 @@ export function GameCard({
       <Card.Content>
         <div
           style={{
-            height: downMd && !started ? "100px" : "420px",
+            height: !started ? "100px" : "420px",
             width: "100%",
             marginTop: "-1.5rem",
             display: "flex",
@@ -211,7 +211,7 @@ export function GameCard({
         {started ? (
           <div
             style={{
-              height: "300px",
+              height: "200px",
               width: "100%",
               marginTop: "-1.5rem",
               display: "flex",
