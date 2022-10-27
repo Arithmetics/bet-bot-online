@@ -11,7 +11,7 @@ import {
 import { startUpDiscordClient, sendNewBetAlertsToDiscord } from "./discord";
 import featureFlags from "./features";
 
-const MASTER_INTERVAL = 250 * 1000;
+export const MASTER_INTERVAL = 250 * 1000;
 
 let lastMetaDataUpdate: Date | null = null;
 let lastMessage = Date.now();

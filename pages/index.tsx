@@ -12,12 +12,12 @@ import {
   Button,
   useTheme,
 } from "@geist-ui/react";
-import AlertTriangle from "@geist-ui/react-icons/alertTriangle";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { GamePlus, HistoricalBetting } from "../backend/src/database";
-
+import DisconnectedApp from "../components/DisconnectedApp";
 import { Games } from "../components/Games";
 import { RefreshCounter } from "../components/RefreshCounter";
+import NProgress from "nprogress";
 import BetTable from "../components/BetTable";
 
 type ConnectionMessage = {
@@ -52,6 +52,7 @@ export default function Home(): JSX.Element {
       });
     }
     if (readyState === ReadyState.OPEN) {
+      NProgress.start();
       setToast({
         text: "Connected successfully",
         type: "success",
@@ -96,23 +97,7 @@ export default function Home(): JSX.Element {
           {/* <Text h1>🤖 🏀</Text> */}
         </Display>
 
-        {isDisconnected ? (
-          <Grid.Container
-            direction="column"
-            justify="center"
-            alignItems="center"
-            style={{ marginTop: "10rem" }}
-          >
-            <Grid xs={12}>
-              <Text type="error" h4>
-                Disconnected
-              </Text>
-            </Grid>
-            <Grid xs={12}>
-              <AlertTriangle color="red" size={36} />
-            </Grid>
-          </Grid.Container>
-        ) : undefined}
+        {isDisconnected ? <DisconnectedApp /> : undefined}
 
         {isConnecting ? (
           <Loading style={{ marginTop: "10rem" }} type="error">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Text,
   Input,
@@ -8,7 +8,7 @@ import {
   useMediaQuery,
 } from "@geist-ui/react";
 import RefreshCcw from "@geist-ui/react-icons/refreshCcw";
-
+import NProgress from "nprogress";
 import TimeAgo from "react-timeago";
 
 type RefreshCounterProps = {
@@ -27,6 +27,14 @@ export function RefreshCounter({
   const closeHandler = () => {
     setState(false);
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const percentage = (Date.now() - messageTimestamp) / msUntilNextUpdate;
+      NProgress.set(percentage);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const nextUpdateTime = new Date(
     messageTimestamp + msUntilNextUpdate

@@ -126,7 +126,6 @@ function createLiveBarGraphData(game: GamePlus): LiveGameBarDatum[] {
 }
 
 function createCompleteBarGraphData(game: GamePlus): CompleteGameBarDatum[] {
-  console.log(game.awayTeam);
   const finalAwayDeficit =
     (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
 

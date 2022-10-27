@@ -45,7 +45,6 @@ export function Games({
     gamesWithSortedLines?.filter((g) => g.liveGameLines.length > 0) || [];
   const notStartedGames =
     gamesWithSortedLines?.filter((g) => g.liveGameLines.length === 0) || [];
-  console.log({ notStartedGames, liveGames });
 
   return (
     <Grid.Container gap={2} justify="center">
