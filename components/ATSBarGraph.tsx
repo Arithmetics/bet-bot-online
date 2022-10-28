@@ -22,7 +22,7 @@ const Line = (barProps: unknown) => {
     .x((bar: { x: number }) => {
       return bar.x * 2;
     })
-    .y(() => yScale(10));
+    .y(() => yScale(0));
 
   const lineGenerator2 = line()
     // @ts-ignore
@@ -31,12 +31,12 @@ const Line = (barProps: unknown) => {
     })
     .y(() => yScale(-5));
 
-  const lineGenerator3 = line()
-    // @ts-ignore
-    .x((bar: { x: number }) => {
-      return bar.x * 2;
-    })
-    .y(() => yScale(-10));
+  // const lineGenerator3 = line()
+  //   // @ts-ignore
+  //   .x((bar: { x: number }) => {
+  //     return bar.x * 2;
+  //   })
+  //   .y(() => yScale(-10));
 
   return (
     <>
@@ -58,12 +58,12 @@ const Line = (barProps: unknown) => {
         stroke={lineColor}
         style={{ pointerEvents: "none" }}
       />
-      <path
+      {/* <path
         d={lineGenerator3(bars) ?? undefined}
         fill="none"
         stroke={lineColor}
         style={{ pointerEvents: "none" }}
-      />
+      /> */}
     </>
   );
 };

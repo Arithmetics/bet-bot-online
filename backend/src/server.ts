@@ -42,6 +42,7 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 // setup message clients
 const discordClient = startUpDiscordClient();
+// twitter client
 
 async function sendMessageToAllClients(): Promise<void> {
   try {
@@ -55,7 +56,9 @@ async function sendMessageToAllClients(): Promise<void> {
   }
 
   const games = await getAllTodaysGames();
+
   if (featureFlags.reportBets) {
+    // pass in twitter
     sendNewBetAlertsToDiscord(discordClient, games, lastMessage);
   } else {
     console.log("No discord alert: flag off");
@@ -81,6 +84,7 @@ async function sendConnectionMessage(ws: ExtWebSocket): Promise<void> {
     lastMetaDataUpdate < yesterday
   ) {
     historicalBetting = await getHistoricalBettingData();
+    // tweet / discord / text last night results here
   }
   ws.send(JSON.stringify(constructMessage(games)));
 }

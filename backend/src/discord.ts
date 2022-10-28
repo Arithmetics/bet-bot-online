@@ -406,6 +406,7 @@ export function sendNewBetAlertsToDiscord(
           // tag me and kev
           betsChannel.send("<@507719783014465537>");
           betsChannel.send("<@306086225016782849>");
+          // twitter
           sendIMessage(
             "+15038033676",
             `${game.awayTeam} @ ${game.homeTeam} Betting ${Math.abs(
@@ -458,6 +459,7 @@ export function sendNewBetAlertsToDiscord(
           // tag me and kev
           betsChannel.send("<@507719783014465537>");
           betsChannel.send("<@306086225016782849>");
+          // twitter
           sendIMessage(
             "+15038033676",
             `${game.awayTeam} @ ${game.homeTeam} Betting ${Math.abs(

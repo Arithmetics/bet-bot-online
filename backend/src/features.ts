@@ -1,10 +1,10 @@
 const featureFlags = {
-  // queryDraftKings: true,
-  // makeBets: true,
-  // reportBets: true,
-  queryDraftKings: false,
-  makeBets: false,
-  reportBets: false,
+  queryDraftKings: true,
+  makeBets: true,
+  reportBets: true,
+  // queryDraftKings: false,
+  // makeBets: false,
+  // reportBets: false,
 };
 
 export const ATS_BET_THRESHOLD = 4.999;

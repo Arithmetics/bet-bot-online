@@ -52,6 +52,7 @@ export default function Home(): JSX.Element {
       });
     }
     if (readyState === ReadyState.OPEN) {
+      NProgress.configure({ trickle: false });
       NProgress.start();
       setToast({
         text: "Connected successfully",
