@@ -31,6 +31,7 @@ export function RefreshCounter({
   useEffect(() => {
     const interval = setInterval(() => {
       const percentage = (Date.now() - messageTimestamp) / msUntilNextUpdate;
+      console.log("nprogress", percentage);
       NProgress.set(percentage);
     }, 3000);
     return () => clearInterval(interval);

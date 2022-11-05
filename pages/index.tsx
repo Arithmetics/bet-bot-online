@@ -46,6 +46,7 @@ export default function Home(): JSX.Element {
 
   useEffect(() => {
     NProgress.configure({ trickle: false });
+    console.log("nprogress", "start");
     NProgress.start();
   }, []);
 
@@ -68,6 +69,7 @@ export default function Home(): JSX.Element {
   useEffect(() => {
     if (lastMessage && lastMessage.data) {
       setCurrentMessage(JSON.parse(lastMessage.data));
+      console.log("nprogress", 0);
       NProgress.set(0);
     }
   }, [lastMessage, setCurrentMessage]);
