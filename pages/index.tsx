@@ -45,6 +45,11 @@ export default function Home(): JSX.Element {
     useState<ConnectionMessage | null>(null);
 
   useEffect(() => {
+    NProgress.configure({ trickle: false });
+    NProgress.start();
+  }, []);
+
+  useEffect(() => {
     if (readyState === ReadyState.CLOSED) {
       setToast({
         text: "Lost connection with server. Refresh and try again.",
@@ -52,8 +57,6 @@ export default function Home(): JSX.Element {
       });
     }
     if (readyState === ReadyState.OPEN) {
-      NProgress.configure({ trickle: false });
-      NProgress.start();
       setToast({
         text: "Connected successfully",
         type: "success",
@@ -65,6 +68,7 @@ export default function Home(): JSX.Element {
   useEffect(() => {
     if (lastMessage && lastMessage.data) {
       setCurrentMessage(JSON.parse(lastMessage.data));
+      NProgress.set(0);
     }
   }, [lastMessage, setCurrentMessage]);
 
