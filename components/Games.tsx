@@ -42,13 +42,16 @@ export function Games({
     gamesWithSortedLines?.filter((g) => g.finalAwayScore && g.finalHomeScore) ||
     [];
   const liveGames =
-    gamesWithSortedLines?.filter((g) => g.liveGameLines.length > 0) || [];
+    gamesWithSortedLines?.filter(
+      (g) =>
+        g.liveGameLines.length > 0 && !g.finalAwayScore && !g.finalHomeScore
+    ) || [];
   const notStartedGames =
     gamesWithSortedLines?.filter((g) => g.liveGameLines.length === 0) || [];
 
   return (
     <Grid.Container gap={2} justify="center">
-      {[liveGames, notStartedGames, completeGames].map((gameSet) =>
+      {[liveGames, completeGames, notStartedGames].map((gameSet) =>
         gameSet.map((game) => (
           <Grid key={game?.id} style={{ width: "425px", maxWidth: "95vw" }}>
             <GameCard

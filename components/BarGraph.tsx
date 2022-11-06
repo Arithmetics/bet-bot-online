@@ -170,8 +170,7 @@ export function TotalBarGraph({ game }: BarGraphProps): JSX.Element | null {
   const { palette } = useTheme();
   const isUpMD = useMediaQuery("md", { match: "up" });
 
-  const marginRight = isUpMD ? 120 : 20;
-  const marginBottom = isUpMD ? 60 : 130;
+  const marginBottom = isUpMD ? 50 : 30;
 
   if (!game) {
     return null;
@@ -205,7 +204,7 @@ export function TotalBarGraph({ game }: BarGraphProps): JSX.Element | null {
       colors={colors}
       margin={{
         top: 50,
-        // right: marginRight,
+        right: 10,
         bottom: marginBottom,
         left: 60,
       }}
