@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Text,
   Input,
@@ -21,6 +21,7 @@ export function RefreshCounter({
   msUntilNextUpdate,
 }: RefreshCounterProps): JSX.Element {
   const [state, setState] = useState(false);
+  const timerRef = useRef<NodeJS.Timer | null>(null);
 
   const downMd = useMediaQuery("sm", { match: "down" });
 
@@ -28,14 +29,28 @@ export function RefreshCounter({
     setState(false);
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const percentage = (Date.now() - messageTimestamp) / msUntilNextUpdate;
-      console.log("nprogress", percentage);
+  const getCurrentPercentage = () => {
+    return (Date.now() - messageTimestamp) / msUntilNextUpdate;
+  };
+
+  const startNProgInterval = () => {
+    timerRef.current = setInterval(() => {
+      const percentage = getCurrentPercentage();
       NProgress.set(percentage);
     }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  };
+
+  useEffect(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    startNProgInterval();
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [messageTimestamp]);
 
   const nextUpdateTime = new Date(
     messageTimestamp + msUntilNextUpdate
