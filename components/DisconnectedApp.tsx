@@ -22,7 +22,7 @@ export default function DisconnectedApp(): JSX.Element {
     >
       <Grid xs={12}>
         <Text type="error" h4>
-          Disconnected
+          Disconnected (Try Refresh)
         </Text>
       </Grid>
       <Grid xs={12}>

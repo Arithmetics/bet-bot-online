@@ -8,34 +8,32 @@ import {
   HistoricalBetting,
   getHistoricalBettingData,
 } from "./database";
-import { startUpDiscordClient, sendNewBetAlertsToDiscord } from "./discord";
+import { startUpDiscordClient } from "./discord";
+import { sendNewBetAlertsToConsumers } from "./alerts";
 import featureFlags from "./features";
 
-export const MASTER_INTERVAL = 250 * 1000;
+type MessageType = "games" | "bet";
 
-let lastMetaDataUpdate: Date | null = null;
-let lastMessage = Date.now();
-let historicalBetting: HistoricalBetting | null = null;
-
-type ConnectionMessage = {
+type WssMessage = {
+  messageType: MessageType;
   messageTimestamp: number;
+};
+
+export type ConnectionMessage = WssMessage & {
   games: GamePlus[];
   msUntilNextUpdate: number;
   historicalBetting: HistoricalBetting | null;
+};
+
+type BetMessage = WssMessage & {
+  bet: GamePlus;
 };
 
 interface ExtWebSocket extends WebSocket {
   isAlive: boolean;
 }
 
-function constructMessage(games: GamePlus[]): ConnectionMessage {
-  return {
-    messageTimestamp: lastMessage,
-    games,
-    msUntilNextUpdate: MASTER_INTERVAL,
-    historicalBetting,
-  };
-}
+export const MASTER_INTERVAL = 250 * 1000;
 
 const app = express();
 const server = http.createServer(app);
@@ -44,32 +42,18 @@ const wss = new WebSocket.Server({ server });
 const discordClient = startUpDiscordClient();
 // twitter client
 
-async function sendMessageToAllClients(): Promise<void> {
-  try {
-    if (featureFlags.queryDraftKings) {
-      await runDraftKingsCycle();
-    } else {
-      console.log("Not querying DK: flag off");
-    }
-  } catch (e) {
-    console.log("BIG BAD ERROR", e);
-  }
+let lastMetaDataUpdate: Date | null = null;
+let lastMessage = Date.now();
+let historicalBetting: HistoricalBetting | null = null;
 
-  const games = await getAllTodaysGames();
-
-  if (featureFlags.reportBets) {
-    // pass in twitter
-    sendNewBetAlertsToDiscord(discordClient, games, lastMessage);
-  } else {
-    console.log("No discord alert: flag off");
-  }
-
-  lastMessage = Date.now();
-
-  console.log("----------------");
-  wss.clients.forEach((client) => {
-    client.send(JSON.stringify(constructMessage(games)));
-  });
+function constructMessage(games: GamePlus[]): ConnectionMessage {
+  return {
+    messageType: "games",
+    messageTimestamp: lastMessage,
+    games,
+    msUntilNextUpdate: MASTER_INTERVAL,
+    historicalBetting,
+  };
 }
 
 async function sendConnectionMessage(ws: ExtWebSocket): Promise<void> {
@@ -99,9 +83,33 @@ wss.on("connection", (ws: ExtWebSocket) => {
   sendConnectionMessage(ws);
 });
 
-// send data out on interval
-sendMessageToAllClients();
-setInterval(sendMessageToAllClients, MASTER_INTERVAL);
+async function updateDataAndPublish(): Promise<void> {
+  try {
+    if (featureFlags.queryDraftKings) {
+      await runDraftKingsCycle();
+    } else {
+      console.log("Not querying DK: flag off");
+    }
+  } catch (e) {
+    console.log("BIG BAD ERROR", e);
+  }
+
+  const games = await getAllTodaysGames();
+
+  if (featureFlags.reportBets) {
+    // pass in twitter
+    sendNewBetAlertsToConsumers(discordClient, games, lastMessage);
+  } else {
+    console.log("No discord alert: flag off");
+  }
+
+  lastMessage = Date.now();
+
+  console.log("----------------");
+  wss.clients.forEach((client) => {
+    client.send(JSON.stringify(constructMessage(games)));
+  });
+}
 
 // check on all connections every 10 secs and close broken connections
 setInterval(() => {
@@ -114,6 +122,10 @@ setInterval(() => {
     ws.ping(null, false);
   });
 }, 10000);
+
+// send data out on interval
+updateDataAndPublish();
+setInterval(updateDataAndPublish, MASTER_INTERVAL);
 
 //start our server
 server.listen(process.env.PORT || 8999, () => {

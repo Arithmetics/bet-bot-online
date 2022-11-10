@@ -1,5 +1,24 @@
 // @ts-ignore
 import osa from "osa2";
+// @ts-ignore
+import { GamePlus, LiveGameLinePlus } from "./database";
+
+export function genIMessageTotal(
+  game: GamePlus,
+  line: LiveGameLinePlus
+): string {
+  return `${game.awayTeam} @ ${game.homeTeam} Betting ${Math.abs(
+    line.grade!
+  )} units on the ${line.grade! < 0 ? "UNDER" : "OVER"}: ${line.totalLine}`;
+}
+
+export function genIMessageATS(game: GamePlus, line: LiveGameLinePlus): string {
+  return `${game.awayTeam} @ ${game.homeTeam} Betting ${Math.abs(
+    line.atsGrade!
+  )} units on the ${line.atsGrade! < 0 ? game.awayTeam : game.homeTeam}: ${
+    line.awayLine
+  }`;
+}
 
 export function sendIMessage(handle: string, message: string) {
   // @ts-ignore
@@ -15,4 +34,8 @@ export function sendIMessage(handle: string, message: string) {
       throw new Error(`no thread with handle '${handle}'`);
     }
   })(handle, message);
+}
+
+export function sendMeAnIMessage(message: string) {
+  sendIMessage("+15038033676", message);
 }

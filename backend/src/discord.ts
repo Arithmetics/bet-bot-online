@@ -3,23 +3,7 @@ import Discord, { GatewayIntentBits } from "discord.js";
 import ReadText from "text-from-image";
 import fs from "fs";
 import { ownerIds } from "./botInformation";
-import {
-  GamePlus,
-  LiveGameLinePlus,
-  getAllTodaysGames,
-  shouldATSBetAwayTeam,
-  shouldATSBetHomeTeam,
-  shouldTotalBetOver,
-  shouldTotalBetUnder,
-} from "./database";
-import { createPacificPrismaDate } from "./utils";
-import {
-  ATS_BET_THRESHOLD,
-  TOTAL_BET_THRESHOLD,
-  ATS_LOW_MINUTE,
-  ATS_HIGH_MINUTE,
-} from "./features";
-import { sendIMessage } from "./iMessage";
+import { GamePlus, getAllTodaysGames, LiveGameLinePlus } from "./database";
 
 const PREFIX = "!";
 
@@ -242,17 +226,13 @@ function sendPersonalReply(message: Discord.Message): void {
     return;
   }
   if (messageIsFrom(message, "dagr")) {
-    message.channel.send(
-      "Back again with some 6 leg SGP? You'll hit one one of these days :)"
-    );
+    message.channel.send("oh look it's MR ELLLIIMINATEDDDDD");
     return;
   }
   if (messageIsFrom(message, "jhi")) {
-    message.channel.send("hahah lil boy jhi. gtfo");
+    message.channel.send("hi jhi");
     return;
   }
-
-  message.channel.send("Tag me again, see what happens!");
 }
 
 export function formatLine(line?: number): string {
@@ -326,152 +306,90 @@ function formatTime(line: LiveGameLinePlus) {
   return `${line.minute}: ${secondString} - ${line.quarter}Q`;
 }
 
-type BetTracking = {
-  date: string | null;
-  totals: string[];
-  ats: string[];
-};
-
-let betTracking: BetTracking = {
-  date: null,
-  totals: [],
-  ats: [],
-};
-
-export function sendNewBetAlertsToDiscord(
+export function sendDiscordBetAlert(
   client: Discord.Client,
-  games: GamePlus[],
-  lastMessage: number
+  embed: Discord.APIEmbed
 ): void {
-  if (betTracking.date === null) {
-    betTracking.date = createPacificPrismaDate().toISOString().split("T")[0];
-  }
-
-  const today = createPacificPrismaDate().toISOString().split("T")[0];
-  if (betTracking.date !== today) {
-    console.log("updating bet tracking at", new Date());
-    betTracking.date = createPacificPrismaDate().toISOString().split("T")[0];
-    betTracking.ats = [];
-    betTracking.totals = [];
-  }
-
   const betsChannel = client.channels.cache.find(
     (c) => c.id === "675574196268564525"
   );
 
   if (betsChannel?.isTextBased()) {
-    games.forEach((game) => {
-      const newLines = game.liveGameLines.filter(
-        (l) => l.timestamp.getTime() > lastMessage
-      );
-
-      newLines.forEach((line) => {
-        if (
-          line.grade &&
-          (line.grade > TOTAL_BET_THRESHOLD ||
-            line.grade < -1 * TOTAL_BET_THRESHOLD) &&
-          !betTracking.totals.some((t) => t === game.awayTeam)
-        ) {
-          betTracking.totals.push(game.awayTeam);
-          const betEmbed = {
-            color: 0x0099ff,
-            title: "BET BOT TOTAL ALERT",
-            fields: [
-              {
-                name: "Game:",
-                value: `${game.awayTeam} @ ${game.homeTeam}`,
-              },
-              {
-                name: "Closing Total Line:",
-                value: `${game.closingTotalLine}`,
-              },
-              {
-                name: "Game Time:",
-                value: formatTime(line),
-              },
-              {
-                name: "Current Total Line:",
-                value: `${line.totalLine}`,
-              },
-              {
-                name: "Bet:",
-                value: `Betting ${Math.abs(line.grade)} units on the ${
-                  line.grade < 0 ? "UNDER" : "OVER"
-                }`,
-              },
-            ],
-          };
-
-          betsChannel?.send({ embeds: [betEmbed] });
-          // tag me and kev
-          betsChannel.send("<@507719783014465537>");
-          betsChannel.send("<@306086225016782849>");
-          // twitter
-          sendIMessage(
-            "+15038033676",
-            `${game.awayTeam} @ ${game.homeTeam} Betting ${Math.abs(
-              line.grade
-            )} units on the ${line.grade < 0 ? "UNDER" : "OVER"}: ${
-              line.totalLine
-            }`
-          );
-        }
-        if (
-          line.atsGrade &&
-          (line.atsGrade > ATS_BET_THRESHOLD ||
-            line.atsGrade < -1 * ATS_BET_THRESHOLD) &&
-          line.totalMinutes &&
-          line.totalMinutes > ATS_LOW_MINUTE &&
-          line.totalMinutes < ATS_HIGH_MINUTE &&
-          !betTracking.ats.some((t) => t === game.awayTeam)
-        ) {
-          betTracking.ats.push(game.awayTeam);
-          const betEmbed = {
-            color: 0x0099ff,
-            title: "BET BOT ATS ALERT",
-            fields: [
-              {
-                name: "Game:",
-                value: `${game.awayTeam} @ ${game.homeTeam}`,
-              },
-              {
-                name: "Closing Away Line:",
-                value: `${game.closingAwayLine}`,
-              },
-              {
-                name: "Game Time:",
-                value: formatTime(line),
-              },
-              {
-                name: "Current Away Line:",
-                value: `${line.awayLine}`,
-              },
-              {
-                name: "Bet:",
-                value: `Betting ${Math.abs(line.atsGrade)} units on the ${
-                  line.atsGrade < 0 ? game.awayTeam : game.homeTeam
-                }`,
-              },
-            ],
-          };
-
-          betsChannel?.send({ embeds: [betEmbed] });
-          // tag me and kev
-          betsChannel.send("<@507719783014465537>");
-          betsChannel.send("<@306086225016782849>");
-          // twitter
-          sendIMessage(
-            "+15038033676",
-            `${game.awayTeam} @ ${game.homeTeam} Betting ${Math.abs(
-              line.atsGrade
-            )} units on the ${
-              line.atsGrade < 0 ? game.awayTeam : game.homeTeam
-            }: ${line.awayLine}`
-          );
-        }
-      });
-    });
+    betsChannel?.send({ embeds: [embed] });
+    // tag me and kev
+    betsChannel.send("<@507719783014465537>");
+    betsChannel.send("<@306086225016782849>");
   }
+}
+
+export function genTotalDiscordEmbed(
+  game: GamePlus,
+  line: LiveGameLinePlus
+): Discord.APIEmbed {
+  const betEmbed = {
+    color: 0x0099ff,
+    title: "BET BOT TOTAL ALERT",
+    fields: [
+      {
+        name: "Game:",
+        value: `${game.awayTeam} @ ${game.homeTeam}`,
+      },
+      {
+        name: "Closing Total Line:",
+        value: `${game.closingTotalLine}`,
+      },
+      {
+        name: "Game Time:",
+        value: formatTime(line),
+      },
+      {
+        name: "Current Total Line:",
+        value: `${line.totalLine}`,
+      },
+      {
+        name: "Bet:",
+        value: `Betting ${Math.abs(line.grade!)} units on the ${
+          line.grade! < 0 ? "UNDER" : "OVER"
+        }`,
+      },
+    ],
+  };
+  return betEmbed;
+}
+
+export function genATSDiscordEmbed(
+  game: GamePlus,
+  line: LiveGameLinePlus
+): Discord.APIEmbed {
+  const betEmbed = {
+    color: 0x0099ff,
+    title: "BET BOT ATS ALERT",
+    fields: [
+      {
+        name: "Game:",
+        value: `${game.awayTeam} @ ${game.homeTeam}`,
+      },
+      {
+        name: "Closing Away Line:",
+        value: `${game.closingAwayLine}`,
+      },
+      {
+        name: "Game Time:",
+        value: formatTime(line),
+      },
+      {
+        name: "Current Away Line:",
+        value: `${line.awayLine}`,
+      },
+      {
+        name: "Bet:",
+        value: `Betting ${Math.abs(line.atsGrade!)} units on the ${
+          line.atsGrade! < 0 ? game.awayTeam : game.homeTeam
+        }`,
+      },
+    ],
+  };
+  return betEmbed;
 }
 
 export function startUpDiscordClient(): Discord.Client {

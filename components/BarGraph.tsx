@@ -204,7 +204,7 @@ export function TotalBarGraph({ game }: BarGraphProps): JSX.Element | null {
       colors={colors}
       margin={{
         top: 50,
-        right: 10,
+        // right: 10,
         bottom: marginBottom,
         left: 60,
       }}
@@ -213,8 +213,8 @@ export function TotalBarGraph({ game }: BarGraphProps): JSX.Element | null {
       axisRight={null}
       gridXValues={10}
       gridYValues={0}
-      minValue={-10}
-      maxValue={10}
+      minValue={-7}
+      maxValue={7}
       axisBottom={{
         tickValues: 5,
         format: ".2s",
@@ -238,7 +238,8 @@ export function TotalBarGraph({ game }: BarGraphProps): JSX.Element | null {
         return (
           <Grid padding={1} style={{ backgroundColor: palette.accents_3 }}>
             Bet {bar.data.grade > 0 || bar.data.winGrade > 0 ? "OVER" : "UNDER"}{" "}
-            {bar.data.total} at {bar.data.minute} mins
+            {bar.data.total} at {bar.data.minute} mins, Grade:{" "}
+            {Math.abs(bar.data.grade)}
           </Grid>
         );
       }}

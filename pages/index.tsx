@@ -12,20 +12,19 @@ import {
   Button,
   useTheme,
 } from "@geist-ui/react";
+import useSound from "use-sound";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { GamePlus, HistoricalBetting } from "../backend/src/database";
+import { ConnectionMessage } from "../backend/src/server";
 import DisconnectedApp from "../components/DisconnectedApp";
 import { Games } from "../components/Games";
 import { RefreshCounter } from "../components/RefreshCounter";
 import NProgress from "nprogress";
 import BetTable from "../components/BetTable";
-
-type ConnectionMessage = {
-  messageTimestamp: number;
-  games: GamePlus[];
-  msUntilNextUpdate: number;
-  historicalBetting: HistoricalBetting | null;
-};
+// @ts-ignore
+import chaching from "../public/chaching.mp3";
+// @ts-ignore
+import alert from "../public/alert.mp3";
 
 export type View = "ats" | "total" | "bets";
 
@@ -36,6 +35,9 @@ export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
   const { palette } = useTheme();
   const downMd = useMediaQuery("sm", { match: "down" });
+
+  const [playAlert] = useSound("/alert.mp3", { volume: 0.5 });
+  const [playMoney] = useSound("/chaching.mp3", { volume: 0.5 });
 
   const { lastMessage, readyState } = useWebSocket(websocketUrl);
 
@@ -67,6 +69,7 @@ export default function Home(): JSX.Element {
 
   useEffect(() => {
     if (lastMessage && lastMessage.data) {
+      playAlert();
       setCurrentMessage(JSON.parse(lastMessage.data));
       NProgress.set(0);
     }
