@@ -107,8 +107,8 @@ function createLiveBarGraphData(game: GamePlus): LiveGameBarDatum[] {
 
     return {
       minute: line.totalMinutes || 0,
-      homeGrade: homeGrade,
-      awayGrade: awayGrade,
+      homeGrade: homeGrade || 0,
+      awayGrade: awayGrade || 0,
       awayLine: line.awayLine,
     };
   });
@@ -193,7 +193,6 @@ export function ATSBarGraph({ game }: BarGraphProps): JSX.Element | null {
 
   const gameComplete =
     game.finalAwayScore && game.finalHomeScore ? true : false;
-
   const data = gameComplete
     ? createCompleteBarGraphData(game)
     : createLiveBarGraphData(game);
@@ -250,7 +249,7 @@ export function ATSBarGraph({ game }: BarGraphProps): JSX.Element | null {
         legendPosition: "middle",
       }}
       tooltip={function (bar: BarTooltipProps<LiveGameBarDatum>): JSX.Element {
-        const betHome = bar.data.awayGrade > 0 || bar.data.winGrade > 0;
+        const betHome = bar.data.awayGrade > 0;
         const lineDisplay = betHome
           ? bar.data.awayLine * -1
           : bar.data.awayLine;
@@ -259,9 +258,7 @@ export function ATSBarGraph({ game }: BarGraphProps): JSX.Element | null {
           <Grid padding={1} style={{ backgroundColor: palette.accents_3 }}>
             Bet {betHome ? "HOME" : "AWAY"} {sign}
             {lineDisplay} at {bar.data.minute} mins, Grade:{" "}
-            {betHome
-              ? Math.abs(bar.data.homeGrade)
-              : Math.abs(bar.data.awayGrade)}
+            {Math.abs(bar.data.homeGrade || bar.data.awayGrade)}
           </Grid>
         );
       }}

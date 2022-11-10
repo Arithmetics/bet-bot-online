@@ -158,7 +158,6 @@ function createCompleteBarGraphData(game: GamePlus): CompleteGameBarDatum[] {
       total: 0,
     });
   });
-
   return datum;
 }
 
@@ -235,11 +234,25 @@ export function TotalBarGraph({ game }: BarGraphProps): JSX.Element | null {
         legendPosition: "middle",
       }}
       tooltip={function (bar: BarTooltipProps<LiveGameBarDatum>): JSX.Element {
+        if (gameComplete) {
+          return (
+            <Grid padding={1} style={{ backgroundColor: palette.accents_3 }}>
+              Bet{" "}
+              {bar.data.winGrade > 0 || bar.data.lossGrade > 0
+                ? "OVER"
+                : "UNDER"}{" "}
+              {bar.data.total} at {bar.data.minute} mins, Grade:{" "}
+              {Math.abs(
+                (bar.data.winGrade as number) || (bar.data.lossGrade as number)
+              ).toFixed(2)}
+            </Grid>
+          );
+        }
         return (
           <Grid padding={1} style={{ backgroundColor: palette.accents_3 }}>
-            Bet {bar.data.grade > 0 || bar.data.winGrade > 0 ? "OVER" : "UNDER"}{" "}
-            {bar.data.total} at {bar.data.minute} mins, Grade:{" "}
-            {Math.abs(bar.data.grade)}
+            Bet {bar.data.grade > 0 ? "OVER" : "UNDER"} {bar.data.total} at{" "}
+            {bar.data.minute} mins, Grade:{" "}
+            {Math.abs(bar.data.grade || bar.data.underGrade).toFixed(2)}
           </Grid>
         );
       }}

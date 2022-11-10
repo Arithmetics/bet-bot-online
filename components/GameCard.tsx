@@ -117,14 +117,26 @@ export function GameCard({
               </Grid>
             </Grid.Container>
             <Spacer h={0.4} />
-            <Text h5 margin={0}>
-              {!started && !gameComplete && "Not Started"}
-              {started &&
-                !gameComplete &&
-                `Score: ${mostRecentLine.awayScore} - ${mostRecentLine.homeScore}`}
-              {gameComplete &&
-                `Final: ${game.finalAwayScore} - ${game.finalHomeScore}`}
-            </Text>
+            <div>
+              <Text h5 margin={0}>
+                {!started && !gameComplete && "Not Started"}
+                {started &&
+                  !gameComplete &&
+                  `Score: ${mostRecentLine.awayScore} - ${mostRecentLine.homeScore}`}
+                {gameComplete &&
+                  `Final: ${game.finalAwayScore} - ${game.finalHomeScore}`}
+              </Text>
+              {started && (
+                <Text h6 margin={0}>
+                  {!gameComplete &&
+                    `Closed @ ${
+                      view === "total"
+                        ? `${game.closingTotalLine} Total`
+                        : `Away ${game.closingAwayLine}`
+                    }  `}
+                </Text>
+              )}
+            </div>
           </Grid>
           <Grid
             xs={10}

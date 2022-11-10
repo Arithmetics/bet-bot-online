@@ -51,7 +51,7 @@ function createSpreadGraphData(game: GamePlus): Serie[] {
   };
 
   const botProj = {
-    id: "Bot Projected",
+    id: "Bot Projected Away Spread",
     data:
       legalLiveLines.map((line) => ({
         x: line.totalMinutes,
