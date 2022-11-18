@@ -1,9 +1,9 @@
 import got from "got";
 import {
+  DraftKingsGameReduced,
   DraftKingsResponse,
   OfferLabelEnum,
   OutcomeLabelEnum,
-  PeriodEnum,
   StateEnum,
 } from "./DraftKingsTypes";
 import { convertToPacificPrismaDate, createPacificPrismaDate } from "./utils";
@@ -12,23 +12,6 @@ import log from "log-to-file";
 
 const GAME_LINES_ID = 487;
 const SUBCATEGOGERY = 4511;
-
-export type DraftKingsGameReduced = {
-  eventId: number;
-  startDate: Date;
-  period?: PeriodEnum;
-  minute: number;
-  second: number;
-  homeTeam: string;
-  awayTeam: string;
-  state: StateEnum;
-  isClockRunning: boolean;
-  homeTeamScore?: number;
-  awayTeamScore?: number;
-  totalLine?: number;
-  atsLine?: number;
-  isBettingAllowed?: number;
-};
 
 export function filterNotStartedGames(
   games: DraftKingsGameReduced[]

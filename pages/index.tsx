@@ -13,12 +13,13 @@ import {
 } from "@geist-ui/react";
 import useSound from "use-sound";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { ConnectionMessage } from "../backend/src/serverTypes";
+import { BetMessage, ConnectionMessage } from "../backend/src/serverTypes";
 import DisconnectedApp from "../components/DisconnectedApp";
 import { Games } from "../components/Games";
 import { RefreshCounter } from "../components/RefreshCounter";
 import NProgress from "nprogress";
 import BetTable from "../components/BetTable";
+import BetModal from "../components/BetModal";
 // @ts-ignore
 // eslint-disable-next-line no-unused-vars
 import chaching from "../public/chaching.mp3";
@@ -42,9 +43,13 @@ export default function Home(): JSX.Element {
   const { lastMessage, readyState } = useWebSocket(websocketUrl);
 
   const [view, setView] = useState<View>("total");
+  const [newBetModalOpen, setNewBetModalOpen] = useState<boolean>(true);
 
   const [currentMessage, setCurrentMessage] =
     useState<ConnectionMessage | null>(null);
+
+  const [betMessages, setBetMessages] =
+    useState<BetMessage[]>([]);
 
   useEffect(() => {
     NProgress.configure({ trickle: false });
@@ -70,7 +75,18 @@ export default function Home(): JSX.Element {
   useEffect(() => {
     if (lastMessage && lastMessage.data) {
       playAlert();
-      setCurrentMessage(JSON.parse(lastMessage.data));
+      const messageData = JSON.parse(lastMessage.data);
+      if (messageData.messageType === 'games') {
+        setCurrentMessage(messageData);
+      }
+      if (messageData.messageType === 'bet') {
+        playMoney();
+        setBetMessages([
+          messageData,
+          ...betMessages,
+        ])
+        setNewBetModalOpen(true);
+      }
       NProgress.set(0);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,6 +194,7 @@ export default function Home(): JSX.Element {
           </>
         ) : undefined}
       </Page>
+      <BetModal isOpen={newBetModalOpen} onClose={() => setNewBetModalOpen(false)} betMessages={betMessages} />
     </div>
   );
 }

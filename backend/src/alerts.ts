@@ -1,7 +1,9 @@
 import Discord from "discord.js";
+import WebSocket from "ws";
 // @ts-ignore
 import {
   GamePlus,
+  LiveGameLinePlus,
   shouldATSBetAwayTeam,
   shouldATSBetHomeTeam,
   shouldTotalBetOver,
@@ -14,6 +16,7 @@ import {
 } from "./discord";
 import { genIMessageATS, genIMessageTotal, sendMeAnIMessage } from "./iMessage";
 import { createPacificPrismaDate } from "./utils";
+import { BetMessage } from "./serverTypes";
 
 type BetTracking = {
   date: string | null;
@@ -27,8 +30,27 @@ let betTracking: BetTracking = {
   ats: [],
 };
 
+function sendWssBetAlerts(
+  wss: WebSocket.Server<WebSocket.WebSocket>,
+  game: GamePlus,
+  line: LiveGameLinePlus
+): void {
+  wss.clients.forEach((client) => {
+    const betMessage: BetMessage = {
+      bet: {
+        ...game,
+        liveGameLines: [line],
+      },
+      messageType: "bet",
+      messageTimestamp: Date.now(),
+    };
+    client.send(JSON.stringify(betMessage));
+  });
+}
+
 export function sendNewBetAlertsToConsumers(
   client: Discord.Client,
+  wss: WebSocket.Server<WebSocket.WebSocket>,
   games: GamePlus[],
   lastMessage: number
 ): void {
@@ -65,6 +87,7 @@ export function sendNewBetAlertsToConsumers(
         sendMeAnIMessage(message);
         // twitter
         // fe client
+        sendWssBetAlerts(wss, game, line);
       }
       // bet on away team
       if (shouldATSBetAwayTeam(line, hasATSBet)) {
@@ -77,6 +100,7 @@ export function sendNewBetAlertsToConsumers(
         sendMeAnIMessage(message);
         // twitter
         // fe client
+        sendWssBetAlerts(wss, game, line);
       }
       // bet on over
       if (shouldTotalBetOver(line, hasTotalBet)) {
@@ -89,6 +113,7 @@ export function sendNewBetAlertsToConsumers(
         sendMeAnIMessage(message);
         // twitter
         // fe client
+        sendWssBetAlerts(wss, game, line);
       }
       // bet on under
       if (shouldTotalBetUnder(line, hasTotalBet)) {
@@ -101,6 +126,7 @@ export function sendNewBetAlertsToConsumers(
         sendMeAnIMessage(message);
         // twitter
         // fe client
+        sendWssBetAlerts(wss, game, line);
       }
     });
   });

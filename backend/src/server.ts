@@ -84,7 +84,7 @@ async function updateDataAndPublish(): Promise<void> {
 
   if (featureFlags.reportBets) {
     // pass in twitter
-    sendNewBetAlertsToConsumers(discordClient, games, lastMessage);
+    sendNewBetAlertsToConsumers(discordClient, wss, games, lastMessage);
   } else {
     console.log("No discord alert: flag off");
   }
@@ -93,7 +93,12 @@ async function updateDataAndPublish(): Promise<void> {
 
   console.log("----------------");
   wss.clients.forEach((client) => {
-    client.send(JSON.stringify(constructMessage(games)));
+    // mock data
+    if (featureFlags.useMockData) {
+      client.send(JSON.stringify(fakeConnectionMessage));
+    } else {
+      client.send(JSON.stringify(constructMessage(games)));
+    }
   });
 }
 
