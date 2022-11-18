@@ -2,7 +2,6 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import {
   Page,
-  Text,
   Display,
   Grid,
   useToasts,
@@ -14,22 +13,23 @@ import {
 } from "@geist-ui/react";
 import useSound from "use-sound";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { GamePlus, HistoricalBetting } from "../backend/src/database";
-import { ConnectionMessage } from "../backend/src/server";
+import { ConnectionMessage } from "../backend/src/serverTypes";
 import DisconnectedApp from "../components/DisconnectedApp";
 import { Games } from "../components/Games";
 import { RefreshCounter } from "../components/RefreshCounter";
 import NProgress from "nprogress";
 import BetTable from "../components/BetTable";
 // @ts-ignore
+// eslint-disable-next-line no-unused-vars
 import chaching from "../public/chaching.mp3";
 // @ts-ignore
+// eslint-disable-next-line no-unused-vars
 import alert from "../public/alert.mp3";
 
 export type View = "ats" | "total" | "bets";
 
-// const websocketUrl = "ws://localhost:8999";
-const websocketUrl = "wss://brockcastle.pagekite.me/";
+const websocketUrl = "ws://localhost:8999";
+// const websocketUrl = "wss://brockcastle.pagekite.me/";
 
 export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
@@ -73,6 +73,7 @@ export default function Home(): JSX.Element {
       setCurrentMessage(JSON.parse(lastMessage.data));
       NProgress.set(0);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastMessage, setCurrentMessage]);
 
   const isConnecting = readyState === ReadyState.CONNECTING;

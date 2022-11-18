@@ -87,7 +87,7 @@ export function GameCard({
 
   return (
     <Card>
-      <Card.Content>
+      <Card.Content padding={1}>
         <Grid.Container gap={1} justify="space-between">
           <Grid xs={12} direction="column">
             <Grid.Container
@@ -128,8 +128,7 @@ export function GameCard({
               </Text>
               {started && (
                 <Text h6 margin={0}>
-                  {!gameComplete &&
-                    `Closed @ ${
+                  {`Closed @ ${
                       view === "total"
                         ? `${game.closingTotalLine} Total`
                         : `Away ${game.closingAwayLine}`
@@ -185,10 +184,17 @@ export function GameCard({
                 {formatTime(mostRecentLine)}
               </Text>
             ) : undefined}
-            {gameComplete ? (
+            {gameComplete && view === "total" ? (
               <Text h5 margin={0}>
-                {`Total: ${
+                {`Final Total: ${
                   (game.finalAwayScore || 0) + (game.finalHomeScore || 0)
+                }`}
+              </Text>
+            ) : undefined}
+            {gameComplete && view === "ats" ? (
+              <Text h5 margin={0}>
+                {`Final Away: ${
+                  (game.finalAwayScore || 0) - (game.finalHomeScore || 0)
                 }`}
               </Text>
             ) : undefined}

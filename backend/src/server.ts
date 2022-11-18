@@ -11,27 +11,8 @@ import {
 import { startUpDiscordClient } from "./discord";
 import { sendNewBetAlertsToConsumers } from "./alerts";
 import featureFlags from "./features";
-
-type MessageType = "games" | "bet";
-
-type WssMessage = {
-  messageType: MessageType;
-  messageTimestamp: number;
-};
-
-export type ConnectionMessage = WssMessage & {
-  games: GamePlus[];
-  msUntilNextUpdate: number;
-  historicalBetting: HistoricalBetting | null;
-};
-
-type BetMessage = WssMessage & {
-  bet: GamePlus;
-};
-
-interface ExtWebSocket extends WebSocket {
-  isAlive: boolean;
-}
+import { ConnectionMessage, ExtWebSocket } from "./serverTypes";
+import { fakeConnectionMessage } from "./mock";
 
 export const MASTER_INTERVAL = 250 * 1000;
 
@@ -69,6 +50,11 @@ async function sendConnectionMessage(ws: ExtWebSocket): Promise<void> {
   ) {
     historicalBetting = await getHistoricalBettingData();
     // tweet / discord / text last night results here
+  }
+  // mock data
+  if (featureFlags.useMockData) {
+    ws.send(JSON.stringify(fakeConnectionMessage));
+    return;
   }
   ws.send(JSON.stringify(constructMessage(games)));
 }
