@@ -30,17 +30,33 @@ let betTracking: BetTracking = {
   ats: [],
 };
 
-function sendWssBetAlerts(
-  wss: WebSocket.Server<WebSocket.WebSocket>,
+export function getWssTotalMessage(
   game: GamePlus,
   line: LiveGameLinePlus
+): string {
+  return `${game.awayTeam} @ ${game.homeTeam} Betting ${Math.abs(
+    line.grade!
+  )} units on the ${line.grade! < 0 ? "UNDER" : "OVER"}: ${line.totalLine}`;
+}
+
+export function getWssATSMessage(
+  game: GamePlus,
+  line: LiveGameLinePlus
+): string {
+  return `${game.awayTeam} @ ${game.homeTeam} Betting ${Math.abs(
+    line.atsGrade!
+  )} units on the ${line.atsGrade! < 0 ? game.awayTeam : game.homeTeam}: ${
+    line.awayLine
+  }`;
+}
+
+function sendWssBetAlerts(
+  wss: WebSocket.Server<WebSocket.WebSocket>,
+  messages: string[]
 ): void {
   wss.clients.forEach((client) => {
     const betMessage: BetMessage = {
-      bet: {
-        ...game,
-        liveGameLines: [line],
-      },
+      bets: messages,
       messageType: "bet",
       messageTimestamp: Date.now(),
     };
@@ -66,6 +82,8 @@ export function sendNewBetAlertsToConsumers(
     betTracking.totals = [];
   }
 
+  const wssMessages: string[] = [];
+
   games.forEach((game) => {
     const newLines = game.liveGameLines.filter(
       (l) => l.timestamp.getTime() > lastMessage
@@ -81,52 +99,59 @@ export function sendNewBetAlertsToConsumers(
         // messages
         const betEmbed = genATSDiscordEmbed(game, line);
         const message = genIMessageATS(game, line);
+        const wssMessage = getWssATSMessage(game, line);
         // sends
         sendDiscordBetAlert(client, betEmbed);
         // imessage
         sendMeAnIMessage(message);
         // twitter
         // fe client
-        sendWssBetAlerts(wss, game, line);
+        wssMessages.push(wssMessage);
       }
       // bet on away team
       if (shouldATSBetAwayTeam(line, hasATSBet)) {
         betTracking.ats.push(game.awayTeam);
         const betEmbed = genATSDiscordEmbed(game, line);
         const message = genIMessageATS(game, line);
+        const wssMessage = getWssATSMessage(game, line);
         // sends
         sendDiscordBetAlert(client, betEmbed);
         // imessage
         sendMeAnIMessage(message);
         // twitter
         // fe client
-        sendWssBetAlerts(wss, game, line);
+        wssMessages.push(wssMessage);
       }
       // bet on over
       if (shouldTotalBetOver(line, hasTotalBet)) {
         betTracking.totals.push(game.awayTeam);
         const betEmbed = genTotalDiscordEmbed(game, line);
         const message = genIMessageTotal(game, line);
+        const wssMessage = getWssTotalMessage(game, line);
         // sends
         sendDiscordBetAlert(client, betEmbed);
         // imessage
         sendMeAnIMessage(message);
         // twitter
         // fe client
-        sendWssBetAlerts(wss, game, line);
+        wssMessages.push(wssMessage);
       }
       // bet on under
       if (shouldTotalBetUnder(line, hasTotalBet)) {
         betTracking.totals.push(game.awayTeam);
         const betEmbed = genTotalDiscordEmbed(game, line);
         const message = genIMessageTotal(game, line);
+        const wssMessage = getWssTotalMessage(game, line);
         // sends
         sendDiscordBetAlert(client, betEmbed);
         // imessage
         sendMeAnIMessage(message);
         // twitter
         // fe client
-        sendWssBetAlerts(wss, game, line);
+        wssMessages.push(wssMessage);
+      }
+      if (wssMessages.length > 0) {
+        sendWssBetAlerts(wss, wssMessages);
       }
     });
   });

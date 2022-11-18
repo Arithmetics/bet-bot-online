@@ -9,7 +9,7 @@ export type WssMessage = {
 };
 
 export type BetMessage = WssMessage & {
-  bet: GamePlus;
+  bets: string[];
 };
 
 export type ConnectionMessage = WssMessage & {

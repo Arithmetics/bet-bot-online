@@ -43,13 +43,12 @@ export default function Home(): JSX.Element {
   const { lastMessage, readyState } = useWebSocket(websocketUrl);
 
   const [view, setView] = useState<View>("total");
-  const [newBetModalOpen, setNewBetModalOpen] = useState<boolean>(true);
+  const [newBetModalOpen, setNewBetModalOpen] = useState<boolean>(false);
 
   const [currentMessage, setCurrentMessage] =
     useState<ConnectionMessage | null>(null);
 
-  const [betMessages, setBetMessages] =
-    useState<BetMessage[]>([]);
+  const [betMessage, setBetMessage] = useState<BetMessage | null>(null);
 
   useEffect(() => {
     NProgress.configure({ trickle: false });
@@ -76,20 +75,17 @@ export default function Home(): JSX.Element {
     if (lastMessage && lastMessage.data) {
       playAlert();
       const messageData = JSON.parse(lastMessage.data);
-      if (messageData.messageType === 'games') {
+      if (messageData.messageType === "games") {
         setCurrentMessage(messageData);
       }
-      if (messageData.messageType === 'bet') {
+      if (messageData.messageType === "bet") {
         playMoney();
-        setBetMessages([
-          messageData,
-          ...betMessages,
-        ])
+        setBetMessage(messageData);
         setNewBetModalOpen(true);
       }
       NProgress.set(0);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastMessage, setCurrentMessage]);
 
   const isConnecting = readyState === ReadyState.CONNECTING;
@@ -194,7 +190,11 @@ export default function Home(): JSX.Element {
           </>
         ) : undefined}
       </Page>
-      <BetModal isOpen={newBetModalOpen} onClose={() => setNewBetModalOpen(false)} betMessages={betMessages} />
+      <BetModal
+        isOpen={newBetModalOpen}
+        onClose={() => setNewBetModalOpen(false)}
+        betMessage={betMessage}
+      />
     </div>
   );
 }
