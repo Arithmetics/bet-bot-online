@@ -29,8 +29,8 @@ import alert from "../public/alert.mp3";
 
 export type View = "ats" | "total" | "bets";
 
-const websocketUrl = "ws://localhost:8999";
-// const websocketUrl = "wss://brockcastle.pagekite.me/";
+// const websocketUrl = "ws://localhost:8999";
+const websocketUrl = "wss://brockcastle.pagekite.me/";
 
 export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
