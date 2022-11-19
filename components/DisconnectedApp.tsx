@@ -1,14 +1,5 @@
 import {
-  Page,
-  Text,
-  Display,
-  Grid,
-  useToasts,
-  Loading,
-  ButtonGroup,
-  useMediaQuery,
-  Button,
-  useTheme,
+  Grid, Text
 } from "@geist-ui/react";
 import AlertTriangle from "@geist-ui/react-icons/alertTriangle";
 
@@ -22,7 +13,7 @@ export default function DisconnectedApp(): JSX.Element {
     >
       <Grid xs={12}>
         <Text type="error" h4>
-          Disconnected (Try Refresh)
+          Disconnected
         </Text>
       </Grid>
       <Grid xs={12}>

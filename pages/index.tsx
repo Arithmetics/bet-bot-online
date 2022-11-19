@@ -2,7 +2,6 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import {
   Page,
-  Text,
   Display,
   Grid,
   useToasts,
@@ -14,22 +13,24 @@ import {
 } from "@geist-ui/react";
 import useSound from "use-sound";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { GamePlus, HistoricalBetting } from "../backend/src/database";
-import { ConnectionMessage } from "../backend/src/server";
+import { BetMessage, ConnectionMessage } from "../backend/src/serverTypes";
 import DisconnectedApp from "../components/DisconnectedApp";
 import { Games } from "../components/Games";
 import { RefreshCounter } from "../components/RefreshCounter";
 import NProgress from "nprogress";
 import BetTable from "../components/BetTable";
+import BetModal from "../components/BetModal";
 // @ts-ignore
+// eslint-disable-next-line no-unused-vars
 import chaching from "../public/chaching.mp3";
 // @ts-ignore
+// eslint-disable-next-line no-unused-vars
 import alert from "../public/alert.mp3";
 
 export type View = "ats" | "total" | "bets";
 
-// const websocketUrl = "ws://localhost:8999";
-const websocketUrl = "wss://brockcastle.pagekite.me/";
+const websocketUrl = "ws://localhost:8999";
+// const websocketUrl = "wss://brockcastle.pagekite.me/";
 
 export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
@@ -42,9 +43,12 @@ export default function Home(): JSX.Element {
   const { lastMessage, readyState } = useWebSocket(websocketUrl);
 
   const [view, setView] = useState<View>("total");
+  const [newBetModalOpen, setNewBetModalOpen] = useState<boolean>(false);
 
   const [currentMessage, setCurrentMessage] =
     useState<ConnectionMessage | null>(null);
+
+  const [betMessage, setBetMessage] = useState<BetMessage | null>(null);
 
   useEffect(() => {
     NProgress.configure({ trickle: false });
@@ -70,9 +74,18 @@ export default function Home(): JSX.Element {
   useEffect(() => {
     if (lastMessage && lastMessage.data) {
       playAlert();
-      setCurrentMessage(JSON.parse(lastMessage.data));
+      const messageData = JSON.parse(lastMessage.data);
+      if (messageData.messageType === "games") {
+        setCurrentMessage(messageData);
+      }
+      if (messageData.messageType === "bet") {
+        playMoney();
+        setBetMessage(messageData);
+        setNewBetModalOpen(true);
+      }
       NProgress.set(0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastMessage, setCurrentMessage]);
 
   const isConnecting = readyState === ReadyState.CONNECTING;
@@ -177,6 +190,11 @@ export default function Home(): JSX.Element {
           </>
         ) : undefined}
       </Page>
+      <BetModal
+        isOpen={newBetModalOpen}
+        onClose={() => setNewBetModalOpen(false)}
+        betMessage={betMessage}
+      />
     </div>
   );
 }

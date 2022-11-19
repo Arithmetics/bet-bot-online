@@ -149,3 +149,20 @@ export interface MediaListEntity {
   mediaTypeName: string;
   updatedAt: string;
 }
+
+export type DraftKingsGameReduced = {
+  eventId: number;
+  startDate: Date;
+  period?: PeriodEnum;
+  minute: number;
+  second: number;
+  homeTeam: string;
+  awayTeam: string;
+  state: StateEnum;
+  isClockRunning: boolean;
+  homeTeamScore?: number;
+  awayTeamScore?: number;
+  totalLine?: number;
+  atsLine?: number;
+  isBettingAllowed?: number;
+};

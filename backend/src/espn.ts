@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import got from "got";
 import { GamePlus, getAllTodaysGames, updateFinalScore } from "./database";
-import { DraftKingsGameReduced } from "./draftKings";
+import { DraftKingsGameReduced } from "./DraftKingsTypes";
 import { createPacificPrismaDate } from "./utils";
 
 type ESPNCompetitor = {

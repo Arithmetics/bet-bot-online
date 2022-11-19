@@ -4,6 +4,7 @@ import ReadText from "text-from-image";
 import fs from "fs";
 import { ownerIds } from "./botInformation";
 import { GamePlus, getAllTodaysGames, LiveGameLinePlus } from "./database";
+import featureFlags from "./features";
 
 const PREFIX = "!";
 
@@ -428,7 +429,9 @@ export function startUpDiscordClient(): Discord.Client {
     });
   });
 
-  client.login(process.env.DISCORD_BOT_TOKEN);
+  if (!featureFlags.useMockData) {
+    client.login(process.env.DISCORD_BOT_TOKEN);
+  }
 
   return client;
 }
