@@ -4,19 +4,17 @@ import { LegendAnchor } from "@nivo/legends";
 
 function createGraphData(profits: Record<string, number>): Serie[] {
   const firstDay = Object.keys(profits)[0];
-
-  const x = 0;
+  const zero = 0;
   return [
     {
       id: "Profit",
       data: [
         {
           x: firstDay,
-          y: x.toFixed(2),
+          y: zero.toFixed(2),
         },
       ].concat(
         Object.keys(profits).map((k, _i) => {
-          console.log(k);
           return {
             x: k,
             y: profits[k].toFixed(2),
