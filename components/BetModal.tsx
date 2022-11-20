@@ -8,13 +8,20 @@ type BetModalProps = {
 };
 
 function BetModal({ isOpen, onClose, betMessage }: BetModalProps): JSX.Element {
+  const betTime = new Date(
+    betMessage?.messageTimestamp || Date.now()
+  ).toLocaleDateString();
   return (
     <Modal visible={isOpen} onClose={onClose}>
       <Modal.Title>New Live Bets</Modal.Title>
-      <Modal.Subtitle>{betMessage?.messageTimestamp}</Modal.Subtitle>
+      <Modal.Subtitle>{betTime}</Modal.Subtitle>
       <Modal.Content>
         {betMessage?.bets?.map((bet) => {
-          return <Note key={JSON.stringify(bet)}>{bet}</Note>;
+          return (
+            <Note key={JSON.stringify(bet)} label={false}>
+              {bet}
+            </Note>
+          );
         })}
       </Modal.Content>
       <Modal.Action passive onClick={() => onClose()}>
