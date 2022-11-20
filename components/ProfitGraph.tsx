@@ -3,15 +3,26 @@ import { ResponsiveLine, Serie, PointTooltipProps } from "@nivo/line";
 import { LegendAnchor } from "@nivo/legends";
 
 function createGraphData(profits: Record<string, number>): Serie[] {
+  const firstDay = Object.keys(profits)[0];
+
+  const x = 0;
   return [
     {
       id: "Profit",
-      data: Object.keys(profits).map((k, i) => {
-        return {
-          x: k,
-          y: profits[k].toFixed(2),
-        };
-      }),
+      data: [
+        {
+          x: firstDay,
+          y: x.toFixed(2),
+        },
+      ].concat(
+        Object.keys(profits).map((k, _i) => {
+          console.log(k);
+          return {
+            x: k,
+            y: profits[k].toFixed(2),
+          };
+        })
+      ),
     },
   ];
 }
@@ -53,7 +64,7 @@ export default function ProfitGraph({
       yScale={{
         type: "linear",
         reverse: false,
-        min: "auto",
+        min: 0,
         max: "auto",
       }}
       yFormat=" >-.2f"
