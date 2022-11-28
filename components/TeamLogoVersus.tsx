@@ -24,7 +24,9 @@ export function TeamLogoVersus({
           />
         </Grid>
         <Grid>
-          <Text h4>@</Text>
+          <Text h4 margin={0}>
+            @
+          </Text>
         </Grid>
         <Grid>
           <Image

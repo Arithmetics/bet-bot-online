@@ -1,6 +1,9 @@
-import { Grid, Card } from "@geist-ui/react";
+import { Grid, Card, Text } from "@geist-ui/react";
 import TeamLogoVersus from "./TeamLogoVersus";
 import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
+import ATSBarGraph from "./ATSBarGraph";
+import TotalBarGraph from "./BarGraph";
+import QuickGame from "./QuickGame";
 
 type QuickViewProps = {
   games?: GamePlus[];
@@ -37,13 +40,11 @@ export function QuickView({
     <Grid.Container gap={1} justify="center">
       {[liveGames, completeGames, notStartedGames].map((gameSet) =>
         gameSet.map((game) => (
-          <Grid key={game?.id} xs={24}>
-            <Card shadow width="100%">
-              <Grid>
-                <TeamLogoVersus game={game} />
-              </Grid>
-            </Card>
-          </Grid>
+          <QuickGame
+            key={game.id}
+            game={game}
+            messageTimestamp={messageTimestamp}
+          />
         ))
       )}
     </Grid.Container>

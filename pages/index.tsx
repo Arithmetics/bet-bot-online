@@ -43,7 +43,7 @@ export default function Home(): JSX.Element {
 
   const { lastMessage, readyState } = useWebSocket(websocketUrl);
 
-  const [view, setView] = useState<View>("total");
+  const [view, setView] = useState<View>("quick");
   const [newBetModalOpen, setNewBetModalOpen] = useState<boolean>(false);
 
   const [currentMessage, setCurrentMessage] =

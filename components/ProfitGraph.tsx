@@ -62,7 +62,7 @@ export default function ProfitGraph({
       yScale={{
         type: "linear",
         reverse: false,
-        min: 0,
+        min: "auto",
         max: "auto",
       }}
       yFormat=" >-.2f"

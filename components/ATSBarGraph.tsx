@@ -31,7 +31,6 @@ const Line = (barProps: unknown) => {
     })
     .y(() => yScale(-5));
 
-
   return (
     <>
       <path
@@ -94,7 +93,7 @@ function createLiveBarGraphData(game: GamePlus): LiveGameBarDatum[] {
     const homeGrade = line.atsGrade >= 0 ? line.atsGrade : 0;
 
     return {
-      minute: (line.totalMinutes || 0) + (Math.random() * 0.05),
+      minute: (line.totalMinutes || 0) + Math.random() * 0.05,
       homeGrade: homeGrade || 0,
       awayGrade: awayGrade || 0,
       awayLine: line.awayLine,
@@ -135,7 +134,7 @@ function createCompleteBarGraphData(game: GamePlus): CompleteGameBarDatum[] {
         awayLine: 0,
       };
     }
-    
+
     const isBettingAway = line.atsGrade < 0;
     // loss by 10 - (away +15) = (-5) which is less than 0 so away covers
     const didAwayCover = finalAwayDeficit - line.awayLine <= 0;
@@ -146,9 +145,8 @@ function createCompleteBarGraphData(game: GamePlus): CompleteGameBarDatum[] {
     const winGrade = projectedWin ? line.atsGrade : 0;
     const lossGrade = !projectedWin ? line.atsGrade : 0;
 
-    console.log({isBettingAway, didAwayCover, projectedWin, winGrade, lossGrade})
     return {
-      minute: (line.totalMinutes || 0) + (Math.random() * 0.05),
+      minute: (line.totalMinutes || 0) + Math.random() * 0.05,
       winGrade,
       lossGrade,
       awayLine: line.awayLine,
@@ -242,21 +240,23 @@ export function ATSBarGraph({ game }: BarGraphProps): JSX.Element | null {
         if (gameComplete) {
           const betHome = bar.data.winGrade > 0 || bar.data.lossGrade > 0;
           const lineDisplay = betHome
-        ? bar.data.awayLine * -1
-        : bar.data.awayLine;
-        const sign = lineDisplay >= 0 ? "+" : "";
+            ? bar.data.awayLine * -1
+            : bar.data.awayLine;
+          const sign = lineDisplay >= 0 ? "+" : "";
           return (
             <Grid padding={1} style={{ backgroundColor: palette.accents_3 }}>
               Bet {betHome ? "HOME" : "AWAY"} {sign}
               {lineDisplay} at {bar.data.minute.toFixed(1)} mins, Grade:{" "}
-              {Math.abs(bar.data.winGrade as number || bar.data.lossGrade as number).toFixed(2)}
+              {Math.abs(
+                (bar.data.winGrade as number) || (bar.data.lossGrade as number)
+              ).toFixed(2)}
             </Grid>
           );
         }
         const betHome = bar.data.homeGrade > 0 || bar.data.awayGrade > 0;
-          const lineDisplay = betHome
-        ? bar.data.awayLine * -1
-        : bar.data.awayLine;
+        const lineDisplay = betHome
+          ? bar.data.awayLine * -1
+          : bar.data.awayLine;
         const sign = lineDisplay >= 0 ? "+" : "";
         return (
           <Grid padding={1} style={{ backgroundColor: palette.accents_3 }}>
