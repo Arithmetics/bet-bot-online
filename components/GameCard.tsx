@@ -16,6 +16,7 @@ import { TotalGraph } from "./TotalGraph";
 import { TotalBarGraph } from "./BarGraph";
 import { ATSBarGraph } from "./ATSBarGraph";
 import SpreadGraph from "./SpreadGraph";
+import TeamLogoVersus from "./TeamLogoVersus";
 
 type GameCardProps = {
   game?: GamePlus;
@@ -94,27 +95,7 @@ export function GameCard({
               alignItems="flex-start"
               style={{ marginBottom: "1rem" }}
             >
-              <Grid xs={24}>
-                <Grid.Container alignItems="center" gap={1} wrap="nowrap">
-                  <Grid>
-                    <Image
-                      height="35px"
-                      src={getLogoUrl(game.awayTeam)}
-                      alt={game.awayTeam}
-                    />
-                  </Grid>
-                  <Grid>
-                    <Text h4>@</Text>
-                  </Grid>
-                  <Grid>
-                    <Image
-                      height="35px"
-                      src={getLogoUrl(game.homeTeam)}
-                      alt={game.homeTeam}
-                    />
-                  </Grid>
-                </Grid.Container>
-              </Grid>
+              <TeamLogoVersus game={game} />
             </Grid.Container>
             <Spacer h={0.4} />
             <div>
@@ -129,10 +110,10 @@ export function GameCard({
               {started && (
                 <Text h6 margin={0}>
                   {`Closed @ ${
-                      view === "total"
-                        ? `${game.closingTotalLine} Total`
-                        : `Away ${game.closingAwayLine}`
-                    }  `}
+                    view === "total"
+                      ? `${game.closingTotalLine} Total`
+                      : `Away ${game.closingAwayLine}`
+                  }  `}
                 </Text>
               )}
             </div>
