@@ -1,10 +1,12 @@
-import { Grid, Card, Text, Badge, Tag } from "@geist-ui/react";
+import { Grid, Card, Text, Tag } from "@geist-ui/react";
 import TeamLogoVersus from "./TeamLogoVersus";
 import { GamePlus } from "../backend/src/database";
-import ATSBarGraph from "./ATSBarGraph";
-import TotalBarGraph from "./BarGraph";
 import { Stat } from "./Stat";
 import { formatTime, getGameDisplays } from "./gameUtils";
+import {
+  ATS_BET_THRESHOLD,
+  TOTAL_BET_THRESHOLD,
+} from "../backend/src/features";
 
 type QuickGameProps = {
   game: GamePlus;
@@ -107,6 +109,10 @@ export function QuickGame({
                 top="ATS Grade"
                 middle={Math.abs(mostRecentLine?.atsGrade || 0).toFixed(1)}
                 bottom={mostRecentLineSpreadTag}
+                alert={
+                  Math.abs(mostRecentLine?.atsGrade || 0) >
+                  ATS_BET_THRESHOLD - 1
+                }
               />
               <Stat top="ATS Live Bet" middle="-" bottom="-" />
             </Grid>
@@ -128,6 +134,9 @@ export function QuickGame({
                 top="Total Grade"
                 middle={Math.abs(mostRecentLine?.grade || 0).toFixed(1)}
                 bottom={mostRecentLineTotalTag}
+                alert={
+                  Math.abs(mostRecentLine?.grade || 0) > TOTAL_BET_THRESHOLD - 1
+                }
               />
               <Stat top="Total Live Bet" middle="-" bottom="-" />
             </Grid>
