@@ -21,7 +21,6 @@ export function QuickGame({
     mostRecentLine,
     mostRecentLineTotalTag,
     mostRecentLineSpreadTag,
-    timeStampNumber,
     stale,
   } = getGameDisplays(game, messageTimestamp);
 
@@ -29,25 +28,12 @@ export function QuickGame({
     <Grid key={game?.id} xs={24}>
       <Card shadow width="100%" padding={0} height="75px">
         <Card.Content padding={0.5}>
-          <Grid padding={0}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                width: "100%",
-                gap: "16px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <TeamLogoVersus game={game} />
-              </div>
+          <Grid.Container>
+            <Grid xs={2}>
+              <TeamLogoVersus game={game} />
+            </Grid>
+            <Grid xs={1} />
+            <Grid xs={2}>
               <div
                 style={{
                   display: "flex",
@@ -73,28 +59,43 @@ export function QuickGame({
                     `Final: ${game.finalAwayScore} - ${game.finalHomeScore}`}
                 </Text>
               </div>
-              {!started && !gameComplete && (
-                <Tag type="secondary" style={{ whiteSpace: "nowrap" }}>
-                  Not Started
-                </Tag>
-              )}
-              {stale && started && !gameComplete && (
-                <Tag type="warning">Stale</Tag>
-              )}
-              {!stale && started && !gameComplete && (
-                <Tag type="success">Live</Tag>
-              )}
-              {gameComplete && <div style={{ width: "50px" }} />}
+            </Grid>
+            <Grid xs={1} />
+            <Grid xs={2}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {!started && !gameComplete && (
+                  <Tag type="secondary" style={{ whiteSpace: "nowrap" }}>
+                    Not Started
+                  </Tag>
+                )}
+                {stale && started && !gameComplete && (
+                  <Tag type="warning">Stale</Tag>
+                )}
+                {!stale && started && !gameComplete && (
+                  <Tag type="success">Live</Tag>
+                )}
+                {gameComplete && <div style={{ width: "50px" }} />}
+              </div>
+            </Grid>
 
+            <Grid xs={1} />
+
+            <Grid xs={6}>
               <Stat
-                top="Closing ATS"
+                top="ATS Close"
                 middle={`${
                   game.closingAwayLine && game.closingAwayLine >= 0 ? "+" : ""
                 }${game.closingAwayLine}`}
                 bottom="AWAY"
               />
               <Stat
-                top="Current ATS"
+                top="ATS Live"
                 middle={`${
                   mostRecentLine?.awayLine && mostRecentLine.awayLine >= 0
                     ? "+"
@@ -107,13 +108,19 @@ export function QuickGame({
                 middle={Math.abs(mostRecentLine?.atsGrade || 0).toFixed(1)}
                 bottom={mostRecentLineSpreadTag}
               />
+              <Stat top="ATS Live Bet" middle="-" bottom="-" />
+            </Grid>
+
+            <Grid xs={2}></Grid>
+
+            <Grid xs={6}>
               <Stat
-                top="Closing Total"
+                top="Total Close"
                 middle={`${game.closingTotalLine}`}
                 bottom="TOTAL"
               />
               <Stat
-                top="Current Total"
+                top="Total Live"
                 middle={`${mostRecentLine?.totalLine || "-"}`}
                 bottom="TOTAL"
               />
@@ -122,30 +129,9 @@ export function QuickGame({
                 middle={Math.abs(mostRecentLine?.grade || 0).toFixed(1)}
                 bottom={mostRecentLineTotalTag}
               />
-              <div
-                style={{
-                  //   height: "150px",
-                  width: "200px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                {/* <TotalBarGraph game={game} /> */}
-              </div>
-              <div
-                style={{
-                  //   height: "150px",
-                  width: "200px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                {/* <ATSBarGraph game={game} /> */}
-              </div>
-            </div>
-          </Grid>
+              <Stat top="Total Live Bet" middle="-" bottom="-" />
+            </Grid>
+          </Grid.Container>
         </Card.Content>
       </Card>
     </Grid>

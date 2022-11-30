@@ -1,9 +1,9 @@
 import React from "react";
 
 type StatProps = {
-  top: string;
-  middle: string;
-  bottom: string;
+  top: React.ReactNode;
+  middle: React.ReactNode;
+  bottom: React.ReactNode;
 };
 
 export const Stat = ({ top, middle, bottom }: StatProps) => (

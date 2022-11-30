@@ -37,7 +37,15 @@ export function QuickView({
     gamesWithSortedLines?.filter((g) => g.liveGameLines.length === 0) || [];
 
   return (
-    <Grid.Container gap={1} justify="center">
+    <Grid.Container
+      gap={1}
+      justify="center"
+      style={{
+        marginLeft: "auto",
+        marginRight: "auto",
+        maxWidth: "1080px",
+      }}
+    >
       {[liveGames, completeGames, notStartedGames].map((gameSet) =>
         gameSet.map((game) => (
           <QuickGame

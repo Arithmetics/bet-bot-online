@@ -115,6 +115,7 @@ export default function Home(): JSX.Element {
           title="bet bot"
           caption={<>welcome to the bet bot</>}
           margin={0}
+          paddingTop={0}
         >
           {/* <Text h1>🤖 🏀</Text> */}
         </Display>
@@ -141,7 +142,7 @@ export default function Home(): JSX.Element {
               </Grid>
             </Grid.Container>
             <Grid.Container justify="center" gap={3} marginBottom={2}>
-              <Grid>
+              <Grid paddingBottom={0}>
                 <ButtonGroup>
                   <Button
                     style={{
