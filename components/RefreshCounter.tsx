@@ -57,7 +57,7 @@ export function RefreshCounter({
   ).toLocaleTimeString();
 
   return (
-    <Grid justify="center">
+    <Grid justify="center" paddingBottom={0}>
       {!downMd && <Text h3>🤖 🏀 Next update: {nextUpdateTime}</Text>}
       {downMd && <Text h5>🤖 🏀 Next update: {nextUpdateTime}</Text>}
 

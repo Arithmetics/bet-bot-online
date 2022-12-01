@@ -16,6 +16,8 @@ import { TotalGraph } from "./TotalGraph";
 import { TotalBarGraph } from "./BarGraph";
 import { ATSBarGraph } from "./ATSBarGraph";
 import SpreadGraph from "./SpreadGraph";
+import TeamLogoVersus from "./TeamLogoVersus";
+import { formatTime, getGameDisplays } from "./gameUtils";
 
 type GameCardProps = {
   game?: GamePlus;
@@ -23,11 +25,6 @@ type GameCardProps = {
   messageTimestamp?: number;
   view: View;
 };
-
-function getLogoUrl(teamName: string): string {
-  const noSpaces = teamName.replace(/\s/g, "");
-  return `/nba_team_logos/${noSpaces}.png`;
-}
 
 function determineBadgeType(
   started: boolean,
@@ -47,25 +44,14 @@ export function GameCard({
   messageTimestamp,
   view,
 }: GameCardProps): JSX.Element | null {
-  const downMd = useMediaQuery("sm", { match: "down" });
-
   if (!game) {
     return null;
   }
 
-  const started = game.liveGameLines.length > 0;
-
-  const mostRecentLine = game.liveGameLines.reduce((acc, cur) => {
-    if ((cur.totalMinutes || 0) > (acc.totalMinutes || 0)) {
-      acc = cur;
-    }
-    return acc;
-  }, game.liveGameLines[0]);
-
-  const formatTime = (line: LiveGameLinePlus) => {
-    const secondString = line.second < 10 ? `0${line.second}` : line.second;
-    return `${line.minute}: ${secondString} - ${line.quarter}Q`;
-  };
+  const { started, gameComplete, mostRecentLine, stale } = getGameDisplays(
+    game,
+    messageTimestamp
+  );
 
   const mostRecentLineTotalGrade =
     (mostRecentLine?.grade || 0) < 0
@@ -77,14 +63,6 @@ export function GameCard({
       ? `AWAY ${Math.abs(mostRecentLine?.atsGrade || 0)}`
       : `HOME ${Math.abs(mostRecentLine?.atsGrade || 0)}`;
 
-  const gameComplete = game.finalAwayScore && game.finalHomeScore;
-
-  const timeStampNumber = mostRecentLine?.timestamp
-    ? new Date(mostRecentLine?.timestamp).getTime()
-    : 0;
-
-  const stale = (messageTimestamp || 0) - timeStampNumber > 30 * 1000;
-
   return (
     <Card>
       <Card.Content padding={1}>
@@ -94,27 +72,7 @@ export function GameCard({
               alignItems="flex-start"
               style={{ marginBottom: "1rem" }}
             >
-              <Grid xs={24}>
-                <Grid.Container alignItems="center" gap={1} wrap="nowrap">
-                  <Grid>
-                    <Image
-                      height="35px"
-                      src={getLogoUrl(game.awayTeam)}
-                      alt={game.awayTeam}
-                    />
-                  </Grid>
-                  <Grid>
-                    <Text h4>@</Text>
-                  </Grid>
-                  <Grid>
-                    <Image
-                      height="35px"
-                      src={getLogoUrl(game.homeTeam)}
-                      alt={game.homeTeam}
-                    />
-                  </Grid>
-                </Grid.Container>
-              </Grid>
+              <TeamLogoVersus game={game} />
             </Grid.Container>
             <Spacer h={0.4} />
             <div>
@@ -122,17 +80,17 @@ export function GameCard({
                 {!started && !gameComplete && "Not Started"}
                 {started &&
                   !gameComplete &&
-                  `Score: ${mostRecentLine.awayScore} - ${mostRecentLine.homeScore}`}
+                  `Score: ${mostRecentLine?.awayScore} - ${mostRecentLine?.homeScore}`}
                 {gameComplete &&
                   `Final: ${game.finalAwayScore} - ${game.finalHomeScore}`}
               </Text>
               {started && (
                 <Text h6 margin={0}>
                   {`Closed @ ${
-                      view === "total"
-                        ? `${game.closingTotalLine} Total`
-                        : `Away ${game.closingAwayLine}`
-                    }  `}
+                    view === "total"
+                      ? `${game.closingTotalLine} Total`
+                      : `Away ${game.closingAwayLine}`
+                  }  `}
                 </Text>
               )}
             </div>

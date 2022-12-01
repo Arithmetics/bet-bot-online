@@ -20,6 +20,7 @@ import { RefreshCounter } from "../components/RefreshCounter";
 import NProgress from "nprogress";
 import BetTable from "../components/BetTable";
 import BetModal from "../components/BetModal";
+import QuickView from "../components/QuickView";
 // @ts-ignore
 // eslint-disable-next-line no-unused-vars
 import chaching from "../public/chaching.mp3";
@@ -27,7 +28,7 @@ import chaching from "../public/chaching.mp3";
 // eslint-disable-next-line no-unused-vars
 import alert from "../public/alert.mp3";
 
-export type View = "ats" | "total" | "bets";
+export type View = "quick" | "ats" | "total" | "bets";
 
 // const websocketUrl = "ws://localhost:8999";
 const websocketUrl = "wss://brockcastle.pagekite.me/";
@@ -37,12 +38,12 @@ export default function Home(): JSX.Element {
   const { palette } = useTheme();
   const downMd = useMediaQuery("sm", { match: "down" });
 
-  const [playAlert] = useSound("/alert.mp3", { volume: 0.5 });
+  // const [playAlert] = useSound("/alert.mp3", { volume: 0.5 });
   const [playMoney] = useSound("/chaching.mp3", { volume: 0.5 });
 
   const { lastMessage, readyState } = useWebSocket(websocketUrl);
 
-  const [view, setView] = useState<View>("total");
+  const [view, setView] = useState<View>("quick");
   const [newBetModalOpen, setNewBetModalOpen] = useState<boolean>(false);
 
   const [currentMessage, setCurrentMessage] =
@@ -73,7 +74,7 @@ export default function Home(): JSX.Element {
 
   useEffect(() => {
     if (lastMessage && lastMessage.data) {
-      playAlert();
+      // playAlert();
       const messageData = JSON.parse(lastMessage.data);
       if (messageData.messageType === "games") {
         setCurrentMessage(messageData);
@@ -114,6 +115,7 @@ export default function Home(): JSX.Element {
           title="bet bot"
           caption={<>welcome to the bet bot</>}
           margin={0}
+          paddingTop={0}
         >
           {/* <Text h1>🤖 🏀</Text> */}
         </Display>
@@ -140,8 +142,18 @@ export default function Home(): JSX.Element {
               </Grid>
             </Grid.Container>
             <Grid.Container justify="center" gap={3} marginBottom={2}>
-              <Grid>
+              <Grid paddingBottom={0}>
                 <ButtonGroup>
+                  <Button
+                    style={{
+                      backgroundColor:
+                        view === "quick" ? palette.violet : "inherit",
+                      color: view === "quick" ? palette.foreground : "inherit",
+                    }}
+                    onClick={() => setView("quick")}
+                  >
+                    Quick
+                  </Button>
                   <Button
                     style={{
                       backgroundColor:
@@ -175,6 +187,12 @@ export default function Home(): JSX.Element {
                 </ButtonGroup>
               </Grid>
             </Grid.Container>
+            {view === "quick" ? (
+              <QuickView
+                games={currentMessage?.games}
+                messageTimestamp={currentMessage?.messageTimestamp}
+              />
+            ) : undefined}
             {view === "total" || view === "ats" ? (
               <Games
                 view={view}
