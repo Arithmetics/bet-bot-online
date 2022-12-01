@@ -37,7 +37,7 @@ export const Stat = ({ top, middle, bottom, alert }: StatProps) => {
             fontWeight: 600,
             fontSize: "16px",
             margin: 0,
-            color: alert ? palette.alert : "inherit",
+            color: alert ? palette.purple : "inherit",
           }}
         >
           {middle}
