@@ -1,4 +1,4 @@
-import { Grid, Card, Text, Tag } from "@geist-ui/react";
+import { Grid, Card, Text, Tag, useMediaQuery } from "@geist-ui/react";
 import TeamLogoVersus from "./TeamLogoVersus";
 import { GamePlus } from "../backend/src/database";
 import { Stat } from "./Stat";
@@ -26,16 +26,24 @@ export function QuickGame({
     stale,
   } = getGameDisplays(game, messageTimestamp);
 
+  const isUpMD = useMediaQuery("md", { match: "up" });
+
   return (
     <Grid key={game?.id} xs={24}>
-      <Card shadow width="100%" padding={0} height="75px">
+      <Card shadow width="100%" padding={0}>
         <Card.Content padding={0.5}>
           <Grid.Container>
-            <Grid xs={2}>
+            <Grid
+              xs={10}
+              md={2}
+              style={{
+                marginBottom: isUpMD ? "0px" : "16px",
+              }}
+            >
               <TeamLogoVersus game={game} />
             </Grid>
-            <Grid xs={1} />
-            <Grid xs={2}>
+            <Grid xs={0} md={1} />
+            <Grid xs={8} md={2}>
               <div
                 style={{
                   display: "flex",
@@ -62,8 +70,8 @@ export function QuickGame({
                 </Text>
               </div>
             </Grid>
-            <Grid xs={1} />
-            <Grid xs={2}>
+            <Grid xs={0} md={1} />
+            <Grid xs={4} md={2}>
               <div
                 style={{
                   display: "flex",
@@ -86,9 +94,15 @@ export function QuickGame({
               </div>
             </Grid>
 
-            <Grid xs={1} />
+            <Grid xs={0} md={2} />
 
-            <Grid xs={6}>
+            <Grid
+              xs={24}
+              md={6}
+              style={{
+                marginBottom: isUpMD ? "0px" : "16px",
+              }}
+            >
               <Stat
                 top="ATS Close"
                 middle={`${
@@ -117,9 +131,9 @@ export function QuickGame({
               <Stat top="ATS Live Bet" middle="-" bottom="-" />
             </Grid>
 
-            <Grid xs={2}></Grid>
+            <Grid xs={0} md={1}></Grid>
 
-            <Grid xs={6}>
+            <Grid xs={24} md={6}>
               <Stat
                 top="Total Close"
                 middle={`${game.closingTotalLine}`}
