@@ -1,12 +1,13 @@
 import express from "express";
 import http from "http";
 import WebSocket from "ws";
+import cron from "node-cron";
 import {
   runDraftKingsCycle,
   getAllTodaysGames,
   GamePlus,
-  HistoricalBetting,
-  getHistoricalBettingData,
+  betCache,
+  refreshHistoricalBetting,
 } from "./database";
 import { startUpDiscordClient } from "./discord";
 import { sendNewBetAlertsToConsumers } from "./alerts";
@@ -23,9 +24,7 @@ const wss = new WebSocket.Server({ server });
 const discordClient = startUpDiscordClient();
 // twitter client
 
-let lastMetaDataUpdate: Date | null = null;
 let lastMessage = Date.now();
-let historicalBetting: HistoricalBetting | null = null;
 
 function constructMessage(games: GamePlus[]): ConnectionMessage {
   return {
@@ -33,7 +32,7 @@ function constructMessage(games: GamePlus[]): ConnectionMessage {
     messageTimestamp: lastMessage,
     games,
     msUntilNextUpdate: MASTER_INTERVAL,
-    historicalBetting,
+    historicalBetting: betCache.historicalBetting,
   };
 }
 
@@ -43,14 +42,7 @@ async function sendConnectionMessage(ws: ExtWebSocket): Promise<void> {
   yesterday.setDate(yesterday.getDate() - 1);
 
   const games = await getAllTodaysGames();
-  if (
-    !historicalBetting ||
-    !lastMetaDataUpdate ||
-    lastMetaDataUpdate < yesterday
-  ) {
-    historicalBetting = await getHistoricalBettingData();
-    // tweet / discord / text last night results here
-  }
+
   // mock data
   if (featureFlags.useMockData) {
     ws.send(JSON.stringify(fakeConnectionMessage));
@@ -117,6 +109,12 @@ setInterval(() => {
 // send data out on interval
 updateDataAndPublish();
 setInterval(updateDataAndPublish, MASTER_INTERVAL);
+
+// schedule cron jobs
+cron.schedule("* * * * *", () => {
+  refreshHistoricalBetting();
+  console.log("running a task every minute");
+});
 
 //start our server
 server.listen(process.env.PORT || 8999, () => {

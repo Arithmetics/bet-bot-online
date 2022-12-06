@@ -8,6 +8,10 @@ type GameDisplays = {
   mostRecentLineSpreadTag: string;
   timeStampNumber: number;
   stale: boolean;
+  atsAwayBet: LiveGameLinePlus | undefined;
+  atsHomeBet: LiveGameLinePlus | undefined;
+  totalOverBet: LiveGameLinePlus | undefined;
+  totalUnderBet: LiveGameLinePlus | undefined;
 };
 
 export const formatTime = (line?: LiveGameLinePlus) => {
@@ -38,6 +42,11 @@ export function getGameDisplays(
   const mostRecentLineSpreadTag =
     (mostRecentLine?.grade || 0) > 0 ? `AWAY` : `HOME`;
 
+  const atsAwayBet = game.liveGameLines.find((l) => l.isAwayATSBet);
+  const atsHomeBet = game.liveGameLines.find((l) => l.isHomeATSBet);
+  const totalOverBet = game.liveGameLines.find((l) => l.isOverTotalBet);
+  const totalUnderBet = game.liveGameLines.find((l) => l.isUnderTotalBet);
+
   const timeStampNumber = mostRecentLine?.timestamp
     ? new Date(mostRecentLine?.timestamp).getTime()
     : 0;
@@ -50,6 +59,10 @@ export function getGameDisplays(
     mostRecentLine,
     mostRecentLineTotalTag,
     mostRecentLineSpreadTag,
+    atsAwayBet,
+    atsHomeBet,
+    totalOverBet,
+    totalUnderBet,
     timeStampNumber,
     stale,
   };
