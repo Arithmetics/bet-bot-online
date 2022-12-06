@@ -3,10 +3,7 @@ import TeamLogoVersus from "./TeamLogoVersus";
 import { GamePlus } from "../backend/src/database";
 import { Stat } from "./Stat";
 import { formatTime, getGameDisplays } from "./gameUtils";
-import {
-  ATS_BET_THRESHOLD,
-  TOTAL_BET_THRESHOLD,
-} from "../backend/src/features";
+import { getTotalSecondsPlayed } from "./SpreadGraph";
 
 type QuickGameProps = {
   game: GamePlus;
@@ -29,6 +26,14 @@ export function QuickGame({
     totalUnderBet,
     stale,
   } = getGameDisplays(game, messageTimestamp);
+
+  const totalSeconds = getTotalSecondsPlayed(
+    mostRecentLine?.quarter || 0,
+    mostRecentLine?.minute || 0,
+    mostRecentLine?.second || 0
+  );
+
+  const inSecondOrThird = totalSeconds > 720 && totalSeconds < 2160;
 
   const atsBetMiddleDisplay = () => {
     if (atsAwayBet) {
@@ -170,7 +175,7 @@ export function QuickGame({
               <Stat
                 top="ATS Grade"
                 middle={
-                  !gameComplete
+                  !gameComplete && inSecondOrThird
                     ? Math.abs(mostRecentLine?.atsGrade || 0).toFixed(1)
                     : (0).toFixed(1)
                 }
