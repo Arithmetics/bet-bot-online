@@ -247,21 +247,17 @@ export function formatLine(line?: number): string {
   return `${line}`;
 }
 
-async function sendLineInfo(message: Discord.Message): Promise<void> {
+async function getLinesInfo(): Promise<Partial<Discord.APIEmbed>> {
   const games = await getAllTodaysGames();
   console.log(games);
   if (!games || games.length < 1) {
-    message.channel.send({
-      embeds: [
-        {
-          color: 0x0099ff,
-          title: "No lines today as far as I can tell...",
-          fields: [],
-        },
-      ],
-    });
-
-    return;
+    {
+      return {
+        color: 0x0099ff,
+        title: "No lines today as far as I can tell...",
+        fields: [],
+      };
+    }
   }
 
   const gameEmbed: Partial<Discord.APIEmbed> = {
@@ -299,6 +295,11 @@ async function sendLineInfo(message: Discord.Message): Promise<void> {
     });
   });
 
+  return gameEmbed;
+}
+
+async function sendLineInfo(message: Discord.Message): Promise<void> {
+  const gameEmbed = await getLinesInfo();
   message.channel.send({ embeds: [gameEmbed] });
 }
 
@@ -320,6 +321,20 @@ export function sendDiscordBetAlert(
     // tag me and kev
     betsChannel.send("<@507719783014465537>");
     betsChannel.send("<@306086225016782849>");
+  }
+}
+
+export async function sendDiscordLinesSummary(
+  client: Discord.Client
+): Promise<void> {
+  const betsChannel = client.channels.cache.find(
+    (c) => c.id === "675574196268564525"
+  );
+
+  const gameEmbed = await getLinesInfo();
+
+  if (betsChannel?.isTextBased()) {
+    betsChannel?.send({ embeds: [gameEmbed] });
   }
 }
 

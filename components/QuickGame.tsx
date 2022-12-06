@@ -176,8 +176,7 @@ export function QuickGame({
                 }
                 bottom={mostRecentLineSpreadTag}
                 alert={
-                  Math.abs(mostRecentLine?.atsGrade || 0) >
-                  ATS_BET_THRESHOLD - 1
+                  mostRecentLine?.isAwayATSBet || mostRecentLine?.isHomeATSBet
                 }
               />
               <Stat
@@ -203,13 +202,14 @@ export function QuickGame({
               <Stat
                 top="Total Grade"
                 middle={
-                  gameComplete
+                  !gameComplete
                     ? Math.abs(mostRecentLine?.grade || 0).toFixed(1)
                     : (0).toFixed(1)
                 }
                 bottom={mostRecentLineTotalTag}
                 alert={
-                  Math.abs(mostRecentLine?.grade || 0) > TOTAL_BET_THRESHOLD - 1
+                  mostRecentLine?.isOverTotalBet ||
+                  mostRecentLine?.isUnderTotalBet
                 }
               />
               <Stat

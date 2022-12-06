@@ -115,31 +115,14 @@ function addGradingData(game: GamePlus): GamePlus {
 }
 
 function addBettingData(game: GamePlus): GamePlus {
-  let hasAwayATSBet = false;
-  let hasHomeATSBet = false;
-  let hasOverTotalBet = false;
-  let hasUnderTotalBet = false;
   game.liveGameLines = game.liveGameLines.map((line) => {
     const newLine = {
       ...line,
-      isAwayATSBet: shouldATSBetAwayTeam(line, hasUnderTotalBet),
-      isHomeATSBet: shouldATSBetHomeTeam(line, hasHomeATSBet),
-      isOverTotalBet: shouldTotalBetOver(line, hasOverTotalBet),
-      isUnderTotalBet: shouldTotalBetUnder(line, hasAwayATSBet),
+      isAwayATSBet: shouldATSBetAwayTeam(line, false),
+      isHomeATSBet: shouldATSBetHomeTeam(line, false),
+      isOverTotalBet: shouldTotalBetOver(line, false),
+      isUnderTotalBet: shouldTotalBetUnder(line, false),
     };
-
-    if (shouldATSBetAwayTeam(line, hasUnderTotalBet)) {
-      hasAwayATSBet = true;
-    }
-    if (shouldATSBetHomeTeam(line, hasHomeATSBet)) {
-      hasHomeATSBet = true;
-    }
-    if (shouldTotalBetOver(line, hasOverTotalBet)) {
-      hasOverTotalBet = true;
-    }
-    if (shouldTotalBetUnder(line, hasAwayATSBet)) {
-      hasUnderTotalBet = true;
-    }
     return newLine;
   });
 

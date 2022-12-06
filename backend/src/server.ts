@@ -9,7 +9,7 @@ import {
   betCache,
   refreshHistoricalBetting,
 } from "./database";
-import { startUpDiscordClient } from "./discord";
+import { sendDiscordLinesSummary, startUpDiscordClient } from "./discord";
 import { sendNewBetAlertsToConsumers } from "./alerts";
 import featureFlags from "./features";
 import { ConnectionMessage, ExtWebSocket } from "./serverTypes";
@@ -110,10 +110,14 @@ setInterval(() => {
 updateDataAndPublish();
 setInterval(updateDataAndPublish, MASTER_INTERVAL);
 
-// schedule cron jobs
-cron.schedule("* * * * *", () => {
+// 6:00 PST
+cron.schedule("0 14 * * *", () => {
   refreshHistoricalBetting();
-  console.log("running a task every minute");
+});
+
+// 23:30 PST
+cron.schedule("30 6 * * *", () => {
+  sendDiscordLinesSummary(discordClient);
 });
 
 //start our server
