@@ -16,7 +16,7 @@ export function genIMessageATS(game: GamePlus, line: LiveGameLinePlus): string {
   return `${game.awayTeam} @ ${game.homeTeam} Betting ${Math.abs(
     line.atsGrade!
   )} units on the ${line.atsGrade! < 0 ? game.awayTeam : game.homeTeam}: ${
-    line.awayLine
+    line.atsGrade! < 0 ? line.awayLine : line.awayLine * -1
   }`;
 }
 

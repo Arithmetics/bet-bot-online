@@ -17,12 +17,24 @@ import {
 
 const prisma = new PrismaClient();
 
+type BetCache = {
+  historicalBetting: HistoricalBetting | null;
+};
+
+export const betCache: BetCache = {
+  historicalBetting: null,
+};
+
 export type LiveGameLinePlus = LiveGameLine & {
   totalMinutes?: number;
   botProjectedTotal?: number;
   botProjectedATS?: number;
   grade?: number;
   atsGrade?: number;
+  isUnderTotalBet?: boolean;
+  isOverTotalBet?: boolean;
+  isAwayATSBet?: boolean;
+  isHomeATSBet?: boolean;
 };
 
 export type GamePlus = Game & {
@@ -64,7 +76,7 @@ function botPredictedATS(
   );
 }
 
-function addBettingData(game: GamePlus): GamePlus {
+function addGradingData(game: GamePlus): GamePlus {
   game.liveGameLines = game.liveGameLines.map((line) => {
     const totalSeconds = getTotalSeconds(
       line.quarter,
@@ -102,6 +114,21 @@ function addBettingData(game: GamePlus): GamePlus {
   return { ...game };
 }
 
+function addBettingData(game: GamePlus): GamePlus {
+  game.liveGameLines = game.liveGameLines.map((line) => {
+    const newLine = {
+      ...line,
+      isAwayATSBet: shouldATSBetAwayTeam(line, false),
+      isHomeATSBet: shouldATSBetHomeTeam(line, false),
+      isOverTotalBet: shouldTotalBetOver(line, false),
+      isUnderTotalBet: shouldTotalBetUnder(line, false),
+    };
+    return newLine;
+  });
+
+  return { ...game };
+}
+
 export async function getAllGamesBeforeToday(): Promise<GamePlus[]> {
   const games = await prisma.game.findMany({
     where: {
@@ -113,7 +140,7 @@ export async function getAllGamesBeforeToday(): Promise<GamePlus[]> {
       liveGameLines: true,
     },
   });
-  return games.map(addBettingData);
+  return games.map(addGradingData).map(addBettingData);
 }
 
 export async function getAllTodaysGames(): Promise<GamePlus[]> {
@@ -125,7 +152,7 @@ export async function getAllTodaysGames(): Promise<GamePlus[]> {
       liveGameLines: true,
     },
   });
-  return games.map(addBettingData);
+  return games.map(addGradingData);
 }
 
 export async function updateFinalScore(
@@ -311,6 +338,10 @@ export function shouldTotalBetOver(
   return false;
 }
 
+export async function refreshHistoricalBetting(): Promise<void> {
+  betCache.historicalBetting = await getHistoricalBettingData();
+}
+
 export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
   const gradedGames = await getAllGamesBeforeToday();
 
@@ -321,7 +352,7 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
   const goodBetsStart = convertToPacificPrismaDate(
     // fix this?
     // new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)
-    new Date("2022-03-02T00:00:00")
+    new Date("2022-10-02T00:00:00")
   );
 
   const allBets: Bet[] = [];

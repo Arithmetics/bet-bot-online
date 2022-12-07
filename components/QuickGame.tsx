@@ -3,10 +3,7 @@ import TeamLogoVersus from "./TeamLogoVersus";
 import { GamePlus } from "../backend/src/database";
 import { Stat } from "./Stat";
 import { formatTime, getGameDisplays } from "./gameUtils";
-import {
-  ATS_BET_THRESHOLD,
-  TOTAL_BET_THRESHOLD,
-} from "../backend/src/features";
+import { getTotalSecondsPlayed } from "./SpreadGraph";
 
 type QuickGameProps = {
   game: GamePlus;
@@ -23,8 +20,64 @@ export function QuickGame({
     mostRecentLine,
     mostRecentLineTotalTag,
     mostRecentLineSpreadTag,
+    atsAwayBet,
+    atsHomeBet,
+    totalOverBet,
+    totalUnderBet,
     stale,
   } = getGameDisplays(game, messageTimestamp);
+
+  const totalSeconds = getTotalSecondsPlayed(
+    mostRecentLine?.quarter || 0,
+    mostRecentLine?.minute || 0,
+    mostRecentLine?.second || 0
+  );
+
+  const inSecondOrThird = totalSeconds > 720 && totalSeconds < 2160;
+
+  const atsBetMiddleDisplay = () => {
+    if (atsAwayBet) {
+      return `${
+        atsAwayBet.awayLine < 0 ? "-" : "+"
+      }${atsAwayBet.awayLine.toFixed(1)}`;
+    }
+    if (atsHomeBet) {
+      return `${atsHomeBet.awayLine > 0 ? "-" : "+"}${(
+        atsHomeBet.awayLine * -1
+      ).toFixed(1)}`;
+    }
+    return "-";
+  };
+
+  const atsBetBottomDisplay = () => {
+    if (atsAwayBet) {
+      return `AWAY`;
+    }
+    if (atsHomeBet) {
+      return "HOME";
+    }
+    return "-";
+  };
+
+  const totalBetMiddleDisplay = () => {
+    if (totalOverBet) {
+      return `${totalOverBet.totalLine.toFixed(1)}`;
+    }
+    if (totalUnderBet) {
+      return `${totalUnderBet.totalLine.toFixed(1)}`;
+    }
+    return "-";
+  };
+
+  const totalBetBottomDisplay = () => {
+    if (totalOverBet) {
+      return `OVER`;
+    }
+    if (totalUnderBet) {
+      return "UNDER";
+    }
+    return "-";
+  };
 
   const isUpMD = useMediaQuery("md", { match: "up" });
 
@@ -90,7 +143,7 @@ export function QuickGame({
                 {!stale && started && !gameComplete && (
                   <Tag type="success">Live</Tag>
                 )}
-                {gameComplete && <div style={{ width: "50px" }} />}
+                {gameComplete && <Tag type="default">Complete</Tag>}
               </div>
             </Grid>
 
@@ -121,14 +174,21 @@ export function QuickGame({
               />
               <Stat
                 top="ATS Grade"
-                middle={Math.abs(mostRecentLine?.atsGrade || 0).toFixed(1)}
+                middle={
+                  !gameComplete && inSecondOrThird
+                    ? Math.abs(mostRecentLine?.atsGrade || 0).toFixed(1)
+                    : (0).toFixed(1)
+                }
                 bottom={mostRecentLineSpreadTag}
                 alert={
-                  Math.abs(mostRecentLine?.atsGrade || 0) >
-                  ATS_BET_THRESHOLD - 1
+                  mostRecentLine?.isAwayATSBet || mostRecentLine?.isHomeATSBet
                 }
               />
-              <Stat top="ATS Live Bet" middle="-" bottom="-" />
+              <Stat
+                top="ATS Live Bet"
+                middle={atsBetMiddleDisplay()}
+                bottom={atsBetBottomDisplay()}
+              />
             </Grid>
 
             <Grid xs={0} md={1}></Grid>
@@ -146,13 +206,22 @@ export function QuickGame({
               />
               <Stat
                 top="Total Grade"
-                middle={Math.abs(mostRecentLine?.grade || 0).toFixed(1)}
+                middle={
+                  !gameComplete
+                    ? Math.abs(mostRecentLine?.grade || 0).toFixed(1)
+                    : (0).toFixed(1)
+                }
                 bottom={mostRecentLineTotalTag}
                 alert={
-                  Math.abs(mostRecentLine?.grade || 0) > TOTAL_BET_THRESHOLD - 1
+                  mostRecentLine?.isOverTotalBet ||
+                  mostRecentLine?.isUnderTotalBet
                 }
               />
-              <Stat top="Total Live Bet" middle="-" bottom="-" />
+              <Stat
+                top="Total Live Bet"
+                middle={totalBetMiddleDisplay()}
+                bottom={totalBetBottomDisplay()}
+              />
             </Grid>
           </Grid.Container>
         </Card.Content>

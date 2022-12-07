@@ -6,11 +6,9 @@ import {
   BadgeProps,
   Spacer,
   Grid,
-  Image,
-  useMediaQuery,
 } from "@geist-ui/react";
 import Activity from "@geist-ui/react-icons/activity";
-import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
+import { GamePlus } from "../backend/src/database";
 import { View } from "../pages/index";
 import { TotalGraph } from "./TotalGraph";
 import { TotalBarGraph } from "./BarGraph";
