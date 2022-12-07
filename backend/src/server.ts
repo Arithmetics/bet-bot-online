@@ -114,6 +114,7 @@ setInterval(updateDataAndPublish, MASTER_INTERVAL);
 cron.schedule("0 14 * * *", () => {
   refreshHistoricalBetting();
 });
+refreshHistoricalBetting();
 
 // 23:30 PST
 cron.schedule("30 6 * * *", () => {
