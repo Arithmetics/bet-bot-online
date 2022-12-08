@@ -110,14 +110,19 @@ setInterval(() => {
 updateDataAndPublish();
 setInterval(updateDataAndPublish, MASTER_INTERVAL);
 
-// 6:00 PST
-cron.schedule("0 14 * * *", () => {
+// 6:00 PST - refresh betting summary
+cron.schedule("0 6 * * *", () => {
   refreshHistoricalBetting();
 });
 refreshHistoricalBetting();
 
-// 23:30 PST
-cron.schedule("30 6 * * *", () => {
+// 23:30 PST - send out todays summary
+cron.schedule("30 23 * * *", () => {
+  sendDiscordLinesSummary(discordClient);
+});
+
+// 10:00 PST - send out todays preview
+cron.schedule("30 10 * * *", () => {
   sendDiscordLinesSummary(discordClient);
 });
 
