@@ -152,7 +152,7 @@ export async function getAllTodaysGames(): Promise<GamePlus[]> {
       liveGameLines: true,
     },
   });
-  return games.map(addGradingData);
+  return games.map(addGradingData).map(addBettingData);
 }
 
 export async function updateFinalScore(
