@@ -169,7 +169,7 @@ export function QuickGame({
                   mostRecentLine?.awayLine && mostRecentLine.awayLine >= 0
                     ? "+"
                     : ""
-                } ${mostRecentLine?.awayLine || "-"}`}
+                }${mostRecentLine?.awayLine || "-"}`}
                 bottom="AWAY"
               />
               <Stat
@@ -188,6 +188,7 @@ export function QuickGame({
                 top="ATS Live Bet"
                 middle={atsBetMiddleDisplay()}
                 bottom={atsBetBottomDisplay()}
+                alert={Boolean(atsHomeBet || atsAwayBet)}
               />
             </Grid>
 
@@ -221,6 +222,7 @@ export function QuickGame({
                 top="Total Live Bet"
                 middle={totalBetMiddleDisplay()}
                 bottom={totalBetBottomDisplay()}
+                alert={Boolean(totalOverBet || totalUnderBet)}
               />
             </Grid>
           </Grid.Container>
