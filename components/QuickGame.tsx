@@ -4,6 +4,7 @@ import { GamePlus } from "../backend/src/database";
 import { Stat } from "./Stat";
 import { formatTime, getGameDisplays } from "./gameUtils";
 import { getTotalSecondsPlayed } from "./SpreadGraph";
+import { GeistUIThemesPalette } from "@geist-ui/react/dist/themes/presets";
 
 type QuickGameProps = {
   game: GamePlus;
@@ -35,6 +36,10 @@ export function QuickGame({
 
   const inSecondOrThird = totalSeconds > 720 && totalSeconds < 2160;
 
+  const finalAwayDeficit =
+    (game.finalAwayScore || 0) - (game.finalHomeScore || 0);
+  const finalTotal = (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
+
   const atsBetMiddleDisplay = () => {
     if (atsAwayBet) {
       return `${
@@ -47,6 +52,52 @@ export function QuickGame({
       ).toFixed(1)}`;
     }
     return "-";
+  };
+
+  const didWinATSBet = (): boolean => {
+    if (atsAwayBet) {
+      return atsAwayBet.awayLine < finalAwayDeficit;
+    }
+    if (atsHomeBet) {
+      return atsHomeBet.awayLine > finalAwayDeficit;
+    }
+    return false;
+  };
+
+  const didWinOverBet = (): boolean => {
+    if (totalOverBet) {
+      return totalOverBet.totalLine < finalTotal;
+    }
+    if (totalUnderBet) {
+      return totalUnderBet.totalLine > finalTotal;
+    }
+    return false;
+  };
+
+  const atsBetAlertColor = (): keyof GeistUIThemesPalette | undefined => {
+    if (!Boolean(atsHomeBet || atsAwayBet)) {
+      return undefined;
+    }
+    if (!gameComplete) {
+      return "purple";
+    }
+    if (didWinATSBet()) {
+      return "cyan";
+    }
+    return "error";
+  };
+
+  const totalBetAlertColor = (): keyof GeistUIThemesPalette | undefined => {
+    if (!Boolean(totalOverBet || totalUnderBet)) {
+      return undefined;
+    }
+    if (!gameComplete) {
+      return "purple";
+    }
+    if (didWinOverBet()) {
+      return "cyan";
+    }
+    return "error";
   };
 
   const atsBetBottomDisplay = () => {
@@ -105,9 +156,11 @@ export function QuickGame({
                   justifyContent: "center",
                 }}
               >
-                <Text h6 margin={0} style={{ whiteSpace: "nowrap" }}>
-                  {formatTime(mostRecentLine)}
-                </Text>
+                {!gameComplete && (
+                  <Text h6 margin={0} style={{ whiteSpace: "nowrap" }}>
+                    {formatTime(mostRecentLine)}
+                  </Text>
+                )}
                 <Text
                   h6
                   margin={0}
@@ -163,15 +216,25 @@ export function QuickGame({
                 }${game.closingAwayLine}`}
                 bottom="AWAY"
               />
-              <Stat
-                top="ATS Live"
-                middle={`${
-                  mostRecentLine?.awayLine && mostRecentLine.awayLine >= 0
-                    ? "+"
-                    : ""
-                }${mostRecentLine?.awayLine || "-"}`}
-                bottom="AWAY"
-              />
+              {!gameComplete ? (
+                <Stat
+                  top="ATS Live"
+                  middle={`${
+                    mostRecentLine?.awayLine && mostRecentLine.awayLine >= 0
+                      ? "+"
+                      : ""
+                  }${mostRecentLine?.awayLine || "-"}`}
+                  bottom="AWAY"
+                />
+              ) : (
+                <Stat
+                  top="Final Diff"
+                  middle={`${
+                    finalAwayDeficit >= 0 ? "+" : ""
+                  }${finalAwayDeficit}`}
+                  bottom="AWAY"
+                />
+              )}
               <Stat
                 top="ATS Grade"
                 middle={
@@ -180,15 +243,17 @@ export function QuickGame({
                     : (0).toFixed(1)
                 }
                 bottom={mostRecentLineSpreadTag}
-                alert={
+                color={
                   mostRecentLine?.isAwayATSBet || mostRecentLine?.isHomeATSBet
+                    ? "purple"
+                    : undefined
                 }
               />
               <Stat
                 top="ATS Live Bet"
                 middle={atsBetMiddleDisplay()}
                 bottom={atsBetBottomDisplay()}
-                alert={Boolean(atsHomeBet || atsAwayBet)}
+                color={atsBetAlertColor()}
               />
             </Grid>
 
@@ -200,11 +265,15 @@ export function QuickGame({
                 middle={`${game.closingTotalLine}`}
                 bottom="TOTAL"
               />
-              <Stat
-                top="Total Live"
-                middle={`${mostRecentLine?.totalLine || "-"}`}
-                bottom="TOTAL"
-              />
+              {!gameComplete ? (
+                <Stat
+                  top="Total Live"
+                  middle={`${mostRecentLine?.totalLine || "-"}`}
+                  bottom="TOTAL"
+                />
+              ) : (
+                <Stat top="Final" middle={`${finalTotal}`} bottom="TOTAL" />
+              )}
               <Stat
                 top="Total Grade"
                 middle={
@@ -213,16 +282,18 @@ export function QuickGame({
                     : (0).toFixed(1)
                 }
                 bottom={mostRecentLineTotalTag}
-                alert={
+                color={
                   mostRecentLine?.isOverTotalBet ||
                   mostRecentLine?.isUnderTotalBet
+                    ? "purple"
+                    : undefined
                 }
               />
               <Stat
                 top="Total Live Bet"
                 middle={totalBetMiddleDisplay()}
                 bottom={totalBetBottomDisplay()}
-                alert={Boolean(totalOverBet || totalUnderBet)}
+                color={totalBetAlertColor()}
               />
             </Grid>
           </Grid.Container>

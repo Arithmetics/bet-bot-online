@@ -1,14 +1,16 @@
 import { useTheme } from "@geist-ui/react";
+import { GeistUIThemesPalette } from "@geist-ui/react/dist/themes/presets";
 import React from "react";
 
 type StatProps = {
   top: React.ReactNode;
   middle: React.ReactNode;
   bottom: React.ReactNode;
-  alert?: boolean;
+  // alert?: boolean;
+  color?: keyof GeistUIThemesPalette;
 };
 
-export const Stat = ({ top, middle, bottom, alert }: StatProps) => {
+export const Stat = ({ top, middle, bottom, color }: StatProps) => {
   const { palette } = useTheme();
   return (
     <div
@@ -37,7 +39,7 @@ export const Stat = ({ top, middle, bottom, alert }: StatProps) => {
             fontWeight: 600,
             fontSize: "16px",
             margin: 0,
-            color: alert ? palette.purple : "inherit",
+            color: color ? palette[color] : "inherit",
           }}
         >
           {middle}
