@@ -37,7 +37,8 @@ export function QuickGame({
   const inSecondOrThird = totalSeconds > 720 && totalSeconds < 2160;
 
   const finalAwayDeficit =
-    (game.finalAwayScore || 0) - (game.finalHomeScore || 0);
+    (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
+
   const finalTotal = (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
 
   const atsBetMiddleDisplay = () => {
@@ -56,10 +57,11 @@ export function QuickGame({
 
   const didWinATSBet = (): boolean => {
     if (atsAwayBet) {
-      return atsAwayBet.awayLine < finalAwayDeficit;
+      console.log(atsAwayBet.awayLine, finalAwayDeficit);
+      return atsAwayBet.awayLine > finalAwayDeficit;
     }
     if (atsHomeBet) {
-      return atsHomeBet.awayLine > finalAwayDeficit;
+      return atsHomeBet.awayLine < finalAwayDeficit;
     }
     return false;
   };
