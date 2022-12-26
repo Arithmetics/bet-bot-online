@@ -44,6 +44,9 @@ export default function ProfitGraph({
 
   const data: Serie[] = createGraphData(profits);
 
+  const mobileDayLimit = Math.ceil(data[0].data.length / 4);
+  const wideDayLimit = Math.ceil(data[0].data.length / 10);
+
   return (
     <ResponsiveLine
       data={data}
@@ -72,7 +75,9 @@ export default function ProfitGraph({
       gridXValues={0}
       gridYValues={0}
       axisBottom={{
-        tickValues: "every 5 days",
+        tickValues: isUpMD
+          ? `every ${wideDayLimit} days`
+          : `every ${mobileDayLimit} days`,
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
