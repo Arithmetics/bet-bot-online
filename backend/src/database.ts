@@ -13,6 +13,8 @@ import {
   TOTAL_BET_THRESHOLD,
   ATS_LOW_MINUTE,
   ATS_HIGH_MINUTE,
+  TOTAL_LOW_MINUTE,
+  TOTAL_HIGH_MINUTE,
 } from "./features";
 
 const prisma = new PrismaClient();
@@ -320,7 +322,14 @@ export function shouldTotalBetUnder(
   line: LiveGameLinePlus,
   hasDuplicate: boolean
 ): boolean {
-  if (line.grade && line.grade < -1 * TOTAL_BET_THRESHOLD && !hasDuplicate) {
+  if (
+    line.grade &&
+    line.grade < -1 * TOTAL_BET_THRESHOLD &&
+    line.totalMinutes &&
+    line.totalMinutes > TOTAL_LOW_MINUTE &&
+    line.totalMinutes < TOTAL_HIGH_MINUTE &&
+    !hasDuplicate
+  ) {
     return true;
   }
 
@@ -331,7 +340,14 @@ export function shouldTotalBetOver(
   line: LiveGameLinePlus,
   hasDuplicate: boolean
 ): boolean {
-  if (line.grade && line.grade > TOTAL_BET_THRESHOLD && !hasDuplicate) {
+  if (
+    line.grade &&
+    line.grade > TOTAL_BET_THRESHOLD &&
+    line.totalMinutes &&
+    line.totalMinutes > TOTAL_LOW_MINUTE &&
+    line.totalMinutes < TOTAL_HIGH_MINUTE &&
+    !hasDuplicate
+  ) {
     return true;
   }
 
@@ -382,6 +398,16 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
         duplicateTracker[dayKey].ats.push(game.awayTeam);
         const finalAwayDeficit =
           (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
+
+        // console.log(
+        //   `${game.awayTeam},${game.homeTeam},${line.awayLine},${
+        //     line.totalMinutes
+        //   },${line.awayScore},${line.homeScore},${
+        //     line.atsGrade
+        //   },${finalAwayDeficit},${finalAwayDeficit > line.awayLine},home,${
+        //     game.closingAwayLine
+        //   }`
+        // );
         allBets.push({
           date: game.date,
           title: `${game.homeTeam} ${line.awayLine < 0 ? "+" : ""}${
@@ -400,6 +426,16 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
         duplicateTracker[dayKey].ats.push(game.awayTeam);
         const finalAwayDeficit =
           (game.finalHomeScore || 0) - (game.finalAwayScore || 0);
+
+        // console.log(
+        //   `${game.awayTeam},${game.homeTeam},${line.awayLine},${
+        //     line.totalMinutes
+        //   },${line.awayScore},${line.homeScore},${
+        //     line.atsGrade
+        //   },${finalAwayDeficit},${finalAwayDeficit > line.awayLine},away,${
+        //     game.closingAwayLine
+        //   }`
+        // );
         allBets.push({
           date: game.date,
           title: `${game.awayTeam} ${line.awayLine > 0 ? "+" : ""}${
@@ -418,6 +454,13 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
         duplicateTracker[dayKey].totals.push(game.awayTeam);
         const finalTotal =
           (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
+        // console.log(
+        //   `${game.awayTeam},${game.homeTeam},${line.totalLine},${
+        //     line.totalMinutes
+        //   },${line.awayScore},${line.homeScore},${line.grade},${finalTotal},${
+        //     finalTotal > line.totalLine
+        //   },over,${game.closingTotalLine}`
+        // );
         allBets.push({
           date: game.date,
           title: `${game.awayTeam} @ ${game.homeTeam} over ${line.totalLine}  (${line.totalMinutes} mins, ${line.awayScore} - ${line.homeScore})`,
@@ -432,6 +475,14 @@ export async function getHistoricalBettingData(): Promise<HistoricalBetting> {
         duplicateTracker[dayKey].totals.push(game.awayTeam);
         const finalTotal =
           (game.finalAwayScore || 0) + (game.finalHomeScore || 0);
+
+        // console.log(
+        //   `${game.awayTeam},${game.homeTeam},${line.totalLine},${
+        //     line.totalMinutes
+        //   },${line.awayScore},${line.homeScore},${line.grade},${finalTotal},${
+        //     finalTotal < line.totalLine
+        //   },under,${game.closingTotalLine}`
+        // );
         allBets.push({
           date: game.date,
           title: `${game.awayTeam} @ ${game.homeTeam} under ${line.totalLine} (${line.totalMinutes} mins, ${line.awayScore} - ${line.homeScore})`,
