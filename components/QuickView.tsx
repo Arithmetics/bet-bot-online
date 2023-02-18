@@ -1,5 +1,6 @@
 import { Grid } from "@geist-ui/react";
 import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
+import NoResult from "./NoResult";
 import QuickGame from "./QuickGame";
 
 type QuickViewProps = {
@@ -33,6 +34,8 @@ export function QuickView({
   const notStartedGames =
     gamesWithSortedLines?.filter((g) => g.liveGameLines.length === 0) || [];
 
+  const allGames = [liveGames, completeGames, notStartedGames];
+  const isEmpty = allGames.every((g) => g.length === 0);
   return (
     <Grid.Container
       gap={1}
@@ -43,7 +46,8 @@ export function QuickView({
         maxWidth: "min(1080px, 100%)",
       }}
     >
-      {[liveGames, completeGames, notStartedGames].map((gameSet) =>
+      {isEmpty && <NoResult />}
+      {allGames.map((gameSet) =>
         gameSet.map((game) => (
           <QuickGame
             key={game.id}
