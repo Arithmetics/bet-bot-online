@@ -4,23 +4,13 @@ import { GamePlus, LiveGameLinePlus } from "../backend/src/database";
 
 import { GameCard } from "./GameCard";
 import { View } from "../pages/index";
+import NoResult from "./NoResult";
 
 type GamesProps = {
   games?: GamePlus[];
   messageTimestamp?: number;
   view: View;
 };
-
-// function sortStarted(a: GamePlus, b: GamePlus): number {
-//   if (!a.liveGameLines.length) {
-//     return 1;
-//   }
-//   if (!b.liveGameLines.length) {
-//     return -1;
-//   }
-
-//   return a.liveGameLines.length > b.liveGameLines.length ? 1 : -1;
-// }
 
 function sortTimestamp(a: LiveGameLinePlus, b: LiveGameLinePlus): number {
   return a.timestamp > b.timestamp ? 1 : -1;
@@ -49,9 +39,13 @@ export function Games({
   const notStartedGames =
     gamesWithSortedLines?.filter((g) => g.liveGameLines.length === 0) || [];
 
+  const allGames = [liveGames, completeGames, notStartedGames];
+  const isEmpty = allGames.every((g) => g.length === 0);
+
   return (
     <Grid.Container gap={2} justify="center">
-      {[liveGames, completeGames, notStartedGames].map((gameSet) =>
+      {isEmpty && <NoResult />}
+      {allGames.map((gameSet) =>
         gameSet.map((game) => (
           <Grid key={game?.id} style={{ width: "425px", maxWidth: "95vw" }}>
             <GameCard
