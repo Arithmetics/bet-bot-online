@@ -65,7 +65,7 @@ function sendWssBetAlerts(
 }
 
 export function sendNewBetAlertsToConsumers(
-  client: Discord.Client,
+  client: Discord.Client | undefined,
   wss: WebSocket.Server<WebSocket.WebSocket>,
   games: GamePlus[],
   lastMessage: number
@@ -101,7 +101,9 @@ export function sendNewBetAlertsToConsumers(
         const message = genIMessageATS(game, line);
         const wssMessage = getWssATSMessage(game, line);
         // sends
-        sendDiscordBetAlert(client, betEmbed);
+        if (client) {
+          sendDiscordBetAlert(client, betEmbed);
+        }
         // imessage
         sendMeAnIMessage(message);
         // twitter
@@ -115,7 +117,9 @@ export function sendNewBetAlertsToConsumers(
         const message = genIMessageATS(game, line);
         const wssMessage = getWssATSMessage(game, line);
         // sends
-        sendDiscordBetAlert(client, betEmbed);
+        if (client) {
+          sendDiscordBetAlert(client, betEmbed);
+        }
         // imessage
         sendMeAnIMessage(message);
         // twitter
@@ -129,7 +133,9 @@ export function sendNewBetAlertsToConsumers(
         const message = genIMessageTotal(game, line);
         const wssMessage = getWssTotalMessage(game, line);
         // sends
-        sendDiscordBetAlert(client, betEmbed);
+        if (client) {
+          sendDiscordBetAlert(client, betEmbed);
+        }
         // imessage
         sendMeAnIMessage(message);
         // twitter
@@ -143,7 +149,9 @@ export function sendNewBetAlertsToConsumers(
         const message = genIMessageTotal(game, line);
         const wssMessage = getWssTotalMessage(game, line);
         // sends
-        sendDiscordBetAlert(client, betEmbed);
+        if (client) {
+          sendDiscordBetAlert(client, betEmbed);
+        }
         // imessage
         sendMeAnIMessage(message);
         // twitter

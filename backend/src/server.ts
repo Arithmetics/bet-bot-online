@@ -21,7 +21,9 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 // setup message clients
-const discordClient = startUpDiscordClient();
+const discordClient = featureFlags.useDiscord
+  ? startUpDiscordClient()
+  : undefined;
 // twitter client
 
 let lastMessage = Date.now();
@@ -74,7 +76,7 @@ async function updateDataAndPublish(): Promise<void> {
 
   const games = await getAllTodaysGames();
 
-  if (featureFlags.reportBets) {
+  if (featureFlags.reportBets && featureFlags.useDiscord) {
     // pass in twitter
     sendNewBetAlertsToConsumers(discordClient, wss, games, lastMessage);
   } else {
@@ -118,12 +120,16 @@ refreshHistoricalBetting();
 
 // 23:30 PST - send out todays summary
 cron.schedule("30 23 * * *", () => {
-  sendDiscordLinesSummary(discordClient);
+  if (discordClient) {
+    sendDiscordLinesSummary(discordClient);
+  }
 });
 
 // 10:00 PST - send out todays preview
 cron.schedule("30 10 * * *", () => {
-  sendDiscordLinesSummary(discordClient);
+  if (discordClient) {
+    sendDiscordLinesSummary(discordClient);
+  }
 });
 
 //start our server
