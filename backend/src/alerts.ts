@@ -14,7 +14,12 @@ import {
   genTotalDiscordEmbed,
   sendDiscordBetAlert,
 } from "./discord";
-import { genIMessageATS, genIMessageTotal, sendMeAnIMessage } from "./iMessage";
+import {
+  genIMessageATS,
+  genIMessageTotal,
+  sendMeAnIMessage,
+  sendKevinAnIMessage,
+} from "./iMessage";
 import { createPacificPrismaDate } from "./utils";
 import { BetMessage } from "./serverTypes";
 
@@ -104,6 +109,7 @@ export function sendNewBetAlertsToConsumers(
         sendDiscordBetAlert(client, betEmbed);
         // imessage
         sendMeAnIMessage(message);
+        sendKevinAnIMessage(message);
         // twitter
         // fe client
         wssMessages.push(wssMessage);
@@ -118,6 +124,7 @@ export function sendNewBetAlertsToConsumers(
         sendDiscordBetAlert(client, betEmbed);
         // imessage
         sendMeAnIMessage(message);
+        sendKevinAnIMessage(message);
         // twitter
         // fe client
         wssMessages.push(wssMessage);
@@ -132,6 +139,7 @@ export function sendNewBetAlertsToConsumers(
         sendDiscordBetAlert(client, betEmbed);
         // imessage
         sendMeAnIMessage(message);
+        sendKevinAnIMessage(message);
         // twitter
         // fe client
         wssMessages.push(wssMessage);
@@ -146,6 +154,7 @@ export function sendNewBetAlertsToConsumers(
         sendDiscordBetAlert(client, betEmbed);
         // imessage
         sendMeAnIMessage(message);
+        sendKevinAnIMessage(message);
         // twitter
         // fe client
         wssMessages.push(wssMessage);

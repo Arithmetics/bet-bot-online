@@ -39,3 +39,7 @@ export function sendIMessage(handle: string, message: string) {
 export function sendMeAnIMessage(message: string) {
   sendIMessage("+15038033676", message);
 }
+
+export function sendKevinAnIMessage(message: string) {
+  sendIMessage("+15035539753", message);
+}
