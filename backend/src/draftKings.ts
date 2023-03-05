@@ -55,7 +55,7 @@ function reduceDraftKingsGames(
       teamName2,
       startDate,
       eventStatus,
-      providerEventId,
+      // providerEventId,
     } = event;
     const {
       state,
@@ -68,7 +68,7 @@ function reduceDraftKingsGames(
     } = eventStatus;
 
     const matchingOffer = offeredLines?.offerSubcategory?.offers?.find((o) =>
-      o?.some((p) => p.providerEventId === providerEventId)
+      o?.some((p) => p.eventId === eventId)
     );
 
     const matchingTotalOutcome = matchingOffer
@@ -108,7 +108,7 @@ export async function getDraftKingsListings(): Promise<
   DraftKingsGameReduced[]
 > {
   try {
-    const url = `https://sportsbook-us-or.draftkings.com//sites/US-OR-SB/api/v4/eventgroups/88670846/categories/487?format=json`;
+    const url = `https://sportsbook-us-or.draftkings.com//sites/US-OR-SB/api/v5/eventgroups/42648?format=json`;
 
     const response = await got(url, {});
 
