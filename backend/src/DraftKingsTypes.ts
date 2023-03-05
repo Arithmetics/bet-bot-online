@@ -39,10 +39,11 @@ export enum OfferLabelEnum {
 
 export interface EntityOrOffersEntityEntity {
   providerOfferId: string;
+  eventId: number;
+  label?: OfferLabelEnum | null;
   providerId: number;
   providerEventId: string;
   providerEventGroupId?: string | null;
-  label?: OfferLabelEnum | null;
   isSuspended: boolean;
   isOpen: boolean;
   offerSubcategoryId: number;
