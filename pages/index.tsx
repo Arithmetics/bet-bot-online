@@ -31,7 +31,7 @@ import alert from "../public/alert.mp3";
 export type View = "quick" | "ats" | "total" | "bets";
 
 // const websocketUrl = "ws://localhost:8999";
-const websocketUrl = "wss://brockcastle.pagekite.me/";
+const websocketUrl = "wss://tunnel.betbot.tk";
 
 export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
