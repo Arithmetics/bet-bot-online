@@ -10,32 +10,31 @@ datasource db {
   url      = "postgres://brocktillotson:rock7900@localhost:5432/bet-bot-online"
 }
 
-
 model Game {
-    id                  Int      @id @default(autoincrement())
-    awayTeam            String   @db.VarChar(255)
-    homeTeam            String   @db.VarChar(255)
-    date                DateTime @db.Date
-    closingAwayLine     Float
-    closingTotalLine    Float
-    finalAwayScore      Float?
-    finalHomeScore      Float?
-    liveGameLines       LiveGameLine[]
+  id               Int            @id @default(autoincrement())
+  awayTeam         String         @db.VarChar(255)
+  homeTeam         String         @db.VarChar(255)
+  date             DateTime       @db.Date
+  closingAwayLine  Float
+  closingTotalLine Float
+  finalAwayScore   Float?
+  finalHomeScore   Float?
+  liveGameLines    LiveGameLine[]
 }
 
 model LiveGameLine {
-    id          Int      @id @default(autoincrement())
-    game        Game     @relation(fields: [gameId], references: [id])
-    gameId      Int
-    awayLine    Float
-    totalLine   Float
-    quarter     Int
-    minute      Int
-    second      Int
-    awayScore   Int
-    homeScore   Int
-    timestamp   DateTime
-    liveBets    LiveBet[]
+  id        Int       @id @default(autoincrement())
+  game      Game      @relation(fields: [gameId], references: [id])
+  gameId    Int
+  awayLine  Float
+  totalLine Float
+  quarter   Int
+  minute    Int
+  second    Int
+  awayScore Int
+  homeScore Int
+  timestamp DateTime
+  liveBets  LiveBet[]
 }
 
 enum BetType {
@@ -43,11 +42,19 @@ enum BetType {
   ATS
 }
 
+enum BetChoice {
+  UNDER
+  OVER
+}
+
 model LiveBet {
-  id                  Int              @id @default(autoincrement())
-  liveGameLine        LiveGameLine     @relation(fields: [liveGameLineId], references: [id])
-  liveGameLineId      Int
-  betType             BetType
-  unitSize            Float
-  date                DateTime @db.Date
+  id             Int          @id @default(autoincrement())
+  liveGameLine   LiveGameLine @relation(fields: [liveGameLineId], references: [id])
+  liveGameLineId Int
+  betType        BetType
+  choice         BetChoice
+  grade          Float
+  timestamp      DateTime
+  wasPlaced      Boolean
+  placedLine     Float
 }

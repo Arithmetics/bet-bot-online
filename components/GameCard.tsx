@@ -178,7 +178,7 @@ export function GameCard({
             alignItems: "center",
           }}
         >
-          {started && view === "total" ? <TotalGraph game={game} /> : undefined}
+          {/* {started && view === "total" ? <TotalGraph game={game} /> : undefined} */}
           {started && view === "ats" ? <SpreadGraph game={game} /> : undefined}
           {!started && <Activity color="red" size={36} />}
         </div>

@@ -1,11 +1,11 @@
 const featureFlags = {
-  queryDraftKings: true,
-  makeBets: true,
-  reportBets: true,
+  // queryDraftKings: true,
+  // makeBets: true,
+  // reportBets: true,
   useMockData: false,
-  // queryDraftKings: false,
-  // makeBets: false,
-  // reportBets: false,
+  queryDraftKings: false,
+  makeBets: false,
+  reportBets: false,
   // useMockData: true,
 };
 

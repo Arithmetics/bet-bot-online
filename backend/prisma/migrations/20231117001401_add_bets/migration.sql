@@ -6,8 +6,9 @@ CREATE TABLE "LiveBet" (
     "id" SERIAL NOT NULL,
     "liveGameLineId" INTEGER NOT NULL,
     "betType" "BetType" NOT NULL,
-    "unitSize" DOUBLE PRECISION NOT NULL,
-    "date" DATE NOT NULL,
+    "grade" DOUBLE PRECISION NOT NULL,
+    "timestamp" TIMESTAMP(3) NOT NULL,
+    "wasPlaced" BOOLEAN NOT NULL,
 
     CONSTRAINT "LiveBet_pkey" PRIMARY KEY ("id")
 );

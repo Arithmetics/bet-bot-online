@@ -30,8 +30,8 @@ import alert from "../public/alert.mp3";
 
 export type View = "quick" | "ats" | "total" | "bets";
 
-// const websocketUrl = "ws://localhost:8999";
-const websocketUrl = "wss://tunnel.betbot.tk";
+const websocketUrl = "ws://localhost:8999";
+// const websocketUrl = "wss://tunnel.betbot.tk";
 
 export default function Home(): JSX.Element {
   const [, setToast] = useToasts();
@@ -92,7 +92,7 @@ export default function Home(): JSX.Element {
   const isConnecting = readyState === ReadyState.CONNECTING;
   const isDisconnected = readyState === ReadyState.CLOSED;
   const isConnected = readyState === ReadyState.OPEN;
-
+  console.log({ currentMessage });
   return (
     <div>
       <Head>

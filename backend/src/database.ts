@@ -1,5 +1,9 @@
-import { PrismaClient, Game, LiveGameLine } from "@prisma/client";
-import { convertToPacificPrismaDate, createPacificPrismaDate } from "./utils";
+import { PrismaClient, Game, LiveGameLine, LiveBet } from "@prisma/client";
+import {
+  convertToPacificPrismaDate,
+  createPacificPrismaDate,
+  getTotalSeconds,
+} from "./utils";
 import {
   getDraftKingsListings,
   filterNotStartedGames,
@@ -43,16 +47,9 @@ export type GamePlus = Game & {
   liveGameLines: LiveGameLinePlus[];
 };
 
-function getTotalSeconds(
-  quarter: number,
-  minute: number,
-  second: number
-): number {
-  const secondsPlayedInQuarter = (12 - minute) * 60 - second;
-  const oldQuarterSeconds = (quarter - 1) * 12 * 60;
-
-  return secondsPlayedInQuarter + oldQuarterSeconds;
-}
+export type LiveBetPlus = LiveBet & {
+  liveGameLine: LiveGameLinePlus;
+};
 
 function botPredictedTotal(
   currentTotalScore: number,
@@ -78,54 +75,61 @@ function botPredictedATS(
   );
 }
 
+export function addGradingDataToLine(
+  line: LiveGameLine,
+  game: Game
+): LiveGameLinePlus {
+  const totalSeconds = getTotalSeconds(line.quarter, line.minute, line.second);
+
+  const secondsLeftInRegulation = 48 * 60 - totalSeconds;
+
+  const totalMinutes =
+    Math.round((totalSeconds / 60 + Number.EPSILON) * 10) / 10;
+
+  const botProjectedTotal = botPredictedTotal(
+    line.awayScore + line.homeScore,
+    game.closingTotalLine,
+    secondsLeftInRegulation
+  );
+
+  const botProjectedATS = botPredictedATS(
+    line.awayScore,
+    line.homeScore,
+    game.closingAwayLine
+  );
+
+  return {
+    ...line,
+    totalMinutes,
+    botProjectedTotal,
+    botProjectedATS,
+    grade: parseFloat((botProjectedTotal - line.totalLine).toFixed(2)),
+    atsGrade: parseFloat((botProjectedATS - line.awayLine).toFixed(2)),
+  };
+}
+
 function addGradingData(game: GamePlus): GamePlus {
   game.liveGameLines = game.liveGameLines.map((line) => {
-    const totalSeconds = getTotalSeconds(
-      line.quarter,
-      line.minute,
-      line.second
-    );
-
-    const secondsLeftInRegulation = 48 * 60 - totalSeconds;
-
-    const totalMinutes =
-      Math.round((totalSeconds / 60 + Number.EPSILON) * 10) / 10;
-
-    const botProjectedTotal = botPredictedTotal(
-      line.awayScore + line.homeScore,
-      game.closingTotalLine,
-      secondsLeftInRegulation
-    );
-
-    const botProjectedATS = botPredictedATS(
-      line.awayScore,
-      line.homeScore,
-      game.closingAwayLine
-    );
-
-    return {
-      ...line,
-      totalMinutes,
-      botProjectedTotal,
-      botProjectedATS,
-      grade: parseFloat((botProjectedTotal - line.totalLine).toFixed(2)),
-      atsGrade: parseFloat((botProjectedATS - line.awayLine).toFixed(2)),
-    };
+    return addGradingDataToLine(line, game);
   });
 
   return { ...game };
 }
 
+export function addBettingDataToLine(line: LiveGameLinePlus): LiveGameLinePlus {
+  const newLine = {
+    ...line,
+    isAwayATSBet: shouldATSBetAwayTeam(line, false),
+    isHomeATSBet: shouldATSBetHomeTeam(line, false),
+    isOverTotalBet: shouldTotalBetOver(line, false),
+    isUnderTotalBet: shouldTotalBetUnder(line, false),
+  };
+  return newLine;
+}
+
 function addBettingData(game: GamePlus): GamePlus {
   game.liveGameLines = game.liveGameLines.map((line) => {
-    const newLine = {
-      ...line,
-      isAwayATSBet: shouldATSBetAwayTeam(line, false),
-      isHomeATSBet: shouldATSBetHomeTeam(line, false),
-      isOverTotalBet: shouldTotalBetOver(line, false),
-      isUnderTotalBet: shouldTotalBetUnder(line, false),
-    };
-    return newLine;
+    return addBettingDataToLine(line);
   });
 
   return { ...game };
@@ -169,6 +173,11 @@ export async function updateFinalScore(
       finalHomeScore,
     },
   });
+}
+
+export async function finishGamesUsingESPN() {
+  const allEspnGames = await getESPNGames();
+  await completePrismaGames(allEspnGames);
 }
 
 export async function runDraftKingsCycle() {

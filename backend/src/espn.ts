@@ -101,18 +101,6 @@ export async function getESPNGames(): Promise<ESPNGameReduced[]> {
   }
 }
 
-// export function findMatchingESPNScore(
-//   draftKings: DraftKingsGameReduced,
-//   scores: ESPNGameReduced[]
-// ): ESPNGameReduced | undefined {
-//   return scores.find((s) => {
-//     return (
-//       draftKings.awayTeam.includes(s.awayTeam) &&
-//       draftKings.homeTeam.includes(s.homeTeam)
-//     );
-//   });
-// }
-
 export function findMatchingPrismaGame(
   espn: ESPNGameReduced,
   games: GamePlus[]
